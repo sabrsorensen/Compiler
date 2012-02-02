@@ -4,7 +4,7 @@ class Scanner():
 
     def __init__(self):
         self.contents = []
-        a = ['\.',',','(',')','=','>','<',':','+','-','*','\w','\d','\'','{','}']
+
     def open_file(self, input_file):
         f = open(input_file)
 
