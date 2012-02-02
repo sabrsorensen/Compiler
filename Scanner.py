@@ -11,8 +11,7 @@ class Scanner():
                 'var':'MP_VAR','while':'MP_WHILE','write':'MP_WRITE'}
     def __init__(self, in_file):
         self.file = in_file
-        self.symbols = ['.', ',', '(', ')', '=', '+', '-', '*']
-        self.hash =
+        self.symbols = ['\.',',','(',')','=','>','<',':','+','-','*','\w','\d','\'','{','}']
 
     def open_file(self, input_file):
         self.file = open(input_file)
