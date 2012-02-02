@@ -21,8 +21,24 @@ class Scanner():
         pass
     def get_column(self):
         pass
+    def err_invalid_token(self):
+        pass
 
-    #distributor sub-methods
+    '''
+    Distributor Sub-Methods
+    Functions take as input the last character read.
+    Then perform whatever is necessary to determine if the given token and subsequent characters give a valid token
+    If a valid token is found, instantiate a new token object and append to list of tokens
+    If no valid token is found, call err_invalid_token()
+        This kills the scanner
+    Pre-condition: file object points at character after last read
+    Post-condition: file object points at character 2 after the end of last complete token
+
+    e.g. input is "...dog+cat=hamster ..."
+    distributor gets to 'd', and file object is now pointing at 'o'
+    so distributor passes 'd' to t_id_key(), t_id_key() finds 'dog', creates a token, and adds it to list
+    t_id_key() passes '+' back to the distributor, and file object now points at 'c'
+    '''
     def t_period(self):
         pass
     def t_comma(self):
@@ -57,8 +73,6 @@ class Scanner():
         pass
     def t_r_comment(self):
         pass
-
-
 
 
 s = Scanner()
