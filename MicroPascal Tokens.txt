@@ -1,0 +1,78 @@
+Tokens
+
+Auxiliary Regular Expressions
+
+letter ::= a|b|c|...|z|A|B|C|...|Z
+digit  ::= 0|1|2|3|4|5|6|7|8|9
+Reserved Words
+
+          Token                         Lexeme
+
+MP_AND            "and"
+MP_BEGIN          "begin"
+MP_DIV            "div"
+MP_DO             "do"
+MP_DOWNTO         "downto"
+MP_ELSE           "else"
+MP_END            "end"
+MP_FIXED          "fixed" 
+MP_FLOAT          "float"
+MP_FOR            "for"
+MP_FUNCTION       "function"
+MP_IF             "if"
+MP_INTEGER        "integer"
+MP_MOD            "mod"
+MP_NOT            "not"
+MP_OR             "or"
+MP_PROCEDURE      "procedure"
+MP_PROGRAM        "program"
+MP_READ           "read"
+MP_REPEAT         "repeat"
+MP_THEN           "then"
+MP_TO             "to"
+MP_UNTIL          "until"
+MP_VAR            "var"
+MP_WHILE          "while"
+MP_WRITE          "write"
+ 
+
+Identifiers and Literals
+
+MP_IDENTIFIER          (letter | "_"(letter | digit)){["_"](letter | digit)}
+MP_INTEGER_LIT         digit{digit}
+
+
+MP_FIXED_LIT           digit{digit} "." digit{digit}  
+MP_FLOAT_LIT           (digit{digit} | digit{digit} "." digit{digit}) ("e"|"E")["+"|"-"]digit{digit}
+  
+MP_STRING_LIT          "'" {"''" | AnyCharacterExceptApostropheOrEOL} "'"  
+                          
+Symbols
+
+MP_PERIOD         "."
+MP_COMMA          ","
+MP_SCOLON         ";"
+MP_LPAREN         "("
+MP_RPAREN         ")"
+MP_EQUAL          "="
+MP_GTHAN          ">"
+MP_GEQUAL         ">="
+MP_LTHAN          "<"
+MP_LEQUAL         "<="
+MP_NEQUAL         "<>"
+MP_ASSIGN         ":="
+MP_PLUS           "+"
+MP_MINUS          "-"
+MP_TIMES          "*"
+MP_COLON          ":"
+End of File
+
+MP_EOF
+Errors
+
+MP_RUN_COMMENT
+MP_RUN_STRING
+MP_ERROR
+Notes
+
+A comment in microPascal starts with a "{" and ends with a "}"
