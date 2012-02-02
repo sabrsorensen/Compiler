@@ -14,9 +14,12 @@ class Scanner():
             re.sub(r'\s', '', line)
             print line
 
-
-
-
+    def get_lexeme(self):
+        pass
+    def get_line(self):
+        pass
+    def get_column(self):
+        pass
 
 s = Scanner()
 s.open_file('C:\Users\Anna\Documents\Code\Aptana\workspace\Compiler\sample.txt')
