@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+from user import f
 
 log = logging.getLogger()
 ch  = logging.StreamHandler()
@@ -8,11 +9,14 @@ log.addHandler(ch)
 log.setLevel(logging.DEBUG)
 
 class Scanner():
-    
+
 
     def __init__(self, in_file=None):
         self.file = in_file
+        self.column
+        self.line
         self.symbols = ['\.',',','(',')','=','>','<',':','+','-','*','\w','\d','\'','{','}']
+        self.tokens = []
         self.keywords = {'and':'MP_AND','begin':'MP_BEGIN','div':'MP_DIV','do':'MP_DO',
                          'downto':'MP_DOWNTO','else':'MP_ELSE','end':'MP_END','fixed':'MP_FIXED',
                          'float':'MP_FLOAT','for':'MP_FOR','function':'MP_FUNCTION','if':'MP_IF',
@@ -43,8 +47,8 @@ class Scanner():
     def open_file(self, input_file):
         self.file = open(input_file)
 
-    def create_token(self, tok):
-        s = Token(self.keywords[tok],get_line(),get_column(), tok)
+    def create_token(self, token_type, token_line, token_column, token_name ):
+        s = Token(token_type,token_line,token_column, token_name)
         tokens.append(s)
 
     def get_token(self):
@@ -59,18 +63,14 @@ class Scanner():
                     cur = getattr(self, self.sym_dict.get(pattern, 't_error'))(result.group(0))
                     break
 
-        
-
-#        re.sub(r'\s', '', line)
-#        print line
 
 
     def get_lexeme(self):
         pass
     def get_line(self):
-        pass
+        return self.line
     def get_column(self):
-        pass
+        return self.column
     def err_invalid_token(self):
         pass
 
@@ -92,42 +92,112 @@ class Scanner():
     t_id_key() passes '+' back to the distributor, and file object now points at 'c'
     '''
     def t_period(self, in_char):
-        return
+        token_type = 'MP_PERIOD'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
+        cur_char = f.read(1)
+        return cur_char
+    def t_comma(self, in_char):
+        token_type = 'MP_COMMA'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
+        cur_char = f.read(1)
+        return cur_char
+    def t_semicolon(self, in_char):
+        token_type = 'MP_SCOLON'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
+        cur_char = f.read(1)
+        return cur_char
+    def t_l_paren(self, in_char):
+        token_type = 'MP_LPAREN'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
+        cur_char = f.read(1)
+        return cur_char
+    def t_r_paren(self, in_char):
+        token_type = 'MP_RPAREN'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
+        cur_char = f.read(1)
+        return cur_char
+    def t_eq(self, in_char):
+        token_type = 'MP_EQUAL'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
+        cur_char = f.read(1)
+        return cur_char
+    def t_plus(self, in_char):
+        token_type = 'MP_PLUS'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
+        cur_char = f.read(1)
+        return cur_char
+    def t_minus(self, in_char):
+        token_type = 'MP_MINUS'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
+        cur_char = f.read(1)
+        return cur_char
+    def t_mul(self, in_char):
+        token_type = 'MP_TIMES'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
+        cur_char = f.read(1)
+        return cur_char
+        #Complex sub-methods, can have different types of tokens created
+    def t_gt(self, in_char):
         pass
-    def t_comma(self):
+    def t_lt(self, in_char):
         pass
-    def t_semicolon(self):
+    def t_colon(self, in_char):
         pass
-    def t_l_paren(self):
+    def t_plus(self, in_char):
         pass
-    def t_r_paren(self):
+    def t_minus(self, in_char):
         pass
-    def t_eq(self):
+    def t_mul(self, in_char):
         pass
-    def t_gt(self):
-        pass
-    def t_lt(self):
-        pass
-    def t_colon(self):
-        pass
-    def t_plus(self):
-        pass
-    def t_minus(self):
-        pass
-    def t_mul(self):
-        pass
-    def t_id_key(self, inp):
-        logging.debug('Yay! it is a letter: %s' % inp)
+    def t_id_key(self, in_char):
+        logging.debug('Yay! it is a letter: %s' % in_char)
         return ''
         pass
-    def t_num(self):
+    def t_num(self, in_char):
         pass
-    def t_string(self):
+    def t_string(self, in_char):
         pass
-    def t_l_comment(self):
+    def t_l_comment(self, in_char):
         pass
-    def t_r_comment(self):
+    def t_r_comment(self, in_char):
         pass
+
+    def scanner_read_char(self):
+        self.cur = self.file.read(1)
+        if cur is '\n':
+            self.line += 1
+            self.column = 0
+        if cur is not '\n':
+            self.column += 1
+        return self.cur
+
 
 class Token(object):
     def __init__(self, token_type, line, column, token_value):
