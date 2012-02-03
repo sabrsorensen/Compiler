@@ -13,10 +13,11 @@ class Scanner():
 
 
     def __init__(self):
+        self.id_pattern = r'([a-zA-Z]) | (_[a-zA-Z0-9](_[a-zA-Z0-9])*)'
+        self.symbols = ['.', ',', ';', '(', ')', '=', '>', '<', '+', '-', '*', ':']
         self.file = None
-        self.column = None
-        self.line = None
-        self.symbols = ['\.',',','(',')','=','>','<',':','+','-','*','\w','\d','\'','{','}']
+        self.column = 0
+        self.line = 0
         self.tokens = []
         self.keywords = {'and':'MP_AND','begin':'MP_BEGIN','div':'MP_DIV','do':'MP_DO',
                          'downto':'MP_DOWNTO','else':'MP_ELSE','end':'MP_END','fixed':'MP_FIXED',
@@ -43,6 +44,7 @@ class Scanner():
             r'\'': 't_string',
             r'{': 't_l_comment',
             r'}': 't_r_comment',
+            r'_': 't_id_key',
             }
         
     def open_file(self, input_file):
@@ -50,35 +52,38 @@ class Scanner():
 
     def create_token(self, token_type, token_line, token_column, token_name ):
         s = Token(token_type,token_line,token_column, token_name)
-        tokens.append(s)
+        self.tokens.append(s)
 
     def get_token(self):
-        cur = self.file.read(1)
-        #cur = 'a'
-        while cur is not '':
+        next = self.scanner_read_char()
+        while next is not '':
             for pattern, f_name in self.sym_dict.items():
-                result = re.match(pattern, cur)
-                # print 'blah'
-                logging.debug('Result: %s' % result)
-                if result.group(0):
-                    cur = getattr(self, self.sym_dict.get(pattern, 't_error'))(result.group(0))
-                    break
+                result = re.match(pattern, next)
+                if result:
+                    print result.group(0)
+                    getattr(self, self.sym_dict.get(pattern, 't_error'))(result.group(0))
+                break
+            next = self.scanner_read_char()
+
 
     def scanner_read_char(self):
-        self.cur = self.file.read(1)
+        cur = self.file.read(1)
         if cur is '\n':
             self.line += 1
             self.column = 0
         if cur is not '\n':
             self.column += 1
-        return self.cur
+        return cur
 
     def get_lexeme(self):
         pass
+
     def get_line(self):
         return self.line
+
     def get_column(self):
         return self.column
+
     def err_invalid_token(self):
         pass
 
@@ -105,81 +110,65 @@ class Scanner():
         column = self.get_column()
         token = in_char
         self.create_token(token_type, line, column, token)
-        cur_char = f.read(1)
-        return cur_char
+        return
 
     def t_comma(self, in_char):
         token_type = 'MP_COMMA'
         line = self.get_line()
         column = self.get_column()
-        token = in_char
-        self.create_token(token_type, line, column, token)
-        cur_char = f.read(1)
-        return cur_char
+        self.create_token(token_type, line, column, in_char)
+        return
 
     def t_semicolon(self, in_char):
         token_type = 'MP_SCOLON'
         line = self.get_line()
         column = self.get_column()
-        token = in_char
-        self.create_token(token_type, line, column, token)
-        cur_char = f.read(1)
-        return cur_char
+        self.create_token(token_type, line, column, in_char)
+        return
 
     def t_l_paren(self, in_char):
         token_type = 'MP_LPAREN'
         line = self.get_line()
         column = self.get_column()
-        token = in_char
-        self.create_token(token_type, line, column, token)
-        cur_char = f.read(1)
-        return cur_char
+        self.create_token(token_type, line, column, in_char)
+        return
 
     def t_r_paren(self, in_char):
         token_type = 'MP_RPAREN'
         line = self.get_line()
         column = self.get_column()
-        token = in_char
-        self.create_token(token_type, line, column, token)
-        cur_char = f.read(1)
-        return cur_char
+        self.create_token(token_type, line, column, in_char)
+        return
 
     def t_eq(self, in_char):
         token_type = 'MP_EQUAL'
         line = self.get_line()
         column = self.get_column()
-        token = in_char
-        self.create_token(token_type, line, column, token)
-        cur_char = f.read(1)
-        return cur_char
+        self.create_token(token_type, line, column, in_char)
+        return
 
     def t_plus(self, in_char):
         token_type = 'MP_PLUS'
         line = self.get_line()
         column = self.get_column()
-        token = in_char
-        self.create_token(token_type, line, column, token)
-        cur_char = f.read(1)
-        return cur_char
+        self.create_token(token_type, line, column, in_char)
+        return
 
     def t_minus(self, in_char):
         token_type = 'MP_MINUS'
         line = self.get_line()
         column = self.get_column()
-        token = in_char
-        self.create_token(token_type, line, column, token)
-        cur_char = f.read(1)
-        return cur_char
+        self.create_token(token_type, line, column, in_char)
+        return
 
     def t_mul(self, in_char):
         token_type = 'MP_TIMES'
         line = self.get_line()
         column = self.get_column()
-        token = in_char
-        self.create_token(token_type, line, column, token)
-        cur_char = f.read(1)
-        return cur_char
-        #Complex sub-methods, can have different types of tokens created
+        self.create_token(token_type, line, column, in_char)
+        return
+
+    #Complex sub-methods, can have different types of tokens created
 
     def t_gt(self, in_char):
         pass
@@ -191,9 +180,33 @@ class Scanner():
         pass
 
     def t_id_key(self, in_char):
-        logging.debug('Yay! it is a letter: %s' % in_char)
-        return ''
-        pass
+
+        final_lexeme = in_char
+        temp = in_char
+        result = re.match(self.id_pattern, temp)
+        while result:
+            final_lexeme = temp
+            next = self.scanner_read_char()
+            temp += next
+            result = re.match(self.id_pattern, temp)
+        #cpopped out of the while loop - means we got our id
+        # first, rewind
+        self.file.seek(-1, 1)
+
+        # check if the id we have is a keyword
+
+        for lexeme, token in self.keywords.items():
+            if temp == lexeme:
+                final_lexeme = lexeme
+                self.create_token(token, self.get_line(),
+                                    self.get_column(), final_lexeme)
+                return
+
+        # we have an identifier
+        token_type = 'MP_IDENTIFIER'
+        self.create_token(token_type, self.get_line(),
+                            self.get_column(), final_lexeme)
+        return
 
     def t_num(self, in_char):
         pass
