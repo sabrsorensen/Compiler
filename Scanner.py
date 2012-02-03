@@ -170,12 +170,6 @@ class Scanner():
         pass
     def t_colon(self, in_char):
         pass
-    def t_plus(self, in_char):
-        pass
-    def t_minus(self, in_char):
-        pass
-    def t_mul(self, in_char):
-        pass
     def t_id_key(self, in_char):
         logging.debug('Yay! it is a letter: %s' % in_char)
         return ''
