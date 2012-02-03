@@ -72,7 +72,7 @@ class Scanner():
         line = get_line()
         column = get_column()
         token = in_char
-        create_token(token_type, line, column, token)
+        self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_comma(self, in_char):
@@ -80,7 +80,7 @@ class Scanner():
         line = get_line()
         column = get_column()
         token = in_char
-        create_token(self.token_type, self.line, self.column, self.token)
+        self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_semicolon(self, in_char):
@@ -88,7 +88,7 @@ class Scanner():
         line = get_line()
         column = get_column()
         token = in_char
-        create_token(self.token_type, self.line, self.column, self.token)
+        self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_l_paren(self, in_char):
@@ -96,47 +96,47 @@ class Scanner():
         line = get_line()
         column = get_column()
         token = in_char
-        create_token(self.token_type, self.line, self.column, self.token)
+        self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_r_paren(self, in_char):
-        self.token_type = 'MP_RPAREN'
-        self.line = get_line()
-        self.column = get_column()
-        self.token = in_char
-        self.create_token(self.token_type, self.line, self.column, self.token)
+        token_type = 'MP_RPAREN'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_eq(self, in_char):
-        self.token_type = 'MP_EQUAL'
-        self.line = self.get_line()
-        self.column = self.get_column()
-        self.token = in_char
-        self.create_token(self.token_type, self.line, self.column, self.token)
+        token_type = 'MP_EQUAL'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_plus(self, in_char):
-        self.token_type = 'MP_PLUS'
-        self.line = self.get_line()
-        self.column = self.get_column()
-        self.token = in_char
-        self.create_token(self.token_type, self.line, self.column, self.token)
+        token_type = 'MP_PLUS'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_minus(self, in_char):
-        self.token_type = 'MP_MINUS'
-        self.line = get_line()
-        self.column = get_column()
-        self.token = in_char
-        self.create_token(self.token_type, self.line, self.column, self.token)
+        token_type = 'MP_MINUS'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_mul(self, in_char):
-        self.token_type = 'MP_TIMES'
-        self.line = get_line()
-        self.column = get_column()
-        self.token = in_char
-        create_token(self.token_type, self.line, self.column, self.token)
+        token_type = 'MP_TIMES'
+        line = get_line()
+        column = get_column()
+        token = in_char
+        self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
         #Complex sub-methods, can have different types of tokens created
