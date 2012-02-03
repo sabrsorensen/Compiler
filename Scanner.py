@@ -174,7 +174,7 @@ class Token(object):
         self.column = column
         self.token_value = token_value
     def __repr__(self):
-        return "%16s %6s %4s %s" % (self.token_type, self.line, self.column, self.token_value)
+        return "%16s %6s %4s %s\n" % (self.token_type, self.line, self.column, self.token_value)
 
 s = Scanner()
 s.open_file(r'.\sample.txt')
