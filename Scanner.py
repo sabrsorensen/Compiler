@@ -40,6 +40,8 @@ class Scanner():
     def err_invalid_token(self):
         pass
 
+
+
     '''
     Distributor Sub-Methods
     Functions take as input the last character read.
@@ -55,7 +57,8 @@ class Scanner():
     so distributor passes 'd' to t_id_key(), t_id_key() finds 'dog', creates a token, and adds it to list
     t_id_key() passes '+' back to the distributor, and file object now points at 'c'
     '''
-    def t_period(self):
+    def t_period(in_char):
+        return
         pass
     def t_comma(self):
         pass
@@ -90,6 +93,14 @@ class Scanner():
     def t_r_comment(self):
         pass
 
+class Token(object):
+    def __init__(self, token_type, line, column, token_value):
+        self.token_type = token_type
+        self.line = line
+        self.column = column
+        self.token_value = token_value
+    def __repr__(self):
+        return "%s %s %s %s" % (self.token_type, self.line, self.column, self.token_value)
 
 s = Scanner()
 s.open_file('C:\Users\Anna\Documents\Code\Aptana\workspace\Compiler\sample.txt')
