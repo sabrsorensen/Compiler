@@ -164,6 +164,7 @@ class Scanner():
             self.column = 0
         if cur is not '\n':
             self.column += 1
+        return self.cur
 
 
 class Token(object):
