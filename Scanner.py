@@ -2,9 +2,13 @@ import re
 import os
 import sys
 
+log = logging.getLogger()
+ch  = logging.StreamHandler()
+log.addHandler(ch)
+log.setLevel(logging.DEBUG)
 
 class Scanner():
-
+    
 
     def __init__(self, in_file=None):
         self.file = in_file
@@ -17,6 +21,25 @@ class Scanner():
                          'repeat':'MP_REPEAT','then':'MP_THEN','to':'MP_TO','until':'MP_UNTIL',
                          'var':'MP_VAR','while':'MP_WHILE','write':'MP_WRITE'}
 
+        self.sym_dict = {
+            r'\.': 't_period',
+            r',': 't_comma',
+            r'\(': 't_l_paren',
+            r'\)': 't_r_paren',
+            r'=': 't_eq',
+            r'>': 't_gt',
+            r'<': 't_lt',
+            r':': 't_colon',
+            r'\+': 't_plus',
+            r'-': 't_minus',
+            r'\*': 't_mul',
+            r'[a-zA-Z]': 't_id_key', # unfortunately, \w matches all alphanumeric characters and underscore
+            r'\d': 't_num',
+            r'\'': 't_string',
+            r'{': 't_l_comment',
+            r'}': 't_r_comment',
+            }
+        
     def open_file(self, input_file):
         self.file = open(input_file)
 
@@ -25,18 +48,21 @@ class Scanner():
         tokens.append(s)
 
     def get_token(self):
-        cur = self.file.read(1)
-        val = 0
-        for pattern in t_dict:
-            result = re.match(pattern, cur)
-            if result.group(0):
-                val = t_dict.index(pattern)
-
+        #cur = self.file.read(1)
+        cur = 'a'
+        while cur is not '':
+            for pattern, f_name in self.sym_dict.items():
+                result = re.match(pattern, cur)
+                # print 'blah'
+                logging.debug('Result: %s' % result)
+                if result.group(0):
+                    cur = getattr(self, self.sym_dict.get(pattern, 't_error'))(result.group(0))
+                    break
 
         
 
-        re.sub(r'\s', '', line)
-        print line
+#        re.sub(r'\s', '', line)
+#        print line
 
 
     def get_lexeme(self):
@@ -65,7 +91,7 @@ class Scanner():
     so distributor passes 'd' to t_id_key(), t_id_key() finds 'dog', creates a token, and adds it to list
     t_id_key() passes '+' back to the distributor, and file object now points at 'c'
     '''
-    def t_period(in_char):
+    def t_period(self, in_char):
         return
         pass
     def t_comma(self):
@@ -90,7 +116,9 @@ class Scanner():
         pass
     def t_mul(self):
         pass
-    def t_id_key(self):
+    def t_id_key(self, inp):
+        logging.debug('Yay! it is a letter: %s' % inp)
+        return ''
         pass
     def t_num(self):
         pass
