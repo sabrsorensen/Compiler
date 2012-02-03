@@ -44,9 +44,9 @@ class Scanner():
     def get_lexeme(self):
         pass
     def get_line(self):
-        pass
+        return self.line
     def get_column(self):
-        pass
+        return self.column
     def err_invalid_token(self):
         pass
 
@@ -164,6 +164,7 @@ class Scanner():
             self.column = 0
         if cur is not '\n':
             self.column += 1
+        return self.cur
 
 
 class Token(object):
