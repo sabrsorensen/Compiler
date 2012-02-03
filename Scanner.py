@@ -93,72 +93,72 @@ class Scanner():
     '''
     def t_period(self, in_char):
         token_type = 'MP_PERIOD'
-        line = get_line()
-        column = get_column()
+        line = self.get_line()
+        column = self.get_column()
         token = in_char
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_comma(self, in_char):
         token_type = 'MP_COMMA'
-        line = get_line()
-        column = get_column()
+        line = self.get_line()
+        column = self.get_column()
         token = in_char
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_semicolon(self, in_char):
         token_type = 'MP_SCOLON'
-        line = get_line()
-        column = get_column()
+        line = self.get_line()
+        column = self.get_column()
         token = in_char
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_l_paren(self, in_char):
         token_type = 'MP_LPAREN'
-        line = get_line()
-        column = get_column()
+        line = self.get_line()
+        column = self.get_column()
         token = in_char
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_r_paren(self, in_char):
         token_type = 'MP_RPAREN'
-        line = get_line()
-        column = get_column()
+        line = self.get_line()
+        column = self.get_column()
         token = in_char
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_eq(self, in_char):
         token_type = 'MP_EQUAL'
-        line = get_line()
-        column = get_column()
+        line = self.get_line()
+        column = self.get_column()
         token = in_char
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_plus(self, in_char):
         token_type = 'MP_PLUS'
-        line = get_line()
-        column = get_column()
+        line = self.get_line()
+        column = self.get_column()
         token = in_char
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_minus(self, in_char):
         token_type = 'MP_MINUS'
-        line = get_line()
-        column = get_column()
+        line = self.get_line()
+        column = self.get_column()
         token = in_char
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
     def t_mul(self, in_char):
         token_type = 'MP_TIMES'
-        line = get_line()
-        column = get_column()
+        line = self.get_line()
+        column = self.get_column()
         token = in_char
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
@@ -206,7 +206,7 @@ class Token(object):
         self.column = column
         self.token_value = token_value
     def __repr__(self):
-        return "%16s %6s %4s %s" % (self.token_type, self.line, self.column, self.token_value)
+        return "%16s %6s %4s %s\n" % (self.token_type, self.line, self.column, self.token_value)
 
 s = Scanner()
 s.open_file(r'.\sample.txt')
