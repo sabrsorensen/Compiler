@@ -53,8 +53,8 @@ class Scanner():
         tokens.append(s)
 
     def get_token(self):
-        #cur = self.file.read(1)
-        cur = 'a'
+        cur = self.file.read(1)
+        #cur = 'a'
         while cur is not '':
             for pattern, f_name in self.sym_dict.items():
                 result = re.match(pattern, cur)
@@ -64,7 +64,14 @@ class Scanner():
                     cur = getattr(self, self.sym_dict.get(pattern, 't_error'))(result.group(0))
                     break
 
-
+    def scanner_read_char(self):
+        self.cur = self.file.read(1)
+        if cur is '\n':
+            self.line += 1
+            self.column = 0
+        if cur is not '\n':
+            self.column += 1
+        return self.cur
 
     def get_lexeme(self):
         pass
@@ -77,21 +84,21 @@ class Scanner():
 
 
 
-    '''
-    Distributor Sub-Methods
-    Functions take as input the last character read.
-    Then perform whatever is necessary to determine if the given token and subsequent characters give a valid token
-    If a valid token is found, instantiate a new token object and append to list of tokens
-    If no valid token is found, call err_invalid_token()
-        This kills the scanner
-    Pre-condition: file object points at character after last read
-    Post-condition: file object points at character 2 after the end of last complete token
+#    Distributor Sub-Methods
+#    Functions take as input the last character read.
+#    Then perform whatever is necessary to determine if the given token and subsequent characters give a valid token
+#    If a valid token is found, instantiate a new token object and append to list of tokens
+#    If no valid token is found, call err_invalid_token()
+#        This kills the scanner
+#    Pre-condition: file object points at character after last read
+#    Post-condition: file object points at character 2 after the end of last complete token
+#
+#    e.g. input is "...dog+cat=hamster ..."
+#    distributor gets to 'd', and file object is now pointing at 'o'
+#    so distributor passes 'd' to t_id_key(), t_id_key() finds 'dog', creates a token, and adds it to list
+#    t_id_key() passes '+' back to the distributor, and file object now points at 'c'
 
-    e.g. input is "...dog+cat=hamster ..."
-    distributor gets to 'd', and file object is now pointing at 'o'
-    so distributor passes 'd' to t_id_key(), t_id_key() finds 'dog', creates a token, and adds it to list
-    t_id_key() passes '+' back to the distributor, and file object now points at 'c'
-    '''
+
     def t_period(self, in_char):
         token_type = 'MP_PERIOD'
         line = self.get_line()
@@ -100,6 +107,7 @@ class Scanner():
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
+
     def t_comma(self, in_char):
         token_type = 'MP_COMMA'
         line = self.get_line()
@@ -108,6 +116,7 @@ class Scanner():
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
+
     def t_semicolon(self, in_char):
         token_type = 'MP_SCOLON'
         line = self.get_line()
@@ -116,6 +125,7 @@ class Scanner():
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
+
     def t_l_paren(self, in_char):
         token_type = 'MP_LPAREN'
         line = self.get_line()
@@ -124,6 +134,7 @@ class Scanner():
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
+
     def t_r_paren(self, in_char):
         token_type = 'MP_RPAREN'
         line = self.get_line()
@@ -132,6 +143,7 @@ class Scanner():
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
+
     def t_eq(self, in_char):
         token_type = 'MP_EQUAL'
         line = self.get_line()
@@ -140,6 +152,7 @@ class Scanner():
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
+
     def t_plus(self, in_char):
         token_type = 'MP_PLUS'
         line = self.get_line()
@@ -148,6 +161,7 @@ class Scanner():
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
+
     def t_minus(self, in_char):
         token_type = 'MP_MINUS'
         line = self.get_line()
@@ -156,6 +170,7 @@ class Scanner():
         self.create_token(token_type, line, column, token)
         cur_char = f.read(1)
         return cur_char
+
     def t_mul(self, in_char):
         token_type = 'MP_TIMES'
         line = self.get_line()
@@ -165,44 +180,42 @@ class Scanner():
         cur_char = f.read(1)
         return cur_char
         #Complex sub-methods, can have different types of tokens created
+
     def t_gt(self, in_char):
         pass
+
     def t_lt(self, in_char):
         pass
+
     def t_colon(self, in_char):
         pass
+
     def t_id_key(self, in_char):
         logging.debug('Yay! it is a letter: %s' % in_char)
         return ''
         pass
+
     def t_num(self, in_char):
         pass
+
     def t_string(self, in_char):
         pass
+
     def t_l_comment(self, in_char):
         pass
+
     def t_r_comment(self, in_char):
         pass
 
-    def scanner_read_char(self):
-        self.cur = self.file.read(1)
-        if cur is '\n':
-            self.line += 1
-            self.column = 0
-        if cur is not '\n':
-            self.column += 1
-        return self.cur
 
 
 class Token(object):
+
     def __init__(self, token_type, line, column, token_value):
         self.token_type = token_type
         self.line = line
         self.column = column
         self.token_value = token_value
+
     def __repr__(self):
         return "%16s %6s %4s %s\n" % (self.token_type, self.line, self.column, self.token_value)
-
-s = Scanner()
-#s.open_file(r'.\sample.txt')
-s.get_token()
