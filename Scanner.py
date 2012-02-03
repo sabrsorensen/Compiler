@@ -1,7 +1,8 @@
 import re
 import os
 import sys
-from user import f
+import logging
+#from user import f
 
 log = logging.getLogger()
 ch  = logging.StreamHandler()
@@ -11,10 +12,10 @@ log.setLevel(logging.DEBUG)
 class Scanner():
 
 
-    def __init__(self, in_file=None):
-        self.file = in_file
-        self.column
-        self.line
+    def __init__(self):
+        self.file = None
+        self.column = None
+        self.line = None
         self.symbols = ['\.',',','(',')','=','>','<',':','+','-','*','\w','\d','\'','{','}']
         self.tokens = []
         self.keywords = {'and':'MP_AND','begin':'MP_BEGIN','div':'MP_DIV','do':'MP_DO',
@@ -209,5 +210,5 @@ class Token(object):
         return "%16s %6s %4s %s\n" % (self.token_type, self.line, self.column, self.token_value)
 
 s = Scanner()
-s.open_file(r'.\sample.txt')
+#s.open_file(r'.\sample.txt')
 s.get_token()
