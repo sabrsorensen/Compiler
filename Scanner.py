@@ -68,6 +68,7 @@ class Scanner():
             r'{': 't_l_comment',
             r'}': 't_r_comment',
             r'_': 't_id_key',
+            r'\t ': 't_white_space',
             }
         
     def open_file(self, input_file):
@@ -126,70 +127,53 @@ class Scanner():
 #    so distributor passes 'd' to t_id_key(), t_id_key() finds 'dog', creates a token, and adds it to list
 #    t_id_key() passes '+' back to the distributor, and file object now points at 'c'
 
+    def t_white_space(self, in_char):
+        pass
 
     def t_period(self, in_char):
         token_type = 'MP_PERIOD'
-        line = self.get_line()
-        column = self.get_column()
-        token = in_char
-        self.create_token(token_type, line, column, token)
-        return
+        self.create_token(token_type, self.get_line(),
+                            self.get_column(), in_char)
 
     def t_comma(self, in_char):
         token_type = 'MP_COMMA'
-        line = self.get_line()
-        column = self.get_column()
-        self.create_token(token_type, line, column, in_char)
-        return
+        self.create_token(token_type, self.get_line(),
+            self.get_column(), in_char)
 
     def t_semicolon(self, in_char):
         token_type = 'MP_SCOLON'
-        line = self.get_line()
-        column = self.get_column()
-        self.create_token(token_type, line, column, in_char)
-        return
+        self.create_token(token_type, self.get_line(),
+            self.get_column(), in_char)
 
     def t_l_paren(self, in_char):
         token_type = 'MP_LPAREN'
-        line = self.get_line()
-        column = self.get_column()
-        self.create_token(token_type, line, column, in_char)
-        return
+        self.create_token(token_type, self.get_line(),
+            self.get_column(), in_char)
 
     def t_r_paren(self, in_char):
         token_type = 'MP_RPAREN'
-        line = self.get_line()
-        column = self.get_column()
-        self.create_token(token_type, line, column, in_char)
-        return
+        self.create_token(token_type, self.get_line(),
+            self.get_column(), in_char)
 
     def t_eq(self, in_char):
         token_type = 'MP_EQUAL'
-        line = self.get_line()
-        column = self.get_column()
-        self.create_token(token_type, line, column, in_char)
-        return
+        self.create_token(token_type, self.get_line(),
+            self.get_column(), in_char)
 
     def t_plus(self, in_char):
         token_type = 'MP_PLUS'
-        line = self.get_line()
-        column = self.get_column()
-        self.create_token(token_type, line, column, in_char)
-        return
+        self.create_token(token_type, self.get_line(),
+            self.get_column(), in_char)
 
     def t_minus(self, in_char):
         token_type = 'MP_MINUS'
-        line = self.get_line()
-        column = self.get_column()
-        self.create_token(token_type, line, column, in_char)
-        return
+        self.create_token(token_type, self.get_line(),
+            self.get_column(), in_char)
 
     def t_mul(self, in_char):
         token_type = 'MP_TIMES'
-        line = self.get_line()
-        column = self.get_column()
-        self.create_token(token_type, line, column, in_char)
-        return
+        self.create_token(token_type, self.get_line(),
+            self.get_column(), in_char)
 
     #Complex sub-methods, can have different types of tokens created
 
@@ -203,17 +187,21 @@ class Scanner():
         pass
 
     def t_id_key(self, in_char):
-
+        logging.debug('In t_id_key')
         final_lexeme = in_char
         temp = in_char
         result = re.match(self.id_pattern, temp)
         while result:
+            logging.debug('Stuck in a while loop in t_id_key')
             final_lexeme = temp
             next = self.scanner_read_char()
+            logging.debug('Next token: %s' % next)
             temp += next
             result = re.match(self.id_pattern, temp)
-        #cpopped out of the while loop - means we got our id
+
+        # popped out of the while loop - means we got our id
         # first, rewind
+        logging.debug('Temp after id is formed: %s' % temp)
         self.file.seek(-1, 1)
 
         # check if the id we have is a keyword
@@ -229,7 +217,6 @@ class Scanner():
         token_type = 'MP_IDENTIFIER'
         self.create_token(token_type, self.get_line(),
                             self.get_column(), final_lexeme)
-        return
 
     def t_num(self, in_char):
         pass
