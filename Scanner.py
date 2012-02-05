@@ -13,8 +13,11 @@ class Scanner():
 
 
     def __init__(self):
-        self.id_pattern = r'([a-zA-Z]) | (_[a-zA-Z0-9](_[a-zA-Z0-9])*)'
+        self.id_pattern = r'(([a-zA-Z]) | (_[a-zA-Z0-9]))(_[a-zA-Z0-9])*)'
         self.symbols = ['.', ',', ';', '(', ')', '=', '>', '<', '+', '-', '*', ':']
+        self.fixed_lit_pattern = r'[0-9]+\.[0-9]'
+        self.integer_lit_pattern = r'[0-9]+'
+        self.float_lit_pattern = r'[0-9]+(\.[0-9]+)?[eE][+-]?[0-9]+'
         self.file = None
         self.column = 0
         self.line = 0
@@ -68,10 +71,10 @@ class Scanner():
 
     def scanner_read_char(self):
         cur = self.file.read(1)
-        if cur is '\n':
+        if cur is '\n':     #If we see new line, increment line counter and reset column
             self.line += 1
             self.column = 0
-        if cur is not '\n':
+        if cur is not '\n': #if not new line, increment column counter
             self.column += 1
         return cur
 
