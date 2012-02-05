@@ -13,23 +13,42 @@ class Scanner():
 
 
     def __init__(self):
-        self.id_pattern = r'(([a-zA-Z]) | (_[a-zA-Z0-9]))(_[a-zA-Z0-9])*)'
+        self.id_pattern =  r'(^(_|[a-zA-Z])[_a-zA-Z0-9]*$)'
         self.symbols = ['.', ',', ';', '(', ')', '=', '>', '<', '+', '-', '*', ':']
-        self.fixed_lit_pattern = r'[0-9]+\.[0-9]'
-        self.integer_lit_pattern = r'[0-9]+'
-        self.float_lit_pattern = r'[0-9]+(\.[0-9]+)?[eE][+-]?[0-9]+'
-        self.string_lit_pattern = r'\'(\'\'|[^(\'|\$)])*\''
+        fixed_lit_pattern = r'^([0-9])+(\.)([0-9])+$'
+        integer_lit_pattern = r'^([0-9])+$'
+        float_lit_pattern = r'^[0-9]+(\.[0-9]+)?[eE][+-]?([0-9])+$'
+        string_lit_pattern = r'^\'(\'\'|[^\'\n])*\'$'
         self.file = None
         self.column = 0
         self.line = 0
         self.tokens = []
-        self.keywords = {'and':'MP_AND','begin':'MP_BEGIN','div':'MP_DIV','do':'MP_DO',
-                         'downto':'MP_DOWNTO','else':'MP_ELSE','end':'MP_END','fixed':'MP_FIXED',
-                         'float':'MP_FLOAT','for':'MP_FOR','function':'MP_FUNCTION','if':'MP_IF',
-                         'integer':'MP_INTEGER','mod':'MP_MOD','not':'MP_NOT','or':'MP_OR',
-                         'procedure':'MP_PROCEDURE','program':'MP_PROGRAM','read':'MP_READ',
-                         'repeat':'MP_REPEAT','then':'MP_THEN','to':'MP_TO','until':'MP_UNTIL',
-                         'var':'MP_VAR','while':'MP_WHILE','write':'MP_WRITE'}
+        self.keywords = {'and':'MP_AND',
+                         'begin':'MP_BEGIN',
+                         'div':'MP_DIV',
+                         'do':'MP_DO',
+                         'downto':'MP_DOWNTO',
+                         'else':'MP_ELSE',
+                         'end':'MP_END',
+                         'fixed':'MP_FIXED',
+                         'float':'MP_FLOAT',
+                         'for':'MP_FOR',
+                         'function':'MP_FUNCTION',
+                         'if':'MP_IF',
+                         'integer':'MP_INTEGER',
+                         'mod':'MP_MOD',
+                         'not':'MP_NOT',
+                         'or':'MP_OR',
+                         'procedure':'MP_PROCEDURE',
+                         'program':'MP_PROGRAM',
+                         'read':'MP_READ',
+                         'repeat':'MP_REPEAT',
+                         'then':'MP_THEN',
+                         'to':'MP_TO',
+                         'until':'MP_UNTIL',
+                         'var':'MP_VAR',
+                         'while':'MP_WHILE',
+                         'write':'MP_WRITE'}
 
         self.sym_dict = {
             r'\.': 't_period',
