@@ -18,6 +18,7 @@ class Scanner():
         self.fixed_lit_pattern = r'[0-9]+\.[0-9]'
         self.integer_lit_pattern = r'[0-9]+'
         self.float_lit_pattern = r'[0-9]+(\.[0-9]+)?[eE][+-]?[0-9]+'
+        self.string_lit_pattern = r'\'(\'\'|[^(\'|\$)])*\''
         self.file = None
         self.column = 0
         self.line = 0
