@@ -108,7 +108,7 @@ class Scanner():
 
     def get_column(self, token_length):
         self.column -=1
-        return (self.column - token_length)
+        return self.column - token_length
 
     def err_invalid_token(self):
         pass
