@@ -86,7 +86,7 @@ class Scanner():
                 result = re.match(pattern, next)
                 if result:
                     getattr(self, self.sym_dict.get(pattern, 't_error'))(result.group(0))
-                    
+
             next = self.scanner_read_char()
 
 
@@ -192,7 +192,6 @@ class Scanner():
         pass
 
     def t_id_key(self, in_char):
-        logging.debug('In t_id_key')
         final_lexeme = in_char
         temp = in_char
         result = re.match(self.id_pattern, temp)
@@ -243,4 +242,4 @@ class Token(object):
         self.token_value = token_value
 
     def __repr__(self):
-        return "%16s %6s %4s %s\n" % (self.token_type, self.line, self.column, self.token_value)
+        return "%16s %6s %4s   %s\n" % (self.token_type, self.line, self.column, self.token_value)
