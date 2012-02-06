@@ -20,8 +20,8 @@ class Scanner():
         float_lit_pattern = r'^[0-9]+(\.[0-9]+)?[eE][+-]?([0-9])+$'
         string_lit_pattern = r'^\'(\'\'|[^\'\n])*\'$'
         self.file = None
-        self.column = 0
-        self.line = 0
+        self.column = 1
+        self.line = 1
         self.tokens = []
         self.keywords = {'and':'MP_AND',
                          'begin':'MP_BEGIN',
@@ -68,7 +68,8 @@ class Scanner():
             r'{': 't_l_comment',
             r'}': 't_r_comment',
             r'_': 't_id_key',
-            r'\t ': 't_white_space',
+            r';': 't_semicolon',
+            r'\t| ': 't_white_space',
             }
         
     def open_file(self, input_file):
@@ -85,7 +86,7 @@ class Scanner():
                 result = re.match(pattern, next)
                 if result:
                     getattr(self, self.sym_dict.get(pattern, 't_error'))(result.group(0))
-                break
+                    
             next = self.scanner_read_char()
 
 
@@ -93,8 +94,12 @@ class Scanner():
         cur = self.file.read(1)
         if cur == '\n':     #If we see new line, increment line counter and reset column
             self.line += 1
-            self.column = 0
-        else:               #if not new line, increment column counter
+            self.column = 1
+            cur = self.file.read(1)
+        elif cur == '\r'  :               #if not new line, increment column counter
+            self.column = 1
+            cur = self.file.read(1)
+        else:
             self.column += 1
         return cur
 
@@ -105,7 +110,8 @@ class Scanner():
         return self.line
 
     def get_column(self, token_length):
-        return (self.column - token_length)
+        self.column -=1
+        return self.column - token_length
 
     def err_invalid_token(self):
         pass
@@ -193,17 +199,14 @@ class Scanner():
         while result:
             final_lexeme = temp
             next = self.scanner_read_char()
-            logging.debug('Next token: %s' % next)
             temp += next
             result = re.match(self.id_pattern, temp)
 
         # popped out of the while loop - means we got our id
         # first, rewind
-        logging.debug('Temp after id is formed: %s' % temp)
         self.file.seek(-1, 1)
 
         # check if the id we have is a keyword
-
         for lexeme, token in self.keywords.items():
             if final_lexeme == lexeme:
                 self.create_token(token, self.get_line(),
