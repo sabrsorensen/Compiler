@@ -80,11 +80,10 @@ class Scanner():
 
     def get_token(self):
         next = self.scanner_read_char()
-        while next is not '':
+        while len(next) is not 0:
             for pattern, f_name in self.sym_dict.items():
                 result = re.match(pattern, next)
                 if result:
-                    print result.group(0)
                     getattr(self, self.sym_dict.get(pattern, 't_error'))(result.group(0))
                 break
             next = self.scanner_read_char()
@@ -92,10 +91,10 @@ class Scanner():
 
     def scanner_read_char(self):
         cur = self.file.read(1)
-        if cur is '\n':     #If we see new line, increment line counter and reset column
+        if cur == '\n':     #If we see new line, increment line counter and reset column
             self.line += 1
             self.column = 0
-        if cur is not '\n': #if not new line, increment column counter
+        else:               #if not new line, increment column counter
             self.column += 1
         return cur
 
@@ -192,7 +191,6 @@ class Scanner():
         temp = in_char
         result = re.match(self.id_pattern, temp)
         while result:
-            logging.debug('Stuck in a while loop in t_id_key')
             final_lexeme = temp
             next = self.scanner_read_char()
             logging.debug('Next token: %s' % next)
