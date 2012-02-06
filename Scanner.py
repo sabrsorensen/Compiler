@@ -104,8 +104,8 @@ class Scanner():
     def get_line(self):
         return self.line
 
-    def get_column(self):
-        return self.column
+    def get_column(self, token_length):
+        return (self.column - token_length)
 
     def err_invalid_token(self):
         pass
@@ -132,47 +132,47 @@ class Scanner():
     def t_period(self, in_char):
         token_type = 'MP_PERIOD'
         self.create_token(token_type, self.get_line(),
-                            self.get_column(), in_char)
+                            self.get_column(len(in_char)), in_char)
 
     def t_comma(self, in_char):
         token_type = 'MP_COMMA'
         self.create_token(token_type, self.get_line(),
-            self.get_column(), in_char)
+            self.get_column(len(in_char)), in_char)
 
     def t_semicolon(self, in_char):
         token_type = 'MP_SCOLON'
         self.create_token(token_type, self.get_line(),
-            self.get_column(), in_char)
+            self.get_column(len(in_char)), in_char)
 
     def t_l_paren(self, in_char):
         token_type = 'MP_LPAREN'
         self.create_token(token_type, self.get_line(),
-            self.get_column(), in_char)
+            self.get_column(len(in_char)), in_char)
 
     def t_r_paren(self, in_char):
         token_type = 'MP_RPAREN'
         self.create_token(token_type, self.get_line(),
-            self.get_column(), in_char)
+            self.get_column(len(in_char)), in_char)
 
     def t_eq(self, in_char):
         token_type = 'MP_EQUAL'
         self.create_token(token_type, self.get_line(),
-            self.get_column(), in_char)
+            self.get_column(len(in_char)), in_char)
 
     def t_plus(self, in_char):
         token_type = 'MP_PLUS'
         self.create_token(token_type, self.get_line(),
-            self.get_column(), in_char)
+            self.get_column(len(in_char)), in_char)
 
     def t_minus(self, in_char):
         token_type = 'MP_MINUS'
         self.create_token(token_type, self.get_line(),
-            self.get_column(), in_char)
+            self.get_column(len(in_char)), in_char)
 
     def t_mul(self, in_char):
         token_type = 'MP_TIMES'
         self.create_token(token_type, self.get_line(),
-            self.get_column(), in_char)
+            self.get_column(len(in_char)), in_char)
 
     #Complex sub-methods, can have different types of tokens created
 
@@ -207,13 +207,13 @@ class Scanner():
         for lexeme, token in self.keywords.items():
             if final_lexeme == lexeme:
                 self.create_token(token, self.get_line(),
-                                    self.get_column(), final_lexeme)
+                                    self.get_column(len(final_lexeme)), final_lexeme)
                 return
 
         # we have an identifier
         token_type = 'MP_IDENTIFIER'
         self.create_token(token_type, self.get_line(),
-                            self.get_column(), final_lexeme)
+                            self.get_column(len(final_lexeme)), final_lexeme)
 
     def t_num(self, in_char):
         pass
