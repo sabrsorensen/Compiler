@@ -216,10 +216,10 @@ class Scanner():
         token_type = 'MP_IDENTIFIER'
         self.create_token(token_type, self.get_line(),
                             self.get_column(len(final_lexeme)), final_lexeme)
-
+    #keith's got this one
     def t_num(self, in_char):
         pass
-
+    #keith's got this one
     def t_string(self, in_char):
         pass
 
@@ -227,7 +227,7 @@ class Scanner():
         next = ''
         while next != '}':
             next = self.scanner_read_char()
-
+    #keith's got this one
     def t_r_comment(self, in_char):
         pass
 
