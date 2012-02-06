@@ -127,7 +127,7 @@ class Scanner():
 #    t_id_key() passes '+' back to the distributor, and file object now points at 'c'
 
     def t_white_space(self, in_char):
-        pass
+        return
 
     def t_period(self, in_char):
         token_type = 'MP_PERIOD'
@@ -205,8 +205,7 @@ class Scanner():
         # check if the id we have is a keyword
 
         for lexeme, token in self.keywords.items():
-            if temp == lexeme:
-                final_lexeme = lexeme
+            if final_lexeme == lexeme:
                 self.create_token(token, self.get_line(),
                                     self.get_column(), final_lexeme)
                 return
@@ -223,7 +222,9 @@ class Scanner():
         pass
 
     def t_l_comment(self, in_char):
-        pass
+        next = ''
+        while next != '}':
+            next = self.scanner_read_char()
 
     def t_r_comment(self, in_char):
         pass
