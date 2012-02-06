@@ -20,8 +20,8 @@ class Scanner():
         float_lit_pattern = r'^[0-9]+(\.[0-9]+)?[eE][+-]?([0-9])+$'
         string_lit_pattern = r'^\'(\'\'|[^\'\n])*\'$'
         self.file = None
-        self.column = 0
-        self.line = 0
+        self.column = 1
+        self.line = 1
         self.tokens = []
         self.keywords = {'and':'MP_AND',
                          'begin':'MP_BEGIN',
@@ -93,8 +93,10 @@ class Scanner():
         cur = self.file.read(1)
         if cur == '\n':     #If we see new line, increment line counter and reset column
             self.line += 1
-            self.column = 0
-        else:               #if not new line, increment column counter
+            self.column = 1
+        elif cur == '\r'  :               #if not new line, increment column counter
+            self.column = 1
+        else:
             self.column += 1
         return cur
 
@@ -105,6 +107,7 @@ class Scanner():
         return self.line
 
     def get_column(self, token_length):
+        self.column -=1
         return (self.column - token_length)
 
     def err_invalid_token(self):
