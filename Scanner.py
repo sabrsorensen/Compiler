@@ -183,13 +183,55 @@ class Scanner():
     #Complex sub-methods, can have different types of tokens created
 
     def t_gt(self, in_char):
-        pass
+        lexeme = in_char
+        token = 'MP_GTHAN'
+        next = self.scanner_read_char()
+        if next == '=':
+            lexeme = in_char + next
+            token = 'MP_GEQUAL'
+            self.create_token(token, self.get_line(),
+                self.get_column(len(in_char)), lexeme)
+            return
+        else:
+            self.file.seek(-1, 1)
+            self.create_token(token, self.get_line(),
+                                self.get_column(len(in_char)), lexeme)
 
     def t_lt(self, in_char):
-        pass
+        lexeme = in_char
+        token = 'MP_LTHAN'
+        next = self.scanner_read_char()
+        if next == '=':
+            lexeme = in_char + next
+            token = 'MP_LEQUAL'
+            self.create_token(token, self.get_line(),
+                self.get_column(len(in_char)), lexeme)
+            return
+        elif next == '>':
+            lexeme = in_char + next
+            token = 'MP_NEQUAL'
+            self.create_token(token, self.get_line(),
+                self.get_column(len(in_char)), lexeme)
+            return
+        else:
+            self.file.seek(-1, 1)
+            self.create_token(token, self.get_line(),
+                self.get_column(len(in_char)), lexeme)
 
     def t_colon(self, in_char):
-        pass
+        lexeme = in_char
+        token = 'MP_COLON'
+        next = self.scanner_read_char()
+        if next == '=':
+            lexeme = in_char + next
+            token = 'MP_ASSIGN'
+            self.create_token(token, self.get_line(),
+                self.get_column(len(in_char)), lexeme)
+            return
+        else:
+            self.file.seek(-1, 1)
+            self.create_token(token, self.get_line(),
+                self.get_column(len(in_char)), lexeme)
 
     def t_id_key(self, in_char):
         final_lexeme = in_char
