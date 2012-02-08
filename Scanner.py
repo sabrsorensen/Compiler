@@ -10,8 +10,7 @@ log.addHandler(ch)
 log.setLevel(logging.DEBUG)
 
 class Scanner():
-
-
+    
     def __init__(self):
         self.id_pattern =  r'(^(_|[a-zA-Z])[_a-zA-Z0-9]*$)'
         self.symbols = ['.', ',', ';', '(', ')', '=', '>', '<', '+', '-', '*', ':']
@@ -51,25 +50,25 @@ class Scanner():
                          'write':'MP_WRITE'}
 
         self.sym_dict = {
-            r'\.': 't_period',
-            r',': 't_comma',
-            r'\(': 't_l_paren',
-            r'\)': 't_r_paren',
-            r'=': 't_eq',
-            r'>': 't_gt',
-            r'<': 't_lt',
-            r':': 't_colon',
-            r'\+': 't_plus',
-            r'-': 't_minus',
-            r'\*': 't_mul',
-            r'[a-zA-Z]': 't_id_key', # unfortunately, \w matches all alphanumeric characters and underscore
-            r'\d': 't_num',
-            r'\'': 't_string',
-            r'{': 't_l_comment',
-            r'}': 't_r_comment',
-            r'_': 't_id_key',
-            r';': 't_semicolon',
-            r'\t| ': 't_white_space',
+                        r'\.': 't_period',
+                        r',': 't_comma',
+                        r'\(': 't_l_paren',
+                        r'\)': 't_r_paren',
+                        r'=': 't_eq',
+                        r'>': 't_gt',
+                        r'<': 't_lt',
+                        r':': 't_colon',
+                        r'\+': 't_plus',
+                        r'-': 't_minus',
+                        r'\*': 't_mul',
+                        r'[a-zA-Z]': 't_id_key', # unfortunately, \w matches all alphanumeric characters and underscore
+                        r'\d': 't_num',
+                        r'\'': 't_string',
+                        r'{': 't_l_comment',
+                        r'}': 't_r_comment',
+                        r'_': 't_id_key',
+                        r';': 't_semicolon',
+                        r'\t| ': 't_white_space',
             }
         
     def open_file(self, input_file):
@@ -89,19 +88,27 @@ class Scanner():
 
             next = self.scanner_read_char()
 
-
+    ######### helper functions ############
     def scanner_read_char(self):
+        logging.debug('Scanner Read Char is called')
         cur = self.file.read(1)
-        if cur == '\n':     #If we see new line, increment line counter and reset column
+        if cur == '\n':                 #If we see new line, increment line counter and reset column
             self.line += 1
             self.column = 1
             cur = self.file.read(1)
-        elif cur == '\r'  :               #if not new line, increment column counter
+        elif cur == '\r'  :
             self.column = 1
             cur = self.file.read(1)
         else:
-            self.column += 1
+            self.column += 1            #if not new line, increment column counter
+        logging.debug('Char is: %s' % cur)
         return cur
+
+    def rewind(self):
+        self.file.seek(-1, 1)
+        self.column -= 1
+        if self.column < 0:
+            self.column = 0
 
     def get_lexeme(self):
         pass
@@ -116,21 +123,7 @@ class Scanner():
     def err_invalid_token(self):
         pass
 
-
-
-#    Distributor Sub-Methods
-#    Functions take as input the last character read.
-#    Then perform whatever is necessary to determine if the given token and subsequent characters give a valid token
-#    If a valid token is found, instantiate a new token object and append to list of tokens
-#    If no valid token is found, call err_invalid_token()
-#        This kills the scanner
-#    Pre-condition: file object points at character after last read
-#    Post-condition: file object points at character 2 after the end of last complete token
-#
-#    e.g. input is "...dog+cat=hamster ..."
-#    distributor gets to 'd', and file object is now pointing at 'o'
-#    so distributor passes 'd' to t_id_key(), t_id_key() finds 'dog', creates a token, and adds it to list
-#    t_id_key() passes '+' back to the distributor, and file object now points at 'c'
+    ############## FSAs ###################
 
     def t_white_space(self, in_char):
         return
@@ -193,7 +186,7 @@ class Scanner():
                 self.get_column(len(in_char)), lexeme)
             return
         else:
-            self.file.seek(-1, 1)
+            self.rewind()
             self.create_token(token, self.get_line(),
                                 self.get_column(len(in_char)), lexeme)
 
@@ -214,7 +207,7 @@ class Scanner():
                 self.get_column(len(in_char)), lexeme)
             return
         else:
-            self.file.seek(-1, 1)
+            self.rewind()
             self.create_token(token, self.get_line(),
                 self.get_column(len(in_char)), lexeme)
 
@@ -229,7 +222,7 @@ class Scanner():
                 self.get_column(len(in_char)), lexeme)
             return
         else:
-            self.file.seek(-1, 1)
+            self.rewind()
             self.create_token(token, self.get_line(),
                 self.get_column(len(in_char)), lexeme)
 
@@ -245,7 +238,7 @@ class Scanner():
 
         # popped out of the while loop - means we got our id
         # first, rewind
-        self.file.seek(-1, 1)
+        self.rewind()
 
         # check if the id we have is a keyword
         for lexeme, token in self.keywords.items():
@@ -276,6 +269,7 @@ class Scanner():
 
 
 class Token(object):
+    """This class is used to create token objects for the token file"""
 
     def __init__(self, token_type, line, column, token_value):
         self.token_type = token_type

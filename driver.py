@@ -3,12 +3,7 @@ import sys
 
 def main():
     input_file = sys.argv[1]
-#    to rewind one character back
-#    f = open(input_file)
-#    print f.read(1)
-#    print f.read(1)
-#    print f.seek(-1, 1)
-#    print f.read(1)
+    output_file = open('token_file.txt')
 
     s = Scanner()
     s.open_file(input_file)
