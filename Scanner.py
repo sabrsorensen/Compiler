@@ -307,9 +307,6 @@ class Scanner():
                 if new_char == '\'':
                     lexeme += new_char
                     go = True
-                else:
-                    self.rewind()
-                    pass
             elif new_char == "\n":
                 go = False
         self.rewind()
