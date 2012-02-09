@@ -22,6 +22,7 @@ class Scanner():
         self.file = None
         self.column = 0
         self.line = 1
+        self.no_errors = True
         self.tokens = []
         self.keywords = {'and':'MP_AND',
                          'begin':'MP_BEGIN',
@@ -83,10 +84,11 @@ class Scanner():
     def err_invalid_token(self, token_line, token_column, lexeme_char):
         s = Token("MP_ERROR", token_line, token_column, lexeme_char)
         self.tokens.append(s)
+        self.no_errors = False
 
     def get_token(self):
         next = self.scanner_read_char()
-        while len(next) is not 0:
+        while len(next) is not 0 and self.no_errors:
             bad_char = True
             for pattern, f_name in self.sym_dict.items():
                 result = re.match(pattern, next)
@@ -317,11 +319,11 @@ class Scanner():
         else:
             if new_char ==' \n':
                 logging.debug("Run on string.")
-                self.create_token("MP_ERROR", self.get_line(),
+                self.err_invalid_token(self.get_line(),
                     cur_col, lexeme)
             else:
                 logging.debug("Scanning error: invalid string match")
-                self.create_token("MP_ERROR", self.get_line(),
+                self.err_invalid_token(self.get_line(),
                     cur_col, lexeme)
 
     def t_l_comment(self, in_char):
