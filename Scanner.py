@@ -14,10 +14,12 @@ class Scanner():
     def __init__(self):
         self.id_pattern =  r'(^(_|[a-zA-Z])[_a-zA-Z0-9]*$)'
         self.symbols = ['.', ',', ';', '(', ')', '=', '>', '<', '+', '-', '*', ':']
-        fixed_lit_pattern = r'^([0-9])+(\.)([0-9])+$'
-        integer_lit_pattern = r'^([0-9])+$'
-        float_lit_pattern = r'^[0-9]+(\.[0-9]+)?[eE][+-]?([0-9])+$'
-        string_lit_pattern = r'^\'(\'\'|[^\'\n])*\'$'
+        #self.generic_num_pattern = r'^([0-9]+([\.][0-9]+([eE]([+-])?[0-9]+)?)?)+$'
+        self.generic_num_pattern = r'^([0-9]+(\.?([0-9]+)?)([eE])?([-+])?([0-9]+)?)+$'
+        self.integer_lit_pattern = r'^([0-9])+$'
+        self.fixed_lit_pattern = r'^([0-9])+(\.)([0-9])+$'
+        self.float_lit_pattern = r'^[0-9]+(\.[0-9]+)?[eE][+-]?([0-9])+$'
+        self.string_lit_pattern = r'^\'(\'\'|[^\'\n])*\'$'
         self.file = None
         self.column = 0
         self.line = 1
@@ -253,18 +255,57 @@ class Scanner():
         token_type = 'MP_IDENTIFIER'
         self.create_token(token_type, self.get_line(),
                             self.get_column(len(final_lexeme)), final_lexeme)
-    #keith's got this one
+
     def t_num(self, in_char):
-        pass
-    #keith's got this one
+        lexeme = in_char
+        #generic_num_pattern matches integers, fixed, and float
+        while re.match(self.generic_num_pattern, lexeme):
+            lexeme += self.scanner_read_char()
+        lexeme = lexeme[0:-1]
+        self.rewind()
+        #find out what kind of number was found
+        if re.match(self.float_lit_pattern, lexeme):
+            self.create_token("MP_FLOAT_LIT", self.get_line(),
+                                self.get_column(len(lexeme)),lexeme)
+            return
+        elif re.match(self.fixed_lit_pattern, lexeme):
+            self.create_token("MP_FIXED_LIT", self.get_line(),
+                                self.get_column(len(lexeme)), lexeme)
+            return
+        elif re.match(self.integer_lit_pattern, lexeme):
+            self.create_token("MP_INTEGER_LIT", self.get_line(),
+                                self.get_column(len(lexeme)), lexeme)
+        else:
+            #invalid token found
+            pass
+
     def t_string(self, in_char):
-        pass
+        lexeme = in_char
+        new_char = ''
+        while  new_char != '\'':
+            new_char = self.scanner_read_char()
+            lexeme += new_char
+        new_char = self.scanner_read_char()
+        if new_char == '\'':
+            lexeme += new_char
+            new_char = ''
+            while new_char != '\'':
+                new_char = self.scanner_read_char()
+                lexeme += new_char
+        else:
+            self.rewind()
+        if re.match(self.string_lit_pattern,lexeme):
+            self.create_token("MP_STRING_LIT", self.get_line(),
+                self.get_column(len(lexeme)), lexeme)
+        else:
+            #invalid token found
+            pass
 
     def t_l_comment(self, in_char):
         next = ''
         while next != '}':
             next = self.scanner_read_char()
-    #keith's got this one
+
     def t_r_comment(self, in_char):
         pass
 
