@@ -79,14 +79,25 @@ class Scanner():
         s = Token(token_type,token_line,token_column, token_name)
         self.tokens.append(s)
 
+        #
+    def err_invalid_token(self, token_line, token_column, lexeme_char):
+        s = Token("MP_ERROR", token_line, token_column, lexeme_char)
+        self.tokens.append(s)
+
     def get_token(self):
         next = self.scanner_read_char()
         while len(next) is not 0:
+            bad_char = True
             for pattern, f_name in self.sym_dict.items():
                 result = re.match(pattern, next)
                 if result:
+                    #invalid character found
                     getattr(self, self.sym_dict.get(pattern, 't_error'))(result.group(0))
-
+                    bad_char = False
+            if bad_char and next != '\n':
+                #invalid character found
+                self.err_invalid_token(self.column, self.line, next)
+                logging.debug('Scanning error: Input char: %s is not a valid character in the language.' % (next))
             next = self.scanner_read_char()
         #add end of file token
         self.create_token("MP_EOF", self.get_line(),
@@ -98,8 +109,8 @@ class Scanner():
         if cur == '\n':                 #If we see new line, increment line counter and reset column
             logging.debug('------->New Line!!!')
             self.line += 1
-            self.column = 1
-            cur = self.file.read(1)
+            self.column = 0
+            #cur = self.file.read(1)
         elif cur == '\r'  :
             self.column = 1
             cur = self.file.read(1)
@@ -123,10 +134,6 @@ class Scanner():
 
     def get_column(self, token_length):
         return self.column - token_length + 1
-
-    # TODO: if a character is not anything from the above list => error
-    def err_invalid_token(self):
-        pass
 
     ############## FSAs ###################
 
@@ -279,34 +286,62 @@ class Scanner():
                                 self.get_column(len(lexeme)), lexeme)
         else:
             #invalid token found
-            pass
+            logging.debug('Scanning Error: Partial number type found, but incomplete token.')
+            self.err_invalid_token(self.get_line(), self.get_column(len(lexeme)), lexeme[1])
 
     def t_string(self, in_char):
         lexeme = in_char
-        new_char = ''
-        while  new_char != '\'':
+        cur_col = self.get_column(len(lexeme))
+        new_char = in_char
+        go = True
+        #scanning string
+        while go:
             new_char = self.scanner_read_char()
             lexeme += new_char
-        new_char = self.scanner_read_char()
-        if new_char == '\'':
-            lexeme += new_char
-            new_char = ''
-            while new_char != '\'':
+            #found potential end of string
+            if new_char == '\'':
+                go = False
+                cur_col = self.get_column(len(lexeme))
                 new_char = self.scanner_read_char()
-                lexeme += new_char
-        else:
-            self.rewind()
+                #check for ''
+                if new_char == '\'':
+                    lexeme += new_char
+                    go = True
+                else:
+                    self.rewind()
+                    pass
+            elif new_char == "\n":
+                go = False
+        self.rewind()
+        print lexeme
         if re.match(self.string_lit_pattern,lexeme):
             self.create_token("MP_STRING_LIT", self.get_line(),
-                self.get_column(len(lexeme)), lexeme)
+                cur_col, lexeme)
         else:
-            #invalid token found
-            pass
+            if new_char ==' \n':
+                logging.debug("Run on string.")
+                self.create_token("MP_ERROR", self.get_line(),
+                    cur_col, lexeme)
+            else:
+                logging.debug("Scanning error: invalid string match")
+                self.create_token("MP_ERROR", self.get_line(),
+                    cur_col, lexeme)
 
     def t_l_comment(self, in_char):
-        next = ''
-        while next != '}':
+        lexeme = in_char
+        go = True
+        while go:
+            cur_col = self.get_column(len(lexeme))
             next = self.scanner_read_char()
+            lexeme += next
+            if next == '}':
+                go = False
+            elif next == '\n':
+                go = False
+                logging.debug('Run on comment.')
+                self.create_token("MP_ERROR", self.get_line(),
+                    cur_col, '')
+
 
     def t_r_comment(self, in_char):
         pass
