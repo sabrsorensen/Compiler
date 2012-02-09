@@ -10,7 +10,7 @@ log.addHandler(ch)
 log.setLevel(logging.DEBUG)
 
 class Scanner():
-    
+
     def __init__(self):
         self.id_pattern =  r'(^(_|[a-zA-Z])[_a-zA-Z0-9]*$)'
         self.symbols = ['.', ',', ';', '(', ')', '=', '>', '<', '+', '-', '*', ':']
@@ -19,7 +19,7 @@ class Scanner():
         float_lit_pattern = r'^[0-9]+(\.[0-9]+)?[eE][+-]?([0-9])+$'
         string_lit_pattern = r'^\'(\'\'|[^\'\n])*\'$'
         self.file = None
-        self.column = 1
+        self.column = 0
         self.line = 1
         self.tokens = []
         self.keywords = {'and':'MP_AND',
@@ -90,9 +90,9 @@ class Scanner():
 
     ######### helper functions ############
     def scanner_read_char(self):
-        logging.debug('Scanner Read Char is called')
         cur = self.file.read(1)
         if cur == '\n':                 #If we see new line, increment line counter and reset column
+            logging.debug('------->New Line!!!')
             self.line += 1
             self.column = 1
             cur = self.file.read(1)
@@ -101,6 +101,7 @@ class Scanner():
             cur = self.file.read(1)
         else:
             self.column += 1            #if not new line, increment column counter
+            logging.debug('Column Incremented! %s' % self.column)
         logging.debug('Char is: %s' % cur)
         return cur
 
@@ -108,7 +109,7 @@ class Scanner():
         self.file.seek(-1, 1)
         self.column -= 1
         if self.column < 0:
-            self.column = 0
+            self.column = 1
 
     def get_lexeme(self):
         pass
@@ -117,14 +118,15 @@ class Scanner():
         return self.line
 
     def get_column(self, token_length):
-        self.column -=1
-        return self.column - token_length
+        return self.column - token_length + 1
 
+    # TODO: if a character is not anything from the above list => error
     def err_invalid_token(self):
         pass
 
     ############## FSAs ###################
 
+    # TODO: handle column increment when tab is encountered
     def t_white_space(self, in_char):
         return
 
