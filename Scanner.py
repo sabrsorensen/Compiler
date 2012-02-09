@@ -14,7 +14,6 @@ class Scanner():
     def __init__(self):
         self.id_pattern =  r'(^(_|[a-zA-Z])[_a-zA-Z0-9]*$)'
         self.symbols = ['.', ',', ';', '(', ')', '=', '>', '<', '+', '-', '*', ':']
-        #self.generic_num_pattern = r'^([0-9]+([\.][0-9]+([eE]([+-])?[0-9]+)?)?)+$'
         self.generic_num_pattern = r'^([0-9]+(\.?([0-9]+)?)([eE])?([-+])?([0-9]+)?)+$'
         self.integer_lit_pattern = r'^([0-9])+$'
         self.fixed_lit_pattern = r'^([0-9])+(\.)([0-9])+$'
@@ -89,6 +88,9 @@ class Scanner():
                     getattr(self, self.sym_dict.get(pattern, 't_error'))(result.group(0))
 
             next = self.scanner_read_char()
+        #add end of file token
+        self.create_token("MP_EOF", self.get_line(),
+                          self.get_column(len(' ')), '')
 
     ######### helper functions ############
     def scanner_read_char(self):
@@ -321,4 +323,7 @@ class Token(object):
         self.token_value = token_value
 
     def __repr__(self):
-        return "%16s %6s %4s   %s\n" % (self.token_type, self.line, self.column, self.token_value)
+        return "%s %s %s %s" % (self.token_type.ljust(16, ' '),
+                                      str(self.line).ljust(6,' '),
+                                      str(self.column).ljust(4,' '),
+                                      self.token_value)
