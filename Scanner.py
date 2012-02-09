@@ -92,7 +92,7 @@ class Scanner():
 
     ######### helper functions ############
     def scanner_read_char(self):
-        #logging.debug('Scanner Read Char is called')
+        logging.debug('Scanner Read Char is called')
         cur = self.file.read(1)
         if cur == '\n':                 #If we see new line, increment line counter and reset column
             self.line += 1
@@ -103,7 +103,7 @@ class Scanner():
             cur = self.file.read(1)
         else:
             self.column += 1            #if not new line, increment column counter
-        #logging.debug('Char is: %s' % cur)
+        logging.debug('Char is: %s' % cur)
         return cur
 
     def rewind(self):
@@ -292,8 +292,6 @@ class Scanner():
                 lexeme += new_char
         else:
             self.rewind()
-        print lexeme
-        print new_char
         if re.match(self.string_lit_pattern,lexeme):
             self.create_token("MP_STRING_LIT", self.get_line(),
                 self.get_column(len(lexeme)), lexeme)
