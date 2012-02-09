@@ -109,17 +109,19 @@ class Scanner():
     def scanner_read_char(self):
         cur = self.file.read(1)
         if cur == '\n':                 #If we see new line, increment line counter and reset column
-            logging.debug('------->New Line!!!')
+            #logging.debug('------->New Line!!!')
             self.line += 1
             self.column = 0
             #cur = self.file.read(1)
         elif cur == '\r'  :
             self.column = 1
             cur = self.file.read(1)
+        elif cur == '\t':
+            self.column = self.column + 4 - (self.column % 4)
         else:
             self.column += 1            #if not new line, increment column counter
-            logging.debug('Column Incremented! %s' % self.column)
-        logging.debug('Char is: %s' % cur)
+            #logging.debug('Column Incremented! %s' % self.column)
+        #logging.debug('Char is: %s' % cur)
         return cur
 
     def rewind(self):
@@ -289,7 +291,7 @@ class Scanner():
         else:
             #invalid token found
             logging.debug('Scanning Error: Partial number type found, but incomplete token.')
-            self.err_invalid_token(self.get_line(), self.get_column(len(lexeme)), lexeme[1])
+            self.err_invalid_token(self.get_line(), self.get_column(len(lexeme)), lexeme)
 
     def t_string(self, in_char):
         lexeme = in_char
@@ -310,6 +312,7 @@ class Scanner():
                     lexeme += new_char
                     go = True
             elif new_char == "\n":
+                lexeme = lexeme[0:-1] + '\\n'
                 go = False
         self.rewind()
         print lexeme
