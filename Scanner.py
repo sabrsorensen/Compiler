@@ -80,13 +80,15 @@ class Scanner():
         self.file = open(input_file)
 
     def create_token(self, token_type, token_line, token_column, token_name ):
+        if token_name[-1:] == '\n':
+            token_name = token_name[0:-1]
         s = Token(token_type,token_line,token_column, token_name)
         self.tokens.append(s)
 
     def err_invalid_token(self, token_type, token_line, token_column, lexeme_char):
         s = Token(token_type, token_line, token_column, lexeme_char)
         self.tokens.append(s)
-        self.no_errors = False
+        #self.no_errors = False
 
     def get_token(self):
         next = self.scanner_read_char()
@@ -123,7 +125,7 @@ class Scanner():
         temp_cur = cur
         if temp_cur == '\n':
             temp_cur = '\\n'
-        #logging.debug('Read char: %2s line: %2s col: %2s%s' % (temp_cur, self.line, self.column, line_msg))
+        logging.debug('Read char: %2s line: %2s col: %2s%s' % (temp_cur, self.line, self.column, line_msg))
         return cur
 
     #Back the file pointer up, can't back up past beginning of line
