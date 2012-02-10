@@ -1,0 +1,10 @@
+?
+ü
+123E-456--5
+a++b-67/8//
+__apple
+'This is a run on string
+'This is a run on string too ''
+apple___
+_banana_
+{ This is a run on comment
