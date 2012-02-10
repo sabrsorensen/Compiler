@@ -12,18 +12,24 @@ log.setLevel(logging.DEBUG)
 class Scanner():
 
     def __init__(self):
-        self.id_pattern =  r'(^(_|[a-zA-Z])[_a-zA-Z0-9]*$)'
         self.symbols = ['.', ',', ';', '(', ')', '=', '>', '<', '+', '-', '*', ':']
+        #### Regular Expressions ####
+        self.id_pattern =  r'(^(_|[a-zA-Z])[_a-zA-Z0-9]*$)'
+        #Matches any number, or partial number still being scanned
         self.generic_num_pattern = r'^([0-9]+(\.?([0-9]+)?)([eE])?([-+])?([0-9]+)?)+$'
         self.integer_lit_pattern = r'^([0-9])+$'
         self.fixed_lit_pattern = r'^([0-9])+(\.)([0-9])+$'
         self.float_lit_pattern = r'^[0-9]+(\.[0-9]+)?[eE][+-]?([0-9])+$'
         self.string_lit_pattern = r'^\'(\'\'|[^\'\n])*\'$'
+
         self.file = None
-        self.column = 0
-        self.line = 1
-        self.no_errors = True
-        self.tokens = []
+        self.column = 0         #current column indicator, accessible by all methods
+        self.line = 1           #current column indicator, accessible by all methods
+        self.no_errors = True   #binary flag used by distributor to tell if an error token has been produced
+                                #modified by err_invalid_token()
+        self.tokens = []        #list of generated tokens
+
+        #keyword ==> <keyword token> lookup dictionary
         self.keywords = {'and':'MP_AND',
                          'begin':'MP_BEGIN',
                          'div':'MP_DIV',
@@ -51,6 +57,7 @@ class Scanner():
                          'while':'MP_WHILE',
                          'write':'MP_WRITE'}
 
+        #input char type ==> method dictionary
         self.sym_dict = {
                         r'\.': 't_period',
                         r',': 't_comma',
@@ -80,7 +87,6 @@ class Scanner():
         s = Token(token_type,token_line,token_column, token_name)
         self.tokens.append(s)
 
-        #
     def err_invalid_token(self, token_line, token_column, lexeme_char):
         s = Token("MP_ERROR", token_line, token_column, lexeme_char)
         self.tokens.append(s)
@@ -99,7 +105,7 @@ class Scanner():
             if bad_char and next != '\n':
                 #invalid character found
                 self.err_invalid_token(self.column, self.line, next)
-                logging.debug('Scanning error: Input char: %s is not a valid character in the language.' % (next))
+                logging.error('Scanning error: Input char: %s is not a valid character in the language.' % (next))
             next = self.scanner_read_char()
         #add end of file token
         self.create_token("MP_EOF", self.get_line(),
@@ -112,18 +118,18 @@ class Scanner():
             #logging.debug('------->New Line!!!')
             self.line += 1
             self.column = 0
-            #cur = self.file.read(1)
-        elif cur == '\r'  :
+        elif cur == '\r':
             self.column = 1
             cur = self.file.read(1)
         elif cur == '\t':
-            self.column = self.column + 4 - (self.column % 4)
+            self.column += 4 - (self.column % 4)
         else:
             self.column += 1            #if not new line, increment column counter
             #logging.debug('Column Incremented! %s' % self.column)
         #logging.debug('Char is: %s' % cur)
         return cur
 
+    #Back the file pointer up, can't back up past beginning of line
     def rewind(self):
         self.file.seek(-1, 1)
         self.column -= 1
@@ -133,15 +139,16 @@ class Scanner():
     def get_lexeme(self):
         pass
 
+    #return current file pointer line
     def get_line(self):
         return self.line
 
+    #return current file pointer column
     def get_column(self, token_length):
         return self.column - token_length + 1
 
     ############## FSAs ###################
 
-    # TODO: handle column increment when tab is encountered
     def t_white_space(self, in_char):
         return
 
@@ -290,7 +297,7 @@ class Scanner():
                                 self.get_column(len(lexeme)), lexeme)
         else:
             #invalid token found
-            logging.debug('Scanning Error: Partial number type found, but incomplete token.')
+            logging.error('Scanning Error: Partial number type found, but incomplete token.')
             self.err_invalid_token(self.get_line(), self.get_column(len(lexeme)), lexeme)
 
     def t_string(self, in_char):
@@ -315,12 +322,11 @@ class Scanner():
                 lexeme = lexeme[0:-1] + '\\n'
                 go = False
         self.rewind()
-        print lexeme
         if re.match(self.string_lit_pattern,lexeme):
             self.create_token("MP_STRING_LIT", self.get_line(),
                 cur_col, lexeme)
         else:
-            if new_char ==' \n':
+            if new_char == '\n':
                 logging.debug("Run on string.")
                 self.err_invalid_token(self.get_line(),
                     cur_col, lexeme)
@@ -331,23 +337,24 @@ class Scanner():
 
     def t_l_comment(self, in_char):
         lexeme = in_char
+        cur_col = self.get_column(len(lexeme))
+        cur_line = self.get_line()
         go = True
         while go:
-            cur_col = self.get_column(len(lexeme))
             next = self.scanner_read_char()
             lexeme += next
             if next == '}':
                 go = False
-            elif next == '\n':
+            elif next == '':
                 go = False
-                logging.debug('Run on comment.')
-                self.create_token("MP_ERROR", self.get_line(),
+                logging.error('Reached end of file while parsing. [run on comment]')
+                self.err_invalid_token(cur_line,
                     cur_col, '')
 
-
     def t_r_comment(self, in_char):
-        pass
-
+        logging.error('Found a stray right comment.')
+        self.err_invalid_token(self.get_line(),
+            self.get_column(1), '}')
 
 
 class Token(object):
@@ -359,8 +366,10 @@ class Token(object):
         self.column = column
         self.token_value = token_value
 
+    #how Token objects are represented in string format
+    #TOKEN_ID        COL   LINE  LEXEME
     def __repr__(self):
-        return "%s %s %s %s" % (self.token_type.ljust(16, ' '),
-                                      str(self.line).ljust(6,' '),
-                                      str(self.column).ljust(4,' '),
+        return "%s %s  %s  %s" % (self.token_type.ljust(16, ' '),
+                                      str(self.line).ljust(4, ' '),
+                                      str(self.column).ljust(4, ' '),
                                       self.token_value)
