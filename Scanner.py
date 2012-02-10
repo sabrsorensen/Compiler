@@ -115,7 +115,7 @@ class Scanner():
         cur = self.file.read(1)
         line_msg = ''
         if cur == '\n':                 #If we see new line, increment line counter and reset column
-            line_msg = ', and found new line'
+            line_msg = ', and found new line.'
             self.line += 1
             self.column = 0
         elif cur == '\r':
@@ -325,13 +325,13 @@ class Scanner():
             elif new_char == "\n":
                 lexeme = lexeme[0:-1] + '\\n'
                 go = False
-        self.rewind()
+        #self.rewind()
         if re.match(self.string_lit_pattern,lexeme):
             self.create_token("MP_STRING_LIT", self.get_line(),
                 cur_col, lexeme)
         else:
             if new_char == '\n':
-                logging.debug("Run on string.")
+                logging.debug("Run on string beginning at line: %s, col: %s" % (self.get_line()-1,cur_col))
                 self.err_invalid_token("MP_RUN_STRING",self.get_line(),
                     cur_col, lexeme)
             else:
@@ -351,7 +351,7 @@ class Scanner():
                 go = False
             elif next == '':
                 go = False
-                logging.error('Reached end of file while parsing. [run on comment]')
+                logging.error('Reached end of file while parsing. Run on comment beginning at line: %s, col: %s' % (cur_line,cur_col))
                 self.err_invalid_token("MP_RUN_COMMENT",cur_line,
                     cur_col, '{')
 
