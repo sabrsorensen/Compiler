@@ -310,6 +310,7 @@ class Scanner():
     def t_string(self, in_char):
         lexeme = in_char
         cur_col = self.get_column(len(lexeme))
+        cur_line = self.get_line()
         new_char = in_char
         go = True
         #scanning string
@@ -328,20 +329,20 @@ class Scanner():
             elif new_char == "\n":
                 lexeme = lexeme[0:-1] + '\\n'
                 go = False
-        #self.rewind()
+        self.rewind()
         if re.match(self.string_lit_pattern,lexeme):
             # strip quotes from a string literal
             lexeme = lexeme.strip('\'')
-            self.create_token("MP_STRING_LIT", self.get_line(),
+            self.create_token("MP_STRING_LIT", cur_line,
                 cur_col, lexeme)
         else:
             if new_char == '\n':
-                logging.debug("Run on string beginning at line: %s, col: %s" % (self.get_line()-1,cur_col))
-                self.err_invalid_token("MP_RUN_STRING",self.get_line(),
+                logging.debug("Run on string beginning at line: %s, col: %s" % (cur_line,cur_col))
+                self.err_invalid_token("MP_RUN_STRING",cur_line,
                     cur_col, lexeme)
             else:
                 logging.debug("Scanning error: invalid string match")
-                self.err_invalid_token("MP_ERROR",self.get_line(),
+                self.err_invalid_token("MP_ERROR",cur_line,
                     cur_col, lexeme)
 
     def t_l_comment(self, in_char):
