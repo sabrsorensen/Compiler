@@ -86,8 +86,8 @@ class Scanner():
         s = Token(token_type,token_line,token_column, token_name)
         self.tokens.append(s)
 
-    def err_invalid_token(self, token_line, token_column, lexeme_char):
-        s = Token("MP_ERROR", token_line, token_column, lexeme_char)
+    def err_invalid_token(self, token_type, token_line, token_column, lexeme_char):
+        s = Token(token_type, token_line, token_column, lexeme_char)
         self.tokens.append(s)
         self.no_errors = False
 
@@ -103,7 +103,7 @@ class Scanner():
                     bad_char = False
             if bad_char and next != '\n':
                 #invalid character found
-                self.err_invalid_token(self.column, self.line, next)
+                self.err_invalid_token("MP_ERROR",self.column, self.line, next)
                 logging.error('Scanning error: Input char: %s is not a valid character in the language.' % (next))
             next = self.scanner_read_char()
         #add end of file token
@@ -113,8 +113,9 @@ class Scanner():
     ######### helper functions ############
     def scanner_read_char(self):
         cur = self.file.read(1)
+        line_msg = ''
         if cur == '\n':                 #If we see new line, increment line counter and reset column
-            #logging.debug('------->New Line!!!')
+            line_msg = ', and found new line.'
             self.line += 1
             self.column = 0
         elif cur == '\r':
@@ -123,7 +124,11 @@ class Scanner():
         else:
             self.column += 1            #if not new line, increment column counter
             #logging.debug('Column Incremented! %s' % self.column)
-        #logging.debug('Char is: %s' % cur)
+        temp_cur = cur
+        if temp_cur == '\n':
+            temp_cur = '\\n'
+        logging.debug('Char is: %2s current line: %s current col: %s%s' % (temp_cur, self.line, self.column, line_msg))
+        line_msg = ''
         return cur
 
     #Back the file pointer up, can't back up past beginning of line
@@ -300,7 +305,7 @@ class Scanner():
         else:
             #invalid token found
             logging.error('Scanning Error: Partial number type found, but incomplete token.')
-            self.err_invalid_token(self.get_line(), self.get_column(len(lexeme)), lexeme)
+            self.err_invalid_token("MP_ERROR",self.get_line(), self.get_column(len(lexeme)), lexeme)
 
     def t_string(self, in_char):
         lexeme = in_char
@@ -323,7 +328,7 @@ class Scanner():
             elif new_char == "\n":
                 lexeme = lexeme[0:-1] + '\\n'
                 go = False
-        self.rewind()
+        #self.rewind()
         if re.match(self.string_lit_pattern,lexeme):
             # strip quotes from a string literal
             lexeme = lexeme.strip('\'')
@@ -331,12 +336,12 @@ class Scanner():
                 cur_col, lexeme)
         else:
             if new_char == '\n':
-                logging.debug("Run on string.")
-                self.err_invalid_token(self.get_line(),
+                logging.debug("Run on string beginning at line: %s, col: %s" % (self.get_line()-1,cur_col))
+                self.err_invalid_token("MP_RUN_STRING",self.get_line(),
                     cur_col, lexeme)
             else:
                 logging.debug("Scanning error: invalid string match")
-                self.err_invalid_token(self.get_line(),
+                self.err_invalid_token("MP_ERROR",self.get_line(),
                     cur_col, lexeme)
 
     def t_l_comment(self, in_char):
@@ -351,13 +356,13 @@ class Scanner():
                 go = False
             elif next == '':
                 go = False
-                logging.error('Reached end of file while parsing. [run on comment]')
-                self.err_invalid_token(cur_line,
-                    cur_col, '')
+                logging.error('Reached end of file while parsing. Run on comment beginning at line: %s, col: %s' % (cur_line,cur_col))
+                self.err_invalid_token("MP_RUN_COMMENT",cur_line,
+                    cur_col, '{')
 
     def t_r_comment(self, in_char):
         logging.error('Found a stray right comment.')
-        self.err_invalid_token(self.get_line(),
+        self.err_invalid_token("MP_ERROR",self.get_line(),
             self.get_column(1), '}')
 
 
