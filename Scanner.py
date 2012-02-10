@@ -128,8 +128,11 @@ class Scanner():
 
     #Back the file pointer up, can't back up past beginning of line
     def rewind(self):
-        self.file.seek(-1, 1)
-        self.column -= 1
+        self.file.seek(-2, 1)
+        cur = self.scanner_read_char()
+        if cur == '\n':
+            self.line -= 1
+        self.column -= 2
         if self.column < 0:
             self.column = 1
 
@@ -322,6 +325,8 @@ class Scanner():
                 go = False
         self.rewind()
         if re.match(self.string_lit_pattern,lexeme):
+            # strip quotes from a string literal
+            lexeme = lexeme.strip('\'')
             self.create_token("MP_STRING_LIT", self.get_line(),
                 cur_col, lexeme)
         else:
