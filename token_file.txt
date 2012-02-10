@@ -1,37 +1,44 @@
-      MP_PROGRAM      1    1   program
-   MP_IDENTIFIER      1    9   sample1
-       MP_SCOLON      1   16   ;
-          MP_VAR      2    3   var
-   MP_IDENTIFIER      2    7   i
-        MP_COMMA      2    8   ,
-   MP_IDENTIFIER      2   10   j
-        MP_COLON      2   11   :
-      MP_INTEGER      2   13   integer
-       MP_SCOLON      2   20   ;
-        MP_BEGIN      3    1   begin
-   MP_IDENTIFIER      4    3   readln
-       MP_LPAREN      4    9   (
-   MP_IDENTIFIER      4   10   i
-       MP_RPAREN      4   11   )
-       MP_SCOLON      4   12   ;
-   MP_IDENTIFIER      5    3   j
-       MP_ASSIGN      5    6   :=
-         MP_PLUS      5   10   +
-   MP_IDENTIFIER      5   12   i
-        MP_TIMES      5   14   *
-       MP_SCOLON      5   17   ;
-        MP_WRITE      6    3   write
-       MP_LPAREN      6    8   (
-   MP_IDENTIFIER      6   11   Result
-   MP_IDENTIFIER      6   18   is
-       MP_RPAREN      6   23   )
-       MP_SCOLON      6   24   ;
-        MP_WRITE      7    3   write
-       MP_LPAREN      7    8   (
-   MP_IDENTIFIER      7   10   j
-       MP_RPAREN      7   12   )
-       MP_SCOLON      7   13   ;
-   MP_IDENTIFIER      8    3   writeln
-       MP_SCOLON      8   10   ;
-          MP_END      9    1   end
-       MP_PERIOD      9    4   .
+MP_PROGRAM       1     1     program
+MP_IDENTIFIER    1     9     sample1
+MP_SCOLON        1     16    ;
+MP_VAR           2     3     var
+MP_IDENTIFIER    2     7     i
+MP_COMMA         2     8     ,
+MP_IDENTIFIER    2     10    j
+MP_COLON         2     11    :
+MP_INTEGER       2     13    integer
+MP_SCOLON        2     20    ;
+MP_BEGIN         3     1     begin
+MP_IDENTIFIER    4     3     readln
+MP_LPAREN        4     9     (
+MP_IDENTIFIER    4     10    i
+MP_RPAREN        4     11    )
+MP_SCOLON        4     12    ;
+MP_IDENTIFIER    5     3     str
+MP_ASSIGN        5     8     :=
+MP_STRING_LIT    6     10    string literal...''e
+MP_IDENTIFIER    6     4     j
+MP_ASSIGN        6     7     :=
+MP_INTEGER_LIT   6     9     9
+MP_PLUS          6     11    +
+MP_IDENTIFIER    6     13    i
+MP_TIMES         6     15    *
+MP_FIXED_LIT     6     17    9.1
+MP_MINUS         6     21    -
+MP_FLOAT_LIT     6     23    8.1e-1
+MP_SCOLON        6     29    ;
+MP_WRITE         7     3     write
+MP_LPAREN        7     8     (
+MP_STRING_LIT    7     10    Result is 
+MP_RPAREN        7     22    )
+MP_SCOLON        7     23    ;
+MP_WRITE         8     3     write
+MP_LPAREN        8     8     (
+MP_IDENTIFIER    8     10    j
+MP_RPAREN        8     12    )
+MP_SCOLON        8     13    ;
+MP_IDENTIFIER    9     3     writeln
+MP_SCOLON        9     10    ;
+MP_END           10    1     end
+MP_PERIOD        10    4     .
+MP_EOF           10    5     
