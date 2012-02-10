@@ -1,8 +1,5 @@
 import re
-import os
-import sys
 import logging
-#from user import f
 
 log = logging.getLogger()
 ch  = logging.StreamHandler()
@@ -104,7 +101,7 @@ class Scanner():
             if bad_char and next != '\n':
                 #invalid character found
                 self.err_invalid_token("MP_ERROR",self.column, self.line, next)
-                logging.error('Scanning error: Input char: %s is not a valid character in the language.' % (next))
+                logging.error('Scanning error: Input char: %s is not a valid character in the language.' % next)
             next = self.scanner_read_char()
         #add end of file token
         self.create_token("MP_EOF", self.get_line(),
@@ -115,7 +112,7 @@ class Scanner():
         cur = self.file.read(1)
         line_msg = ''
         if cur == '\n':                 #If we see new line, increment line counter and reset column
-            line_msg = ', and found new line.'
+            line_msg = ', found new line'
             self.line += 1
             self.column = 0
         elif cur == '\r':
@@ -123,12 +120,10 @@ class Scanner():
             cur = self.file.read(1)
         else:
             self.column += 1            #if not new line, increment column counter
-            #logging.debug('Column Incremented! %s' % self.column)
         temp_cur = cur
         if temp_cur == '\n':
             temp_cur = '\\n'
-        logging.debug('Char is: %2s current line: %s current col: %s%s' % (temp_cur, self.line, self.column, line_msg))
-        line_msg = ''
+        logging.debug('Read char: %2s line: %2s col: %2s%s' % (temp_cur, self.line, self.column, line_msg))
         return cur
 
     #Back the file pointer up, can't back up past beginning of line
@@ -364,7 +359,7 @@ class Scanner():
     def t_r_comment(self, in_char):
         logging.error('Found a stray right comment.')
         self.err_invalid_token("MP_ERROR",self.get_line(),
-            self.get_column(1), '}')
+            self.get_column(1), in_char)
 
 
 class Token(object):
