@@ -134,7 +134,7 @@ class Scanner():
             self.line -= 1
         self.column -= 2
         if self.column < 0:
-            self.column = 1
+            self.column = 0
 
     def get_lexeme(self):
         pass
