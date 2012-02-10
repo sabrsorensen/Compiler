@@ -123,7 +123,7 @@ class Scanner():
         temp_cur = cur
         if temp_cur == '\n':
             temp_cur = '\\n'
-        logging.debug('Read char: %2s line: %2s col: %2s%s' % (temp_cur, self.line, self.column, line_msg))
+        #logging.debug('Read char: %2s line: %2s col: %2s%s' % (temp_cur, self.line, self.column, line_msg))
         return cur
 
     #Back the file pointer up, can't back up past beginning of line
@@ -256,6 +256,8 @@ class Scanner():
         final_lexeme = in_char
         temp = in_char
         result = re.match(self.id_pattern, temp)
+        cur_line = self.get_line()
+        cur_col = self.get_column(len(final_lexeme))
         while result:
             final_lexeme = temp
             next = self.scanner_read_char()
@@ -265,18 +267,19 @@ class Scanner():
         # popped out of the while loop - means we got our id
         # first, rewind
         self.rewind()
-
+        if final_lexeme[-1:] == '\n':
+            final_lexeme = final_lexeme[0:-1]
         # check if the id we have is a keyword
         for lexeme, token in self.keywords.items():
             if final_lexeme == lexeme:
-                self.create_token(token, self.get_line(),
-                                    self.get_column(len(final_lexeme)), final_lexeme)
+                self.create_token(token, cur_line,
+                                    cur_col, final_lexeme)
                 return
 
         # we have an identifier
         token_type = 'MP_IDENTIFIER'
-        self.create_token(token_type, self.get_line(),
-                            self.get_column(len(final_lexeme)), final_lexeme)
+        self.create_token(token_type, cur_line,
+                            cur_col, final_lexeme)
 
     def t_num(self, in_char):
         lexeme = in_char
