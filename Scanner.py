@@ -116,8 +116,6 @@ class Scanner():
         elif cur == '\r'  :
             self.column = 1
             cur = self.file.read(1)
-        elif cur == '\t':
-            self.column = self.column + 4 - (self.column % 4)
         else:
             self.column += 1            #if not new line, increment column counter
             #logging.debug('Column Incremented! %s' % self.column)
@@ -143,6 +141,8 @@ class Scanner():
 
     # TODO: handle column increment when tab is encountered
     def t_white_space(self, in_char):
+        if in_char == '\t':
+            self.column = self.column + 4 - (self.column % 4)
         return
 
     def t_period(self, in_char):
