@@ -7,10 +7,24 @@ class Parser:
     def __init__(self):
         #### Regular Expressions out the wazoo. Yes, that is typically where they come from ####
         self.ProgramRE = r'%s;%s.' % ProgramHeadingRE, BlockRE
-        self.ProgramHeadingRE = r'program %s' % Identifier
+        self.ProgramHeadingRE = r'program %s' % IdentifierRE
         self.BlockRE = r'%s %s %s' % VariableDecPartRE, ProcedureFuncDecPartRE, StatementPartRE
         self.VariableDecPartRE = r'(var (%s;)+)?' % VariableDecRE
-        self.ProcedureFuncDecPartRE = r'((%s | %s);)*' % ProcedureDec, FunctionDec
+        self.ProcedureFuncDecPartRE = r'((%s | %s);)*' % ProcedureDecRE, FunctionDecRE
+        self.StatementPartRE = r'%s' % CompountStatementRE
+        self.VariableDecRE = r'%s:%s' % IdentifierListRE, TypeRE
+        self.TypeRE = r'(Integer)|(Float)'
+        self.ProcedureDecRE = r'%s;%s' % ProcedureHeadingRE, BlockRE
+        self.FunctionDecRE = r'%s;%s' % FunctionHeadingRE, BlockRE
+        self.ProcedureHeadingRE = r'(procedure) %s (%s)?' % IdentifierRE,FormalParameterListRE
+        self.FunctionHeadingRE = r'(function) %s (%s)? : %s' % IdentifierRE,FormalParameterListRE,TypeRE
+        self.FormalParameterListRE = r'\( %s (;%s)* \)' % FormalParameterSectionRE, FormalParameterSectionRE
+        self.FormalParameterSectionRE = r'(%s|%s)' % ValueParameterSectionRE, VariableParameterSectionRE
+        self.ValueParameterSectionRE = r'%s:%s' % IdentifierListRE, TypeRE
+        self.VariableParameterSectionRE = r'var %s:%s' % IdentifierListRE,TypeRE
+        self.CompoundStatementRE = r'begin %s end' % StatementSequenceRE
+        self.StatementSequenceRE = r'%s (;%s)*' % StatementRE,StatementRE
+        self.StatementRE = r'(%s|%s)' % SimpleStatementRE,StructuredStatementRE
 
         self.LetterRE = r'[a-zA-Z]'
         self.DigitRE = r'[0-9]'
