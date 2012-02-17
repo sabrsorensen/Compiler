@@ -6,8 +6,15 @@ class Parser:
 
     def __init__(self):
         #### Regular Expressions out the wazoo. Yes, that is typically where they come from ####
-        self.ProgramRE
+        self.ProgramRE = r'%s;%s.' % ProgramHeadingRE, BlockRE
+        self.ProgramHeadingRE = r'program %s' % Identifier
 
+        self.LetterRE = r'[a-zA-Z]'
+        self.DigitRE = r'[0-9]'
+        self.DigitSequenceRE = r'[0-9]+'
+        self.UnderRE = r'_'
+        self.SignRE = r'[-+]'
+        self.UnsignedIntegerRE = r'%s' % DigitSequenceRE
 
 
 
@@ -80,13 +87,13 @@ ProcedureIdentifier                 = Identifier
 FunctionIdentifier                  = Identifier
 IdentifierList                      = Identifier { "," Identifier }
 Identifier                          = ??
-UnsignedInteger                     = DigitSequence
-Sign                                = "+" | "-"
-Under                               = "_"
-DigitSequence                       = Digit { Digit }
-Letter                              = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m"
+##UnsignedInteger                     = DigitSequence
+##Sign                                = "+" | "-"
+##Under                               = "_"
+##DigitSequence                       = Digit { Digit }
+##Letter                              = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m"
                                      |"n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
                                      |"A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M"
                                      |"N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
-Digit                               = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+##Digit                               = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 """
