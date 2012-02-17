@@ -25,6 +25,7 @@ class Parser:
         self.CompoundStatementRE = r'begin %s end' % StatementSequenceRE
         self.StatementSequenceRE = r'%s (;%s)*' % StatementRE,StatementRE
         self.StatementRE = r'(%s|%s)' % SimpleStatementRE,StructuredStatementRE
+        self.SimpleStatementRE = r'(%s|%s|%s|%s|%s' % EmptyStatementRE,ReadStatementRE,WriteStatementRE,AssignmentStatementRE,ProcedureStatementRE
 
         self.LetterRE = r'[a-zA-Z]'
         self.DigitRE = r'[0-9]'
