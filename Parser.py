@@ -8,6 +8,9 @@ class Parser:
         #### Regular Expressions out the wazoo. Yes, that is typically where they come from ####
         self.ProgramRE = r'%s;%s.' % ProgramHeadingRE, BlockRE
         self.ProgramHeadingRE = r'program %s' % Identifier
+        self.BlockRE = r'%s %s %s' % VariableDecPartRE, ProcedureFuncDecPartRE, StatementPartRE
+        self.VariableDecPartRE = r'(var (%s;)+)?' % VariableDecRE
+        self.ProcedureFuncDecPartRE = r'((%s | %s);)*' % ProcedureDec, FunctionDec
 
         self.LetterRE = r'[a-zA-Z]'
         self.DigitRE = r'[0-9]'
@@ -15,19 +18,6 @@ class Parser:
         self.UnderRE = r'_'
         self.SignRE = r'[-+]'
         self.UnsignedIntegerRE = r'%s' % DigitSequenceRE
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 """
 Program                             = ProgramHeading ";" Block "."
