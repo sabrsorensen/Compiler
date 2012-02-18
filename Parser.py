@@ -26,6 +26,10 @@ class Parser:
         self.StatementSequenceRE = r'%s (;%s)*' % StatementRE,StatementRE
         self.StatementRE = r'(%s|%s)' % SimpleStatementRE,StructuredStatementRE
         self.SimpleStatementRE = r'(%s|%s|%s|%s|%s' % EmptyStatementRE,ReadStatementRE,WriteStatementRE,AssignmentStatementRE,ProcedureStatementRE
+        self.StructuredStatementRE = r'(%s|%s|%s)' % CompoundStatementRE, ConditionalStatementRE,RepetitiveStatementRE
+        self.ConditionalStatementRE = r'%s' % IfStatementRE
+        self.RepetitiveStatementRE = r'(%s|%s|%s)' % WhileStatementRE,RepeatStatementRE,ForStatementRE
+        self.EmptyStatementRE = r''
 
         self.LetterRE = r'[a-zA-Z]'
         self.DigitRE = r'[0-9]'
@@ -35,26 +39,6 @@ class Parser:
         self.UnsignedIntegerRE = r'%s' % DigitSequenceRE
 
 """
-Program                             = ProgramHeading ";" Block "."
-ProgramHeading                      = "program" Identifier
-Block                               = VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart
-VariableDeclarationPart             = [ "var" VariableDeclaration ";" { VariableDeclaration ";" } ]
-ProcedureAndFunctionDeclarationPart = { ( ProcedureDeclaration | FunctionDeclaration )  ";" }
-StatementPart                       = CompoundStatement
-VariableDeclaration                 = Identifierlist ":" Type
-Type                                = "Integer" | "Float"
-ProcedureDeclaration                = ProcedureHeading ";" Block
-FunctionDeclaration                 = FunctionHeading ";" Block
-ProcedureHeading                    = "procedure" Identifier [ FormaParameterList ]
-FunctionHeading                     = "function" Identifier [ FormalParameterList ] : Type
-FormalParameterList                 = "(" FormalParameterSection { ";" FormalParameterSection } ")"
-FormalParameterSection              = ValueParameterSection | VariableParameterSection
-ValueParamterSection                = IdentifierList : Type
-VariableParameterSection            = "var" IdentifierList : Type
-CompoundStatement                   = "begin" StatementSequence "end"
-StatementSequence                   = Statement { ";" Statement }
-Statement                           = SimpleStatement | StructuredStatement
-SimpleStatement                     = EmptyStatement | ReadStatement | WriteStatement | AssignmentStatement | ProcedureStatement
 StructuredStatement                 = CompoundStatement | ConditionalStatement | RepetitiveStatement
 ConditionalStatement                = IfStatement
 RepetitiveStatement                 = WhileStatement | RepeatStatement | ForStatement
