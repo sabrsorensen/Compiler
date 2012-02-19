@@ -1,3 +1,4 @@
+
 __author__ = 'logiasin'
 import sys
 import re
@@ -6,31 +7,33 @@ class Parser:
 
     def __init__(self):
         #### Regular Expressions out the wazoo. Yes, that is typically where they come from ####
-        self.ProgramRE = r'%s;%s.' % ProgramHeadingRE, BlockRE
-        self.ProgramHeadingRE = r'program %s' % IdentifierRE
-        self.BlockRE = r'%s %s %s' % VariableDecPartRE, ProcedureFuncDecPartRE, StatementPartRE
-        self.VariableDecPartRE = r'(var (%s;)+)?' % VariableDecRE
-        self.ProcedureFuncDecPartRE = r'((%s | %s);)*' % ProcedureDecRE, FunctionDecRE
-        self.StatementPartRE = r'%s' % CompountStatementRE
-        self.VariableDecRE = r'%s:%s' % IdentifierListRE, TypeRE
+        self.ProgramRE = r'%s;%s.' % (self.ProgramHeadingRE, self.BlockRE)
+        self.ProgramHeadingRE = r'program %s' % (self.IdentifierRE)
+        self.BlockRE = r'%s %s %s' % (self.VariableDecPartRE, self.ProcedureFuncDecPartRE, self.StatementPartRE)
+        self.VariableDecPartRE = r'(var (%s;)+)?' % (self.VariableDecRE)
+        self.ProcedureFuncDecPartRE = r'((%s | %s);)*' % (self.ProcedureDecRE, self.FunctionDecRE)
+        self.StatementPartRE = r'%s' % (self.CompountStatementRE)
+        self.VariableDecRE = r'%s:%s' % (self.IdentifierListRE, self.TypeRE)
         self.TypeRE = r'(Integer)|(Float)'
-        self.ProcedureDecRE = r'%s;%s' % ProcedureHeadingRE, BlockRE
-        self.FunctionDecRE = r'%s;%s' % FunctionHeadingRE, BlockRE
-        self.ProcedureHeadingRE = r'(procedure) %s (%s)?' % IdentifierRE,FormalParameterListRE
-        self.FunctionHeadingRE = r'(function) %s (%s)? : %s' % IdentifierRE,FormalParameterListRE,TypeRE
-        self.FormalParameterListRE = r'\( %s (;%s)* \)' % FormalParameterSectionRE, FormalParameterSectionRE
-        self.FormalParameterSectionRE = r'(%s|%s)' % ValueParameterSectionRE, VariableParameterSectionRE
-        self.ValueParameterSectionRE = r'%s:%s' % IdentifierListRE, TypeRE
-        self.VariableParameterSectionRE = r'var %s:%s' % IdentifierListRE,TypeRE
-        self.CompoundStatementRE = r'begin %s end' % StatementSequenceRE
-        self.StatementSequenceRE = r'%s (;%s)*' % StatementRE,StatementRE
-        self.StatementRE = r'(%s|%s)' % SimpleStatementRE,StructuredStatementRE
-        self.SimpleStatementRE = r'(%s|%s|%s|%s|%s' % EmptyStatementRE,ReadStatementRE,WriteStatementRE,AssignmentStatementRE,ProcedureStatementRE
-        self.StructuredStatementRE = r'(%s|%s|%s)' % CompoundStatementRE, ConditionalStatementRE,RepetitiveStatementRE
-        self.ConditionalStatementRE = r'%s' % IfStatementRE
-        self.RepetitiveStatementRE = r'(%s|%s|%s)' % WhileStatementRE,RepeatStatementRE,ForStatementRE
+        self.ProcedureDecRE = r'%s;%s' % (self.ProcedureHeadingRE, self.BlockRE)
+        self.FunctionDecRE = r'%s;%s' % (self.FunctionHeadingRE, self.BlockRE)
+        self.ProcedureHeadingRE = r'(procedure) %s (%s)?' % (self.IdentifierRE,self.FormalParameterListRE)
+        self.FunctionHeadingRE = r'(function) %s (%s)? : %s' % (self.IdentifierRE,self.FormalParameterListRE,self.TypeRE)
+        self.FormalParameterListRE = r'\( %s (;%s)* \)' % (self.FormalParameterSectionRE, self.FormalParameterSectionRE)
+        self.FormalParameterSectionRE = r'(%s|%s)' % (self.ValueParameterSectionRE, self.VariableParameterSectionRE)
+        self.ValueParameterSectionRE = r'%s:%s' % (self.IdentifierListRE, self.TypeRE)
+        self.VariableParameterSectionRE = r'var %s:%s' % (self.IdentifierListRE,self.TypeRE)
+        self.CompoundStatementRE = r'begin %s end' % (self.StatementSequenceRE)
+        self.StatementSequenceRE = r'%s (;%s)*' % (self.StatementRE,self.StatementRE)
+        self.StatementRE = r'(%s|%s)' % (self.SimpleStatementRE,self.StructuredStatementRE)
+        self.SimpleStatementRE = r'(%s|%s|%s|%s|%s)' % (self.EmptyStatementRE,self.ReadStatementRE,self.WriteStatementRE,self.AssignmentStatementRE,self.ProcedureStatementRE)
+        self.StructuredStatementRE = r'(%s|%s|%s)' % (self.CompoundStatementRE, self.ConditionalStatementRE,self.RepetitiveStatementRE)
+        self.ConditionalStatementRE = r'%s' % (self.IfStatementRE)
+        self.RepetitiveStatementRE = r'(%s|%s|%s)' % (self.WhileStatementRE,self.RepeatStatementRE,self.ForStatementRE)
         self.EmptyStatementRE = r''
-
+        self.ReadStatementRE = r'read %s' % (self.ReadParameterListRE)
+        self.WriteStatementRE = r'write %s' % (self.WriteParameterListRE)
+        self.AssignmentStatementRE = r'(%s | %s):=%s' % (self.VariableRE, self.FunctionIdentifierRE,self.ExpressionRE)
         self.LetterRE = r'[a-zA-Z]'
         self.DigitRE = r'[0-9]'
         self.DigitSequenceRE = r'[0-9]+'
