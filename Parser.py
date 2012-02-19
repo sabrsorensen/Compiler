@@ -5,7 +5,62 @@ import re
 
 class Parser:
 
+    self.parsed = ''
     def __init__(self):
+        return
+
+    def lookahead(self):
+        return
+    def program(self):
+        program_heading()
+        self.parsed = self.parsed + ';'
+        block()
+        self.parsed = self.parsed + '.'
+
+    def program_heading(self):
+        self.parsed = self.parsed + 'program'
+        identifier()
+
+    def block(self):
+        variable_declaration_part()
+        procedure_function_declaration_part()
+        statement_part()
+
+    def variable_declaration_part(self):
+        if(lookahead() is 'var'):
+            self.parsed = self.parsed + 'var'
+            #This needs more looping!
+            variable_declaration()
+            self.parsed = self.parsed + ';'
+
+    def procedure_and_function_declaration_part(self):
+        #broken switch statement, don't know how to do it in Python
+
+        switch (lookahead())
+        {
+            case blah1:
+                procedure_declaration()
+                break
+            case blah2:
+                function_declaration()
+                break()
+            case others:
+                error()
+        }
+        self.parsed = self.parsed + ';'
+
+
+    def variable_declaration(self):
+        identifier_list()
+        self.parsed = self.parsed + ':'
+        type()
+
+
+
+
+
+
+
         #### Regular Expressions out the wazoo. Yes, that is typically where they come from ####
 #        self.ProgramRE = r'%s;%s.' % (self.ProgramHeadingRE, self.BlockRE)
 #        self.ProgramHeadingRE = r'program %s' % (self.IdentifierRE)
