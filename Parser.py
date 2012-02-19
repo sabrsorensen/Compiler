@@ -33,7 +33,13 @@ class Parser:
         self.EmptyStatementRE = r''
         self.ReadStatementRE = r'read %s' % (self.ReadParameterListRE)
         self.WriteStatementRE = r'write %s' % (self.WriteParameterListRE)
-        self.AssignmentStatementRE = r'(%s | %s):=%s' % (self.VariableRE, self.FunctionIdentifierRE,self.ExpressionRE)
+        self.AssignmentStatementRE = r'(%s|%s):=%s' % (self.VariableRE, self.FunctionIdentifierRE,self.ExpressionRE)
+        self.ProcedureStatementRE = r'%s(%s)?' % (self.ProcedureIdentifierRE,self.ActualParameterListRE)
+        self.IfStatementRE = r'if %s then %s (else %s)?' % (self.BooleanExpressionRE, self.StatementRE, self.StatementRE)
+        self.RepeatStatementRE = r'repeat %s until %s' % (self.StatementSequenceRE,self.BooleanExpressionRE)
+        self.WhileStatementRE = r'while %s do %s' % (self.BooleanExpressionRE, self.StatementRE)
+        self.ForStatementRE = r'for %s := %s (to|downto) %s do %s' % (self.ControlVariableRE,self.InitialValueRE, self.FinalValueRE, self.StatementRE)
+
         self.LetterRE = r'[a-zA-Z]'
         self.DigitRE = r'[0-9]'
         self.DigitSequenceRE = r'[0-9]+'
@@ -42,18 +48,6 @@ class Parser:
         self.UnsignedIntegerRE = r'%s' % DigitSequenceRE
 
 """
-StructuredStatement                 = CompoundStatement | ConditionalStatement | RepetitiveStatement
-ConditionalStatement                = IfStatement
-RepetitiveStatement                 = WhileStatement | RepeatStatement | ForStatement
-EmptyStatement                      =
-ReadStatement                       = "read" ReadParameterList
-WriteStatement                      = "write" WriteParameterList
-AssignmentStatement                 = ( Variable | FunctionIdentifier ) ":=" Expression
-ProcedureStatement                  = ProcedureIdentifier [ ActualParameterList ]
-IfStatement                         = "if" BooleanExpression "then" Statement [ "else" Statement ]
-RepeatStatement                     = "repeat" StatementSequence "until" BooleanExpression
-WhileStatement                      = "while" BooleanExpression "do" Statement
-ForStatement                        = "for" ControlVariable ":=" InitialValue ( "to" | "downto" ) FinalValue "do" Statement
 ControlVariable                     = VariableIdentifier
 InitialValue                        = OrdinalExpression
 FinalValue                          = OrdinalExpression
