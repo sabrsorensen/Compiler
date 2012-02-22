@@ -1,5 +1,6 @@
 
 __author__ = 'logiasin' # Sam took all the credit :P
+                        # that was all PyCharm, it grabbed my username :P
 import sys
 import re
 import logging
