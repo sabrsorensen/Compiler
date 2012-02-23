@@ -3,6 +3,7 @@ import sys
 import re
 import logging
 from Scanner import Scanner
+from Scanner import Token
 
 class Parser(object):
 
@@ -27,19 +28,23 @@ class Parser(object):
         return self.cur_token.token_type == token
 
     def system_goal(self): #Someone message Sam and let him know if this is what the stubs should be looking like
-        self.program()
+        self.lookahead()
+        if self.match('MP_PROGRAM'):
+            self.program()
+            self.lookahead()
+        else:
+            self.error()
+
         if self.match('$'):
             logging.info('Matched end of program')
         else:
             self.error()
 
-
     def program(self):
         """ Expanding -----Program = ProgramHeading ";" Block "."-----"""
-        self.lookahead()
-
         self.program_heading()
 
+        self.lookahead()
         if self.match('MP_SCOLON'):
             logging.info('Matched a Semicolon.')
             self.lookahead()
@@ -48,10 +53,11 @@ class Parser(object):
 
         self.block()
 
+        self.lookahead()
         if self.match('MP_PERIOD'):
             logging.info('Matched a period.')
-            self.lookahead()
-
+        else:
+            self.error()
 
     def program_heading(self):
         """"Expanding -----"program" Identifier-----"""
@@ -64,39 +70,40 @@ class Parser(object):
         self.identifier()
 
     def block(self):
-        variable_declaration_part()
-        procedure_function_declaration_part()
-        statement_part()
+        self.variable_declaration_part()
 
-#    def variable_declaration_part(self):
-#        if lookahead() is 'var':
-#            self.parsed += 'var'
-#            #This needs more looping!
-#            variable_declaration()
-#            self.parsed += ';'
-#
-#    def procedure_and_function_declaration_part(self):
-#        #broken switch statement, don't know how to do it in Python
-#
-#        switch (lookahead())
-#        {
-#            case blah1:
-#                procedure_declaration()
-#                break
-#            case blah2:
-#                function_declaration()
-#                break()
-#            case others:
-#                error()
-#        }
-#        self.parsed += ';'
+        self.lookahead()
+        self.procedure_function_declaration_part()
 
+        self.lookahead()
+        self.statement_part()
+
+    def variable_declaration_part(self):
+        if self.match('MP_VAR'):
+            self.lookahead()
+            self.variable_declaration()
+
+            self.lookahead()
+            if self.match('MP_SCOLON'):
+                self.lookahead()
+                self.variable_declaration_tail()
+        else:
+            return
+    def variable_declaration_tail(self): ##Sam's confused on this one
+        self.variable_declaration()
+
+        self.lookahead()
+        if self.match('MP_SCOLON'):
+            self.lookahead()
+            self.variable_declaration_tail()
 
     def variable_declaration(self):
-        identifier_list()
-        self.parsed += ':'
-        type()
+        return
 
+    def procedure_function_declaration_part(self):
+        return
+    def statement_part(self):
+        return
     def identifier(self):
         if self.match('MP_IDENTIFIER'):
             logging.info('Matched an identifier.')
