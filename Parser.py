@@ -1,6 +1,4 @@
 
-__author__ = 'logiasin' # Sam took all the credit :P
-                        # that was all PyCharm, it grabbed my username :P
 import sys
 import re
 import logging
@@ -27,6 +25,14 @@ class Parser(object):
 
     def match(self, token):
         return self.cur_token.token_type == token
+
+    def system_goal(self): #Someone message Sam and let him know if this is what the stubs should be looking like
+        self.program()
+        if self.match('$'):
+            logging.info('Matched end of program')
+        else:
+            self.error()
+
 
     def program(self):
         """ Expanding -----Program = ProgramHeading ";" Block "."-----"""
