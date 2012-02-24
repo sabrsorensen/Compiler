@@ -70,32 +70,48 @@ class Parser(object):
         self.identifier()
 
     def block(self):
-        self.variable_declaration_part()
 
-        self.lookahead()
-        self.procedure_function_declaration_part()
-
-        self.lookahead()
-        self.statement_part()
-
-    def variable_declaration_part(self):
         if self.match('MP_VAR'):
             self.lookahead()
-            self.variable_declaration()
-
+            self.variable_declaration_part()
             self.lookahead()
-            if self.match('MP_SCOLON'):
-                self.lookahead()
-                self.variable_declaration_tail()
+        if self.match('MP_PROCEDURE'):
+            self.lookahead()
+            self.procedure_function_declaration_part()
+            self.lookahead()
+        if self.match('MP_BEGIN'):
+            self.lookahead()
+            self.statement_part()
         else:
-            return
+            self.error()
+
+    def variable_declaration_part(self):
+        if self.match('MP_IDENTIFIER'):
+            self.variable_declaration()
+            self.lookahead()
+        else:
+            self.error()
+        if self.match('MP_SCOLON'):
+                self.lookahead()
+                if self.match('MP_IDENTIFIER'):
+                    self.variable_declaration_tail()
+                else:
+                    return
+        else:
+            self.error()
+
     def variable_declaration_tail(self): ##Sam's confused on this one
         self.variable_declaration()
-
         self.lookahead()
+
         if self.match('MP_SCOLON'):
             self.lookahead()
-            self.variable_declaration_tail()
+            if self.match('MP_IDENTIFIER'):
+                self.variable_declaration_tail()
+            else:
+                return
+        else:
+            self.error()
 
     def variable_declaration(self):
         return
