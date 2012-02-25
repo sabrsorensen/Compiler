@@ -2,7 +2,6 @@
 import sys
 import re
 import logging
-from Scanner import Scanner
 from Scanner import Token
 
 class Parser(object):
@@ -10,106 +9,125 @@ class Parser(object):
 
     def __init__(self, tokens):
         self.parsed = ''
-        self.cur_token = ''
+        self.cur_token = self.tokens.next()
         self.index = len(tokens)
         self.tokens = iter(tokens)
 
+    ############### Utility Functions ###############
+
     def error(self):
-        pass
+        logging.error("Couldn't match: %s" % self.t_lexeme())
 
-    def lookahead(self):
-        if self.tokens.next().token_type == 'MP_EOF':
-            logging.info('Done Parsing.')
-            exit()
-        else:
-            self.cur_token = self.tokens.next()
+    def t_type(self):
+        """
+        So that we don't have to call the line below
+        every time we need a current token type
+        """
+        return self.cur_token.token_type
 
-    def match(self, token):
-        return self.cur_token.token_type == token
+    def t_lexeme(self):
+        """
+        Same as above - just a wrapper to make code
+        more elegant
+        """
+        return self.cur_token.token_value
 
-    def system_goal(self): #Someone message Sam and let him know if this is what the stubs should be looking like
-        self.lookahead()
-        if self.match('MP_PROGRAM'):
+    def match(self, lexeme):
+        self.cur_token = self.tokens.next()
+        logging.info("Matched '%s'" % lexeme)
+        return False
+
+
+    ############### Rule handling functions ###############
+
+
+    def system_goal(self):
+        """
+        Expanding
+        System Goal -> Program $
+        """
+        if self.t_type() == 'MP_PROGRAM':
             self.program()
-            self.lookahead()
-        else:
-            self.error()
-
-        if self.match('$'):
-            logging.info('Matched end of program')
+            self.match('MP_EOF') # ?
         else:
             self.error()
 
     def program(self):
-        """ Expanding -----Program = ProgramHeading ";" Block "."-----"""
-        self.program_heading()
-
-        self.lookahead()
-        if self.match('MP_SCOLON'):
-            logging.info('Matched a Semicolon.')
-            self.lookahead()
-        else:
-            self.error()
-
-        self.block()
-
-        self.lookahead()
-        if self.match('MP_PERIOD'):
-            logging.info('Matched a period.')
+        """
+        Expanding
+        Program -> ProgramHeading ";" Block "."
+        """
+        if self.t_type() == 'MP_PROGRAM':
+            self.program_heading()
+            self.match('MP_SCOLON')
+            self.block()
+            self.match('.')
         else:
             self.error()
 
     def program_heading(self):
-        """"Expanding -----"program" Identifier-----"""
-        if self.match('MP_PROGRAM'):
-            logging.info('Matched %s' % self.cur_token.lexeme)
-            self.lookahead()
+        """
+        Expanding
+        "program" Identifier
+        """
+        if self.t_type() == 'MP_PROGRAM':
+            self.match('program')
+            self.program_identifier()
         else:
             self.error()
 
-        self.identifier()
+    def program_identifier(self):
+        """
+        Expanding
+        ProgramIdentifier -> Identifier
+        """
+        pass
 
     def block(self):
-
-        if self.match('MP_VAR'):
-            self.lookahead()
+        """
+        Expanding
+        Block -> VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart
+        """
+        if self.t_type() == ('MP_VAR' or 'MP_PROCEDURE' or 'MP_BEGIN' or 'MP_FUNCTION'):
             self.variable_declaration_part()
-            self.lookahead()
-        if self.match('MP_PROCEDURE'):
-            self.lookahead()
             self.procedure_function_declaration_part()
-            self.lookahead()
-        if self.match('MP_BEGIN'):
-            self.lookahead()
             self.statement_part()
         else:
             self.error()
 
     def variable_declaration_part(self):
-        if self.match('MP_IDENTIFIER'):
+        """
+        Expanding
+        VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail
+                                -> e
+        """
+        if self.t_type() == 'MP_IDENTIFIER':
             self.variable_declaration()
-            self.lookahead()
-        else:
-            self.error()
-        if self.match('MP_SCOLON'):
-                self.lookahead()
-                if self.match('MP_IDENTIFIER'):
-                    self.variable_declaration_tail()
-                else:
-                    return
+            self.match(';')
+            self.variable_declaration_tail()
+        elif self.t_type() == ('MP_BEGIN' or 'MP_FUNCTION' or 'MP_PROCEDURE'):
+            self.epsilon()
         else:
             self.error()
 
-    def variable_declaration_tail(self): ##Sam's confused on this one
-        self.variable_declaration()
-        self.lookahead()
+    def epsilon(self):
+        """
+        Branch went to epsilon - pass
+        """
+        pass
 
-        if self.match('MP_SCOLON'):
-            self.lookahead()
-            if self.match('MP_IDENTIFIER'):
-                self.variable_declaration_tail()
-            else:
-                return
+    def variable_declaration_tail(self):
+        """
+        Expanding
+        VariableDeclarationTail -> VariableDeclaration ";" VariableDeclarationTail
+                                -> e
+        """
+        if self.t_type() == 'MP_IDENTIFIER':
+            self.variable_declaration()
+            self.match(';')
+            self.variable_declaration_tail()
+        elif self.t_type() == ('MP_BEGIN' or 'MP_FUNCTION' or 'MP_PROCEDURE'):
+            self.epsilon()
         else:
             self.error()
 
@@ -118,9 +136,11 @@ class Parser(object):
 
     def procedure_function_declaration_part(self):
         return
+
     def statement_part(self):
         return
+
     def identifier(self):
-        if self.match('MP_IDENTIFIER'):
-            logging.info('Matched an identifier.')
-            self.lookahead()
+        pass
+
+
