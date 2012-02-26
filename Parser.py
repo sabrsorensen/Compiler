@@ -1,4 +1,4 @@
-
+import inspect
 import sys
 import re
 import logging
@@ -15,7 +15,8 @@ class Parser(object):
     ############### Utility Functions ###############
 
     def error(self):
-        logging.error("Couldn't match: %s" % self.t_lexeme())
+        logging.error("Couldn't match: %s in %s()" % (self.t_lexeme(),
+                                                      inspect.stack()[2][3]))
 
     def t_type(self):
         """
@@ -176,6 +177,46 @@ class Parser(object):
             self.match(';')
             self.block()
             self.match(';')
+        else:
+            self.error()
+
+
+    def function_declaration(self):
+        """
+        Expanding Rule 16:
+        FunctionDeclaration -> FunctionHeading ";" Block ";"
+        """
+        if self.t_type() == 'MP_FUNCTION':
+            self.function_heading()
+            self.match(';')
+            self.block()
+            self.match(';')
+        else:
+            self.error()
+
+    def procedure_heading(self):
+        """
+        Expanding Rule 17:
+        ProcedureHeading -> "procedure" procedureIdentifier OptionalFormalParameterList
+        """
+        if self.t_type() == 'MP_PROCEDURE':
+            self.match('procedure')
+            self.procedure_identifier()
+            self.optional_formal_parameter_list()
+        else:
+            self.error()
+
+    def function_heading(self):
+        """
+        Expanding Rule 18:
+        FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type
+        """
+        if self.t_type() == 'MP_FUNCTION':
+            self.match('function')
+            self.function_identifier()
+            self.optional_formal_parameter_list()
+            self.match(':')
+            self.type()
         else:
             self.error()
 
