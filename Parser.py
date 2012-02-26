@@ -8,10 +8,9 @@ class Parser(object):
 
 
     def __init__(self, tokens):
-        self.parsed = ''
-        self.cur_token = self.tokens.next()
         self.index = len(tokens)
         self.tokens = iter(tokens)
+        self.cur_token = self.tokens.next()
 
     ############### Utility Functions ###############
 
@@ -43,7 +42,7 @@ class Parser(object):
 
     def system_goal(self):
         """
-        Expanding
+        Expanding Rule 1:
         System Goal -> Program $
         """
         if self.t_type() == 'MP_PROGRAM':
@@ -54,7 +53,7 @@ class Parser(object):
 
     def program(self):
         """
-        Expanding
+        Expanding Rule 2:
         Program -> ProgramHeading ";" Block "."
         """
         if self.t_type() == 'MP_PROGRAM':
@@ -67,7 +66,7 @@ class Parser(object):
 
     def program_heading(self):
         """
-        Expanding
+        Expanding Rule 3:
         "program" Identifier
         """
         if self.t_type() == 'MP_PROGRAM':
@@ -76,16 +75,9 @@ class Parser(object):
         else:
             self.error()
 
-    def program_identifier(self):
-        """
-        Expanding
-        ProgramIdentifier -> Identifier
-        """
-        pass
-
     def block(self):
         """
-        Expanding
+        Expanding Rule 4:
         Block -> VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart
         """
         if self.t_type() == ('MP_VAR' or 'MP_PROCEDURE' or 'MP_BEGIN' or 'MP_FUNCTION'):
@@ -97,7 +89,7 @@ class Parser(object):
 
     def variable_declaration_part(self):
         """
-        Expanding
+        Expanding Rules 5, 6:
         VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail
                                 -> e
         """
@@ -118,7 +110,7 @@ class Parser(object):
 
     def variable_declaration_tail(self):
         """
-        Expanding
+        Expanding Rules 7, 8:
         VariableDeclarationTail -> VariableDeclaration ";" VariableDeclarationTail
                                 -> e
         """
@@ -132,13 +124,71 @@ class Parser(object):
             self.error()
 
     def variable_declaration(self):
-        return
+        """
+        Expanding Rule 9:
+        VariableDeclaration -> IdentifierList ":" Type
+        """
+        if self.t_type() == 'MP_IDENTIFIER':
+            self.identifier_list()
+            self.match(';')
+            self.type()
+        else:
+            self.error()
+
+    def type(self):
+        """
+        Expanding Rules 10, 11:
+        Type -> "Integer"
+             -> "Float"
+        """
+        if self.t_type() == 'MP_FLOAT':
+            self.match('float')
+        elif self.t_type() == 'MP_INTEGER':
+            self.match('integer')
+        else:
+            self.error()
 
     def procedure_function_declaration_part(self):
-        return
+        """
+        Expanding Rules 12, 13, 14:
+        ProcedureAndFunctionDeclarationPart -> ProcedureDeclaration ProcedureAndFunctionDeclarationPart
+                                            -> FunctionDeclaration ProcedureAndFunctionDeclarationPart
+                                            -> epsilon
+        """
+        if self.t_type() == 'MP_PROCEDURE':
+            self.procedure_declaration()
+            self.procedure_and_function_declaration_part()
+        elif self.t_type() == 'MP_FUNCTION':
+            self.function_declaration()
+            self.procedure_and_function_declaration_part()
+        elif self.t_type() == 'MP_BEGIN':
+            self.epsilon()
+        else:
+            self.error()
+
+    def procedure_declaration(self):
+        """
+        Expanding Rule 15:
+        ProcedureDeclaration -> ProcedureHeading ";" Block ";"
+        """
+        if self.t_type() == 'MP_PROCEDURE':
+            self.procedure_heading()
+            self.match(';')
+            self.block()
+            self.match(';')
+        else:
+            self.error()
 
     def statement_part(self):
         return
+
+
+    def program_identifier(self):
+        """
+        Expanding Rule 56:
+        ProgramIdentifier -> Identifier
+        """
+        pass
 
     def identifier(self):
         pass
