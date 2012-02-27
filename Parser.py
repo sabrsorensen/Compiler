@@ -251,11 +251,131 @@ class Parser(object):
         else:
             self.error()
 
+    def formal_parameter_section(self):
+        """
+        Expanding Rules 23, 24:
+        FormalParameterSection -> ValueParameterSection
+                               -> VariableParameterSection
+        """
+        if self.t_type() == 'MP_IDENTIFIER':
+            self.value_parameter_section()
+        elif self.t_type() == 'MP_VAR':
+            self.variable_parameter_section()
+        else:
+            self.error()
+
+    def value_parameter_section(self):
+        """
+        Expanding Rule 25:
+        ValueParameterSection -> IdentifierList ":" Type
+        """
+        if self.t_type() == 'MP_IDENTIFIER':
+            self.identifier_list()
+            self.match(':')
+            self.type()
+        else:
+            self.error()
+
+
+    def variable_parameter_section(self):
+        """
+        Expanding Rule 26:
+        VariableParameterSection -> "var" IdentifierList ":" Type
+        """
+        if self.t_type() == 'MP_VAR':
+            self.identifier_list()
+            self.match(':')
+            self.type()
+        else:
+            self.error()
 
 
     def statement_part(self):
-        return
+        """
+        Expanding Rule 27:
+        StatementPart -> CompoundStatement
+        """
+        if self.t_type() == 'MP_BEGIN':
+            self.compound_statement()
+        else:
+            self.error()
 
+
+    def compound_statement(self):
+        """
+        Expanding Rule 28:
+        CompoundStatement -> "begin" StatementSequence "end"
+        """
+        if self.t_type() == 'MP_BEGIN':
+            self.match('begin')
+            self.statement_sequence()
+            self.match('end')
+        else:
+            self.error()
+
+    def statement_sequence(self):
+        """
+        Expanding Rule 29:
+        StatementSequence -> Statement StatementTail
+        """
+        if self.t_type() == ('MP_BEGIN' or 'MP_END' or 'MP_READ'
+                             or 'MP_WRITE' or 'MP_IF' or 'MP_WHILE'
+                             or 'MP_REPEAT' or 'MP_FOR' or 'MP_IDENTIFIER'):
+            self.statement()
+            self.statement_tail()
+        else:
+            self.error()
+
+    def statement_tail(self):
+        """
+        Expanding Rules 30, 31 :
+        StatementTail -> ";" Statement StatementTail
+                      -> epsilon
+        """
+        if self.t_type() == 'MP_SCOLON':
+            self.match(';')
+            self.statement()
+            self.statement_tail()
+        elif self.t_type() == ('MP_END' or 'MP_UNTIL'):
+            self.epsilon()
+        else:
+            self.error()
+    def statement(self):
+        """
+        Expanding Rule 32 - 41 :
+        Statement -> EmptyStatement
+                  -> CompoundStatement
+                  -> ReadStatement
+                  -> WriteStatement
+                  -> AssignmentStatement
+                  -> IfStatement
+                  -> WhileStatement
+                  > RepeatStatement
+                  -> ForStatement
+                  -> ProcedureStatement
+        """
+        if self.t_type() == '':
+            self.empty_statement()
+        elif self.t_type() == 'MP_BEGIN':
+            self.compound_statement()
+        elif self.t_type() == 'MP_READ':
+            self.read_statement()
+        elif self.t_type() == 'MP_WRITE':
+            self.write_statement()
+        elif self.t_type() == 'MP_IDENTIFIER':
+            self.assignment_statement()
+        elif self.t_type() == 'MP_IF':
+            self.if_statement()
+        elif self.t_type() == 'MP_WHILE':
+            self.while_statement()
+        elif self.t_type() == 'MP_REPEAT':
+            self.repeat_statement()
+        elif self.t_type() == 'MP_FOR':
+            self.for_statement()
+        elif self.t_type() == 'MP_IDENTIFIER': # need to resolve ambiguity
+            self.procedure_statement()
+        else:
+            self.error()
 
     def program_identifier(self):
         """
@@ -267,4 +387,18 @@ class Parser(object):
     def identifier(self):
         pass
 
+
+
+
+    def fun_template(self):
+        """
+        Expanding Rule :
+
+        """
+        if self.t_type() == '':
+            pass
+        elif self.t_type() == '':
+            pass
+        else:
+            self.error()
 
