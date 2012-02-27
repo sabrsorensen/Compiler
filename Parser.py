@@ -149,7 +149,7 @@ class Parser(object):
         else:
             self.error()
 
-    def procedure_function_declaration_part(self):
+    def procedure_and_function_declaration_part(self):
         """
         Expanding Rules 12, 13, 14:
         ProcedureAndFunctionDeclarationPart -> ProcedureDeclaration ProcedureAndFunctionDeclarationPart
@@ -219,6 +219,39 @@ class Parser(object):
             self.type()
         else:
             self.error()
+
+    def optional_formal_parameter_list(self):
+        """
+        Expanding Rules 19, 20:
+        OptionalFormalParameterList -> "(" FormalParameterSection FormalParameterSectionTail ")"
+                                    -> epsilon
+        """
+        if self.t_type() == 'MP_LPAREN':
+            self.match('(')
+            self.formal_parameter_section()
+            self.formal_parameter_section_tail()
+            self.match(')')
+        elif self.t_type() == ('MP_FLOAT' or 'MP_INTEGER' or 'MP_SCOLON'):
+            self.epsilon()
+        else:
+            self.error()
+
+    def formal_parameter_section_tail(self):
+        """
+        Expanding Rules 21, 22:
+        FormalParameterSectionTail -> ";" FormalParameterSection FormalParameterSectionTail
+                                   -> epsilon
+        """
+        if self.t_type() == 'MP_SCOLON':
+            self.match(';')
+            self.formal_parameter_section()
+            self.formal_parameter_section_tail()
+        elif self.t_type() == ('MP_RPAREN'):
+            self.epsilon()
+        else:
+            self.error()
+
+
 
     def statement_part(self):
         return
