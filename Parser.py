@@ -354,10 +354,10 @@ class Parser(object):
                   -> ForStatement
                   -> ProcedureStatement
         """
-        if self.t_type() == '':
+        if self.t_type() == 'MP_END':
             self.empty_statement()
-        elif self.t_type() == 'MP_BEGIN':
-            self.compound_statement()
+#        elif self.t_type() == 'MP_BEGIN':
+#            self.compound_statement()
         elif self.t_type() == 'MP_READ':
             self.read_statement()
         elif self.t_type() == 'MP_WRITE':
@@ -374,6 +374,16 @@ class Parser(object):
             self.for_statement()
         elif self.t_type() == 'MP_IDENTIFIER': # need to resolve ambiguity
             self.procedure_statement()
+        else:
+            self.error()
+
+    def empty_statement(self):
+        """
+        Expanding Rule :
+        EmptyStatement -> epsilon
+        """
+        if self.t_type() == ('MP_SCOLON' or 'MP_ELSE' or 'MP_END' or 'MP_UNTIL'):
+            self.epsilon()
         else:
             self.error()
 
