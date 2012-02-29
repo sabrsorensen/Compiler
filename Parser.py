@@ -14,9 +14,10 @@ class Parser(object):
 
     ############### Utility Functions ###############
 
-    def error(self):
+    def error(self, expected=None):
         logging.error("Couldn't match: %s in %s()" % (self.t_lexeme(),
                                                       inspect.stack()[2][3]))
+        logging.error('Expected tokens: %s' % expected)
 
     def t_type(self):
         """
@@ -379,13 +380,93 @@ class Parser(object):
 
     def empty_statement(self):
         """
-        Expanding Rule :
+        Expanding Rule 42:
         EmptyStatement -> epsilon
         """
         if self.t_type() == ('MP_SCOLON' or 'MP_ELSE' or 'MP_END' or 'MP_UNTIL'):
             self.epsilon()
         else:
             self.error()
+
+    def read_statement(self):
+        """
+        Expanding Rule 43:
+        ReadStatement -> "read" "(" ReadParameter ReadParameterTail ")"
+        """
+        if self.t_type() == 'MP_READ':
+            self.match('read')
+            self.match('(')
+            self.read_parameter()
+            self.read_parameter_tail()
+            self.match(')')
+        else:
+            self.error()
+
+    def read_parameter_tail(self):
+        """
+        Expanding Rules 44, 45 :
+        ReadParameterTail -> "," ReadParameter ReadParameterTail
+                          -> epsilon
+        """
+        if self.t_type() == 'MP_COMMA':
+            self.match(',')
+            self.read_parameter()
+            self.read_parameter_tail()
+        elif self.t_type() == 'MP_RPAREN':
+            self.epsilon()
+        else:
+            self.error()
+
+    def read_parameter(self):
+        """
+        Expanding Rule 46 :
+        ReadParameter -> VariableIdentifier
+        """
+        if self.t_type() == 'MP_IDENTIFIER':
+            self.variable_identifier()
+        else:
+            self.error()
+
+    def write_statement(self):
+        """
+        Expanding Rule 47:
+        WriteStatement -> "write" "(" WriteParameter WriteParameterTail ")"
+        """
+        if self.t_type() == 'MP_WRITE':
+            self.match('write')
+            self.match('(')
+            self.write_parameter()
+            self.write_parameter_tail()
+            self.match(')')
+        else:
+            self.error()
+
+    def write_parameter_tail(self):
+        """
+        Expanding Rules 48, 49 :
+        WriteParameterTail -> "," WriteParameter WriteParameterTail
+                           -> epsilon
+        """
+        if self.t_type() == 'MP_COMMA':
+            self.match(',')
+            self.write_parameter()
+            self.write_parameter_tail()
+        elif self.t_type() == 'MP_RPAREN':
+            self.epsilon()
+        else:
+            self.error()
+
+
+    def write_parameter(self):
+        """
+        Expanding Rule 50 :
+        WriteParameter -> OrdinalExpression
+        """
+        if self.t_type() == ('MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'
+                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER'):
+            self.ordinal_expression()
+        else:
+            self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
 
     def program_identifier(self):
         """
