@@ -357,6 +357,7 @@ class Parser(object):
         """
         if self.t_type() == 'MP_END':
             self.empty_statement()
+        #TODO resolve conflict
 #        elif self.t_type() == 'MP_BEGIN':
 #            self.compound_statement()
         elif self.t_type() == 'MP_READ':
@@ -468,6 +469,60 @@ class Parser(object):
         else:
             self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
 
+    def assignment_statement(self):
+        """
+        Expanding Rules 51, 52:
+        AssignmentStatement -> VariableIdentifier ":=" Expression
+                            -> FunctionIdentifier ":=" Expression
+        """
+        # the conflict here should be considered resolved, because in the end
+        #both those guys lead to identifier
+        if self.t_type() == 'MP_IDENTIFIER':
+            self.variable_identifier()
+        else:
+            self.error('MP_IDENTIFIER')
+
+
+    def if_statement(self):
+        """
+        Expanding Rule 53:
+        IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart
+        """
+        if self.t_type() == 'MP_IF':
+            self.match('if')
+            self.boolean_expression()
+            self.match('then')
+            self.statement()
+            self.optional_else_part()
+        else:
+            self.error('MP_IF')
+
+    def optional_else_part(self):
+        """
+        Expanding Rule 54:
+        OptionalElsePart -> "else" Statement
+        """
+        if self.t_type() == 'MP_ELSE':
+            self.match('else')
+            self.statement()
+        elif self.t_type() == ('MP_SCOLON' or 'MP_END' or 'MP_UNTIL'):
+            self.epsilon()
+        else:
+            self.error(['MP_ELSE', 'MP_SCOLON', 'MP_END', 'MP_UNTIL'])
+
+    def repeat_statement(self):
+        """
+        Expanding Rule 56:
+        RepeatStatement -> "repeat" StatementSequence "until" BooleanExpression
+        """
+        if self.t_type() == 'MP_REPEAT':
+            self.match('repeat')
+            self.statement_sequence()
+            self.match('until')
+            self.boolean_expression()
+        else:
+            self.error('MP_REPEAT')
+            
     def program_identifier(self):
         """
         Expanding Rule 56:
