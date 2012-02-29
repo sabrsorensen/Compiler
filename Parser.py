@@ -96,6 +96,7 @@ class Parser(object):
                                 -> e
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            self.match('var')
             self.variable_declaration()
             self.match(';')
             self.variable_declaration_tail()
