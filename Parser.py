@@ -479,6 +479,8 @@ class Parser(object):
         #both those guys lead to identifier
         if self.t_type() == 'MP_IDENTIFIER':
             self.variable_identifier()
+            self.match(':=')
+            self.expression()
         else:
             self.error('MP_IDENTIFIER')
 
@@ -522,7 +524,124 @@ class Parser(object):
             self.boolean_expression()
         else:
             self.error('MP_REPEAT')
-            
+
+    def while_statement(self):
+        """
+        Expanding Rule 57:
+        WhileStatement -> "while" BooleanExpression "do" Statement
+        """
+        if self.t_type() == 'MP_WHILE':
+            self.match('while')
+            self.boolean_expression()
+            self.match('do')
+            self.statement()
+        else:
+            self.error('MP_WHILE')
+
+
+    def for_statement(self):
+        """
+        Expanding Rule 58:
+        ForStatement -> "for" ControlVariable ":=" InitialValue StepValue FinalValue "do" Statement
+        """
+        if self.t_type() == 'MP_FOR':
+            self.match('for')
+            self.control_variable()
+            self.match(':=')
+            self.initial_value()
+            self.step_value()
+            self.final_value()
+            self.match('do')
+            self.statement()
+        else:
+            self.error('MP_FOR')
+
+    def control_variable(self):
+        """
+        Expanding Rule 59:
+        ControlVariable -> VariableIdentifier
+        """
+        if self.t_type() == 'MP_IDENTIFIER':
+            self.variable_identifier()
+        else:
+            self.error('MP_IDENTIFIER')
+
+    def initial_value(self):
+        """
+        Expanding Rule 60:
+        InitialValue -> OrdinalExpression
+        """
+        if self.t_type() == ('MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'
+                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER'):
+            self.ordinal_expression()
+        else:
+            self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
+
+    def step_value(self):
+        """
+        Expanding Rules 61, 62 :
+        StepValue -> "to"
+                  -> "downto"
+        """
+        if self.t_type() == 'MP_TO':
+            self.match('to')
+        elif self.t_type() == 'MP_DOWNTO':
+            self.match('downto')
+        else:
+            self.error(['MP_TO', 'MP_DOWNTO'])
+
+    def final_value(self):
+        """
+        Expanding Rule 63:
+        FinalValue -> OrdinalExpression
+        """
+        if self.t_type() == ('MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'
+                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER'):
+            self.ordinal_expression()
+        else:
+            self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
+
+
+    def procedure_statement(self):
+        """
+        Expanding Rule 64:
+        ProcedureStatement -> ProcedureIdentifier OptionalActualParameterList
+        """
+        if self.t_type() == 'MP_IDENTIFIER':
+            self.procedure_identifier()
+            self.optional_actual_parameter_list()
+        else:
+            self.error('MP_IDENTIFIER')
+
+    def optional_actual_parameter_list(self):
+        """
+        Expanding Rules 65, 66 :
+        OptionalActualParameterList -> "(" ActualParameter ActualParameterTail ")"
+        """
+        if self.t_type() == 'MP_LPAREN':
+            self.match('(')
+            self.actual_parameter()
+            self.actual_parameter_tail()
+            self.match(')')
+        elif self.t_type() == ('MP_TIMES' or 'MP_RPAREN' or 'MP_PLUS'
+                                or 'MP_COMMA' or 'MP_MINUS' or 'MP_SCOLON'
+                                or 'MP_LTHAN' or 'MP_LEQUAL' or 'MP_GTHAN'
+                                or 'MP_GEQUAL' or 'MP_EQUAL' or 'MP_NEQUAL'
+                                or 'MP_AND' or 'MP_DIV' or 'MP_DO'
+                                or 'MP_DOWNTO' or 'MP_ELSE' or 'MP_END'
+                                or 'MP_MOD' or 'MP_OR' or 'MP_THEN'
+                                or 'MP_TO' or 'MP_UNTIL'):
+            self.epsilon()
+        else:
+            self.error(['MP_LPAREN', 'MP_TIMES', 'MP_RPAREN', 'MP_PLUS',
+                        'MP_COMMA', 'MP_MINUS', 'MP_SCOLON',
+                        'MP_LTHAN', 'MP_LEQUAL', 'MP_GTHAN',
+                        'MP_GEQUAL', 'MP_EQUAL', 'MP_NEQUAL',
+                        'MP_AND', 'MP_DIV', 'MP_DO',
+                        'MP_DOWNTO', 'MP_ELSE', 'MP_END',
+                        'MP_MOD', 'MP_OR', 'MP_THEN',
+                        'MP_TO', 'MP_UNTIL'])
+
     def program_identifier(self):
         """
         Expanding Rule 56:
