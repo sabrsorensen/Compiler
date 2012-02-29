@@ -642,6 +642,45 @@ class Parser(object):
                         'MP_MOD', 'MP_OR', 'MP_THEN',
                         'MP_TO', 'MP_UNTIL'])
 
+    def actual_parameter_tail(self):
+        """
+        Expanding Rules 67, 68:
+        ActualParameterTail -> "," ActualParameter ActualParameterTail
+                            -> epsilon
+        """
+        if self.t_type() == 'MP_COMMA':
+            self.match(',')
+            self.actual_parameter()
+            self.actual_parameter_tail()
+        elif self.t_type() == 'MP_RPAREN':
+            self.epsilon()
+        else:
+            self.error(['MP_COMMA', 'MP_RPAREN'])
+
+    def actual_parameter(self):
+        """
+        Expanding Rule 69:
+        ActualParameter -> OrdinalExpression
+        """
+        if self.t_type() == ('MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'
+                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER'):
+            self.ordinal_expression()
+        else:
+            self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
+
+    def expression(self):
+        """
+        Expanding Rule 70 :
+        Expression -> SimpleExpression OptionalRelationalPart
+        """
+        if self.t_type() == ('MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'
+                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER'):
+            self.simple_expression()
+            self.optional_relational_part()
+        else:
+            self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
+
+
     def program_identifier(self):
         """
         Expanding Rule 56:
