@@ -51,7 +51,7 @@ class Parser(object):
             self.program()
             self.match('MP_EOF') # ?
         else:
-            self.error()
+            self.error('MP_PROGRAM')
 
     def program(self):
         """
@@ -64,7 +64,7 @@ class Parser(object):
             self.block()
             self.match('.')
         else:
-            self.error()
+            self.error(['MP_PROGRAM', 'MP_SCOLON'])
 
     def program_heading(self):
         """
@@ -75,7 +75,7 @@ class Parser(object):
             self.match('program')
             self.program_identifier()
         else:
-            self.error()
+            self.error('MP_PROGRAM')
 
     def block(self):
         """
@@ -84,10 +84,10 @@ class Parser(object):
         """
         if self.t_type() == ('MP_VAR' or 'MP_PROCEDURE' or 'MP_BEGIN' or 'MP_FUNCTION'):
             self.variable_declaration_part()
-            self.procedure_function_declaration_part()
+            self.procedure_and_function_declaration_part()
             self.statement_part()
         else:
-            self.error()
+            self.error(['MP_VAR', 'MP_PROCEDURE', 'MP_BEGIN', 'MP_FUNCTION'])
 
     def variable_declaration_part(self):
         """
@@ -102,7 +102,7 @@ class Parser(object):
         elif self.t_type() == ('MP_BEGIN' or 'MP_FUNCTION' or 'MP_PROCEDURE'):
             self.epsilon()
         else:
-            self.error()
+            self.error(['MP_IDENTIFIER', 'MP_BEGIN', 'MP_FUNCTION', 'MP_PROCEDURE'])
 
     def epsilon(self):
         """
@@ -123,7 +123,7 @@ class Parser(object):
         elif self.t_type() == ('MP_BEGIN' or 'MP_FUNCTION' or 'MP_PROCEDURE'):
             self.epsilon()
         else:
-            self.error()
+            self.error(['MP_IDENTIFIER', 'MP_BEGIN', 'MP_FUNCTION', 'MP_PRODCEDURE'])
 
     def variable_declaration(self):
         """
@@ -135,7 +135,7 @@ class Parser(object):
             self.match(';')
             self.type()
         else:
-            self.error()
+            self.error('MP_IDENTIFIER')
 
     def type(self):
         """
@@ -148,7 +148,7 @@ class Parser(object):
         elif self.t_type() == 'MP_INTEGER':
             self.match('integer')
         else:
-            self.error()
+            self.error(['MP_FLOAT', 'MP_INTEGER'])
 
     def procedure_and_function_declaration_part(self):
         """
@@ -166,7 +166,7 @@ class Parser(object):
         elif self.t_type() == 'MP_BEGIN':
             self.epsilon()
         else:
-            self.error()
+            self.error(['MP_PROCEDURE', 'MP_FUNCTION', 'MP_BEGIN'])
 
     def procedure_declaration(self):
         """
@@ -179,7 +179,7 @@ class Parser(object):
             self.block()
             self.match(';')
         else:
-            self.error()
+            self.error('MP_PROCEDURE')
 
 
     def function_declaration(self):
@@ -193,7 +193,7 @@ class Parser(object):
             self.block()
             self.match(';')
         else:
-            self.error()
+            self.error('MP_FUNCTION')
 
     def procedure_heading(self):
         """
@@ -205,7 +205,7 @@ class Parser(object):
             self.procedure_identifier()
             self.optional_formal_parameter_list()
         else:
-            self.error()
+            self.error('MP_PROCEDURE')
 
     def function_heading(self):
         """
@@ -219,7 +219,7 @@ class Parser(object):
             self.match(':')
             self.type()
         else:
-            self.error()
+            self.error('MP_FUNCTION')
 
     def optional_formal_parameter_list(self):
         """
@@ -235,7 +235,7 @@ class Parser(object):
         elif self.t_type() == ('MP_FLOAT' or 'MP_INTEGER' or 'MP_SCOLON'):
             self.epsilon()
         else:
-            self.error()
+            self.error(['MP_LPAREN', 'MP_FLOAT', 'MP_INTEGER', 'MP_SCOLON'])
 
     def formal_parameter_section_tail(self):
         """
@@ -250,7 +250,7 @@ class Parser(object):
         elif self.t_type() == ('MP_RPAREN'):
             self.epsilon()
         else:
-            self.error()
+            self.error(['MP_SCOLON', 'MP_RPAREN'])
 
     def formal_parameter_section(self):
         """
@@ -263,7 +263,7 @@ class Parser(object):
         elif self.t_type() == 'MP_VAR':
             self.variable_parameter_section()
         else:
-            self.error()
+            self.error(['MP_IDENTIFIER', 'MP_VAR'])
 
     def value_parameter_section(self):
         """
@@ -275,7 +275,7 @@ class Parser(object):
             self.match(':')
             self.type()
         else:
-            self.error()
+            self.error('MP_IDENTIFIER')
 
 
     def variable_parameter_section(self):
@@ -288,7 +288,7 @@ class Parser(object):
             self.match(':')
             self.type()
         else:
-            self.error()
+            self.error('MP_VAR')
 
 
     def statement_part(self):
@@ -299,7 +299,7 @@ class Parser(object):
         if self.t_type() == 'MP_BEGIN':
             self.compound_statement()
         else:
-            self.error()
+            self.error('MP_BEGIN')
 
 
     def compound_statement(self):
@@ -312,7 +312,7 @@ class Parser(object):
             self.statement_sequence()
             self.match('end')
         else:
-            self.error()
+            self.error('MP_BEGIN')
 
     def statement_sequence(self):
         """
@@ -325,7 +325,9 @@ class Parser(object):
             self.statement()
             self.statement_tail()
         else:
-            self.error()
+            self.error(['MP_BEGIN', 'MP_END', 'MP_READ',
+                       'MP_WRITE', 'MP_IF', 'MP_WHILE',
+                       'MP_REPEAT', 'MP_FOR', 'MP_IDENTIFIER'])
 
     def statement_tail(self):
         """
@@ -340,7 +342,7 @@ class Parser(object):
         elif self.t_type() == ('MP_END' or 'MP_UNTIL'):
             self.epsilon()
         else:
-            self.error()
+            self.error(['MP_SCOLON', 'MP_END', 'MP_UNTIL'])
     def statement(self):
         """
         Expanding Rule 32 - 41 :
