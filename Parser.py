@@ -1,8 +1,8 @@
 import inspect
-import sys
-import re
+#import sys
+#import re
 import logging
-from Scanner import Token
+#from Scanner import Token
 
 class Parser(object):
 
@@ -15,8 +15,8 @@ class Parser(object):
     ############### Utility Functions ###############
 
     def error(self, expected=None):
-        logging.error("Couldn't match: %s in %s()" % (self.t_lexeme(),
-                                                      inspect.stack()[2][3]))
+        logging.error("Couldn't match: \"%s\" in %s(). Received %s" % (self.t_lexeme(),
+                                                      inspect.stack()[1][3],self.t_type()))
         logging.error('Expected tokens: %s' % expected)
 
     def t_type(self):
@@ -35,7 +35,7 @@ class Parser(object):
 
     def match(self, lexeme):
         self.cur_token = self.tokens.next()
-        logging.info("Matched '%s'" % lexeme)
+        logging.info("Matched '%s' in %s()" % (lexeme, inspect.stack()[1][3]))
         return False
 
 
@@ -82,7 +82,7 @@ class Parser(object):
         Expanding Rule 4:
         Block -> VariableDeclarationPart ProcedureAndFunctionDeclarationPart StatementPart
         """
-        if self.t_type() == ('MP_VAR' or 'MP_PROCEDURE' or 'MP_BEGIN' or 'MP_FUNCTION'):
+        if self.t_type() == 'MP_VAR' or 'MP_PROCEDURE' or 'MP_BEGIN' or 'MP_FUNCTION':
             self.variable_declaration_part()
             self.procedure_and_function_declaration_part()
             self.statement_part()
@@ -100,7 +100,7 @@ class Parser(object):
             self.variable_declaration()
             self.match(';')
             self.variable_declaration_tail()
-        elif self.t_type() == ('MP_BEGIN' or 'MP_FUNCTION' or 'MP_PROCEDURE'):
+        elif self.t_type() == 'MP_BEGIN' or 'MP_FUNCTION' or 'MP_PROCEDURE':
             self.epsilon()
         else:
             self.error(['MP_IDENTIFIER', 'MP_BEGIN', 'MP_FUNCTION', 'MP_PROCEDURE'])
@@ -121,7 +121,7 @@ class Parser(object):
             self.variable_declaration()
             self.match(';')
             self.variable_declaration_tail()
-        elif self.t_type() == ('MP_BEGIN' or 'MP_FUNCTION' or 'MP_PROCEDURE'):
+        elif self.t_type() == 'MP_BEGIN' or 'MP_FUNCTION' or 'MP_PROCEDURE':
             self.epsilon()
         else:
             self.error(['MP_IDENTIFIER', 'MP_BEGIN', 'MP_FUNCTION', 'MP_PRODCEDURE'])
@@ -233,7 +233,7 @@ class Parser(object):
             self.formal_parameter_section()
             self.formal_parameter_section_tail()
             self.match(')')
-        elif self.t_type() == ('MP_FLOAT' or 'MP_INTEGER' or 'MP_SCOLON'):
+        elif self.t_type() == 'MP_FLOAT' or 'MP_INTEGER' or 'MP_SCOLON':
             self.epsilon()
         else:
             self.error(['MP_LPAREN', 'MP_FLOAT', 'MP_INTEGER', 'MP_SCOLON'])
@@ -248,7 +248,7 @@ class Parser(object):
             self.match(';')
             self.formal_parameter_section()
             self.formal_parameter_section_tail()
-        elif self.t_type() == ('MP_RPAREN'):
+        elif self.t_type() == 'MP_RPAREN':
             self.epsilon()
         else:
             self.error(['MP_SCOLON', 'MP_RPAREN'])
@@ -320,9 +320,9 @@ class Parser(object):
         Expanding Rule 29:
         StatementSequence -> Statement StatementTail
         """
-        if self.t_type() == ('MP_BEGIN' or 'MP_END' or 'MP_READ'
-                             or 'MP_WRITE' or 'MP_IF' or 'MP_WHILE'
-                             or 'MP_REPEAT' or 'MP_FOR' or 'MP_IDENTIFIER'):
+        if self.t_type() == 'MP_BEGIN' or 'MP_END' or 'MP_READ'\
+                             or 'MP_WRITE' or 'MP_IF' or 'MP_WHILE'\
+                             or 'MP_REPEAT' or 'MP_FOR' or 'MP_IDENTIFIER':
             self.statement()
             self.statement_tail()
         else:
@@ -340,7 +340,7 @@ class Parser(object):
             self.match(';')
             self.statement()
             self.statement_tail()
-        elif self.t_type() == ('MP_END' or 'MP_UNTIL'):
+        elif self.t_type() == 'MP_END' or 'MP_UNTIL':
             self.epsilon()
         else:
             self.error(['MP_SCOLON', 'MP_END', 'MP_UNTIL'])
@@ -387,7 +387,7 @@ class Parser(object):
         Expanding Rule 42:
         EmptyStatement -> epsilon
         """
-        if self.t_type() == ('MP_SCOLON' or 'MP_ELSE' or 'MP_END' or 'MP_UNTIL'):
+        if self.t_type() == 'MP_SCOLON' or 'MP_ELSE' or 'MP_END' or 'MP_UNTIL':
             self.epsilon()
         else:
             self.error()
@@ -466,8 +466,8 @@ class Parser(object):
         Expanding Rule 50 :
         WriteParameter -> OrdinalExpression
         """
-        if self.t_type() == ('MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'
-                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER'):
+        if self.t_type() == 'MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'\
+                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER':
             self.ordinal_expression()
         else:
             self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
@@ -510,7 +510,7 @@ class Parser(object):
         if self.t_type() == 'MP_ELSE':
             self.match('else')
             self.statement()
-        elif self.t_type() == ('MP_SCOLON' or 'MP_END' or 'MP_UNTIL'):
+        elif self.t_type() == 'MP_SCOLON' or 'MP_END' or 'MP_UNTIL':
             self.epsilon()
         else:
             self.error(['MP_ELSE', 'MP_SCOLON', 'MP_END', 'MP_UNTIL'])
@@ -574,8 +574,8 @@ class Parser(object):
         Expanding Rule 60:
         InitialValue -> OrdinalExpression
         """
-        if self.t_type() == ('MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'
-                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER'):
+        if self.t_type() == 'MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'\
+                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER':
             self.ordinal_expression()
         else:
             self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
@@ -598,8 +598,8 @@ class Parser(object):
         Expanding Rule 63:
         FinalValue -> OrdinalExpression
         """
-        if self.t_type() == ('MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'
-                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER'):
+        if self.t_type() == 'MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'\
+                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER':
             self.ordinal_expression()
         else:
             self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
@@ -626,14 +626,14 @@ class Parser(object):
             self.actual_parameter()
             self.actual_parameter_tail()
             self.match(')')
-        elif self.t_type() == ('MP_TIMES' or 'MP_RPAREN' or 'MP_PLUS'
-                                or 'MP_COMMA' or 'MP_MINUS' or 'MP_SCOLON'
-                                or 'MP_LTHAN' or 'MP_LEQUAL' or 'MP_GTHAN'
-                                or 'MP_GEQUAL' or 'MP_EQUAL' or 'MP_NEQUAL'
-                                or 'MP_AND' or 'MP_DIV' or 'MP_DO'
-                                or 'MP_DOWNTO' or 'MP_ELSE' or 'MP_END'
-                                or 'MP_MOD' or 'MP_OR' or 'MP_THEN'
-                                or 'MP_TO' or 'MP_UNTIL'):
+        elif self.t_type() == 'MP_TIMES' or 'MP_RPAREN' or 'MP_PLUS'\
+                                or 'MP_COMMA' or 'MP_MINUS' or 'MP_SCOLON'\
+                                or 'MP_LTHAN' or 'MP_LEQUAL' or 'MP_GTHAN'\
+                                or 'MP_GEQUAL' or 'MP_EQUAL' or 'MP_NEQUAL'\
+                                or 'MP_AND' or 'MP_DIV' or 'MP_DO'\
+                                or 'MP_DOWNTO' or 'MP_ELSE' or 'MP_END'\
+                                or 'MP_MOD' or 'MP_OR' or 'MP_THEN'\
+                                or 'MP_TO' or 'MP_UNTIL':
             self.epsilon()
         else:
             self.error(['MP_LPAREN', 'MP_TIMES', 'MP_RPAREN', 'MP_PLUS',
@@ -665,8 +665,8 @@ class Parser(object):
         Expanding Rule 69:
         ActualParameter -> OrdinalExpression
         """
-        if self.t_type() == ('MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'
-                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER'):
+        if self.t_type() == 'MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'\
+                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER':
             self.ordinal_expression()
         else:
             self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
@@ -676,8 +676,8 @@ class Parser(object):
         Expanding Rule 70 :
         Expression -> SimpleExpression OptionalRelationalPart
         """
-        if self.t_type() == ('MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'
-                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER'):
+        if self.t_type() == 'MP_PLUS' or 'MP_MINUS' or 'MP_INTEGER'\
+                             or 'MP_NOT' or 'MP_LPAREN' or 'MP_IDENTIFIER':
             self.simple_expression()
             self.optional_relational_part()
         else:
@@ -688,14 +688,14 @@ class Parser(object):
         OptionalRelationalPart -> RelationalOperator SimpleExpression
                                -> epsilon
         """
-        if self.t_type() == ('MP_LTHAN' or 'MP_LEQUAL' or 'MP_GTHAN'
-                             or 'MP_GEQUAL' or 'MP_EQUAL' or 'MP_NEQUAL'):
+        if self.t_type() == 'MP_LTHAN' or 'MP_LEQUAL' or 'MP_GTHAN'\
+                             or 'MP_GEQUAL' or 'MP_EQUAL' or 'MP_NEQUAL':
             self.relational_operator()
             self.simple_expression()
-        elif self.t_type() == ('MP_RPAREN' or 'MP_COMMA' or 'MP_SCOLON'
-                               or 'MP_DO' or 'MP_DOWNTO' or 'MP_ELSE'
-                               or 'MP_END' or 'MP_THEN' or 'MP_TO'
-                               or 'MP_UNTIL'):
+        elif self.t_type() == 'MP_RPAREN' or 'MP_COMMA' or 'MP_SCOLON'\
+                               or 'MP_DO' or 'MP_DOWNTO' or 'MP_ELSE'\
+                               or 'MP_END' or 'MP_THEN' or 'MP_TO'\
+                               or 'MP_UNTIL':
             self.epsilon()
         else:
             self.error(['MP_LTHAN', 'MP_LEQUAL', 'MP_GTHAN',
@@ -736,8 +736,8 @@ class Parser(object):
         Expanding Rule 79 :
         SimpleExpression -> OptionalSign Term TermTail
         """
-        if self.t_type() == ('MP_LPAREN' or 'MP_PLUS' or 'MP_MINUS'
-                             or 'MP_IDENTIFIER' or 'MP_INTEGER_LIT' or 'MP_NOT'):
+        if self.t_type() == 'MP_LPAREN' or 'MP_PLUS' or 'MP_MINUS'\
+                             or 'MP_IDENTIFIER' or 'MP_INTEGER_LIT' or 'MP_NOT':
             self.optional_sign()
             self.term()
             self.term_tail()
@@ -751,15 +751,15 @@ class Parser(object):
         TermTail -> AddingOperator Term TermTail
         TermTail -> ?
         """
-        if self.t_type() == ('MP_PAREN' or 'MP_COMMA' or 'MP_SCOLON'
-                             or 'MP_LTHAN' or 'MP_LEQUAL' or 'MP_NEQUAL'
-                             or 'MP_EQUAL' or 'MP_GTHAN' or 'MP_GEQUAL'
-                             or 'MP_DO' or 'MP_DOWNTO' or 'MP_ELSE'
-                             or 'MP_TO' or 'MP_UNTIL'):
+        if self.t_type() == 'MP_PAREN' or 'MP_COMMA' or 'MP_SCOLON'\
+                             or 'MP_LTHAN' or 'MP_LEQUAL' or 'MP_NEQUAL'\
+                             or 'MP_EQUAL' or 'MP_GTHAN' or 'MP_GEQUAL'\
+                             or 'MP_DO' or 'MP_DOWNTO' or 'MP_ELSE'\
+                             or 'MP_TO' or 'MP_UNTIL':
             self.optional_sign()
             self.term()
             self.term_tail()
-        elif self.t_type() == ('MP_PLUS' or 'MP_MINUS'):
+        elif self.t_type() == 'MP_PLUS' or 'MP_MINUS':
             self.epsilon()
         else:
             self.error(['MP_PAREN', 'MP_COMMA', 'MP_SCOLON',
@@ -780,7 +780,7 @@ class Parser(object):
             self.match('+')
         elif self.t_type() == 'MP_MINUS':
             self.match('-')
-        elif self.t_type() == ('MP_IDENTIFER' or 'MP_INTEGER_LIT' or 'MP_NOT'):
+        elif self.t_type() == 'MP_IDENTIFER' or 'MP_INTEGER_LIT' or 'MP_NOT':
             self.epsilon()
         else:
             self.error(['MP_PLUS','MP_MINUS','MP_IDENTIFIER',
@@ -807,8 +807,8 @@ class Parser(object):
         Expanding Rule 88:
         Term -> Factor FactorTail
         """
-        if self.t_type() == ('MP_LPAREN' or 'MP_IDENTIFIER' or 'MP_INTEGER_LIT'
-                             or 'MP_NOT'):
+        if self.t_type() == 'MP_LPAREN' or 'MP_IDENTIFIER' or 'MP_INTEGER_LIT'\
+                             or 'MP_NOT':
             self.factor()
             self.factor_tail()
         else:
@@ -821,18 +821,18 @@ class Parser(object):
         FactorTail -> MultiplyingOperator Factor FactorTail
         FactorTail -> ?
         """
-        if self.t_type() == ('MP_TIMES' or 'MP_AND' or 'MP_DIV'
-                             or 'MP_MOD'):
+        if self.t_type() == 'MP_TIMES' or 'MP_AND' or 'MP_DIV'\
+                             or 'MP_MOD':
             self.multiplying_operator()
             self.factor()
             self.factor_tail()
-        elif self.t_type() == ('MP_RPAREN' or 'MP_PLUS' or 'MP_COMMA'
-                               or 'MP_MINUS' or 'MP_SCOLON' or 'MP_LTHAN'
-                               or 'MP_LEQUAL' or 'MP_NEQUAL' or 'MP_EQUAL'
-                               or 'MP_GTHAN' or 'MP_GEQUAL' or 'MP_DO'
-                               or 'MP_DOWNTO' or 'MP_ELSE' or 'MP_END'
-                               or 'MP_OR' or 'MP_THEN' or 'MP_TO'
-                               or 'MP_UNTIL'):
+        elif self.t_type() == 'MP_RPAREN' or 'MP_PLUS' or 'MP_COMMA'\
+                               or 'MP_MINUS' or 'MP_SCOLON' or 'MP_LTHAN'\
+                               or 'MP_LEQUAL' or 'MP_NEQUAL' or 'MP_EQUAL'\
+                               or 'MP_GTHAN' or 'MP_GEQUAL' or 'MP_DO'\
+                               or 'MP_DOWNTO' or 'MP_ELSE' or 'MP_END'\
+                               or 'MP_OR' or 'MP_THEN' or 'MP_TO'\
+                               or 'MP_UNTIL':
             self.epsilon()
         else:
             self.error(['MP_RPAREN', 'MP_PLUS', 'MP_COMMA',
@@ -930,8 +930,8 @@ class Parser(object):
         Expanding Rule 104:
         BooleanIdentifier -> Identifier
         """
-        if self.t_type() == ('MP_IDENTIFIER' or 'MP_PLUS' or 'MP_MINUS'
-                             or 'MP_IDENTIFIER' or 'MP_INTEGER' or 'MP_NOT'):
+        if self.t_type() == 'MP_IDENTIFIER' or 'MP_PLUS' or 'MP_MINUS'\
+                             or 'MP_IDENTIFIER' or 'MP_INTEGER' or 'MP_NOT':
             self.match(self.t_lexeme())
         else:
             self.error(['MP_IDENTIFIER', 'MP_PLUS', 'MP_MINUS',
@@ -942,8 +942,8 @@ class Parser(object):
         Expanding Rule 105:
         OrdinalExpression -> Expression
         """
-        if self.t_type() == ('MP_LPAREN' or 'MP_PLUS' or 'MP_MINUS'
-                             or 'MP_IDENTIFIER' or 'MP_INTEGER' or 'MP_NOT'):
+        if self.t_type() == 'MP_LPAREN' or 'MP_PLUS' or 'MP_MINUS'\
+                             or 'MP_IDENTIFIER' or 'MP_INTEGER' or 'MP_NOT':
             self.expression()
         else:
             self.error(['MP_LPAREN', 'MP_PLUS', 'MP_MINUS',
@@ -975,15 +975,8 @@ class Parser(object):
         else:
             self.error(['MP_COMMMA', 'MP_COLON'])
 
-    def program_identifier(self):
-        """
-        Expanding Rule 56:
-        ProgramIdentifier -> Identifier
-        """
-        pass
-
     def identifier(self):
-        pass
+        self.match(self.t_lexeme())
 
     def fun_template(self):
         """
