@@ -680,6 +680,32 @@ class Parser(object):
         else:
             self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
 
+    def simple_expression(self):
+        """
+        Expanding Rule 79 :
+        SimpleExpression -> OptionalSign Term TermTail
+        """
+        if self.t_type() == ('MP_LPAREN' or 'MP_PLUS' or 'MP_MINUS' or 'MP_IDENTIFIER' or 'MP_INTEGER_LIT' or 'MP_NOT'):
+            self.optional_sign()
+            self.term()
+            self.term_tail()
+        else:
+            self.error('MP_LPAREN', 'MP_PLUS', 'MP_MINUS', 'MP_IDENTIFIER', 'MP_INTEGER_LIT', 'MP_NOT')
+
+    def term_tail(self):
+        """
+        Expanding Rule 80,81 :
+        TermTail -> AddingOperator Term TermTail
+        TermTail -> ?
+        """
+        if self.t_type() == ('MP_PAREN' or 'MP_COMMA' or 'MP_SCOLON' or 'MP_LTHAN' or 'MP_LEQUAL' or 'MP_NEQUAL' or 'MP_EQUAL' or 'MP_GTHAN' or 'MP_GEQUAL' or 'MP_DO' or 'MP_DOWNTO' or 'MP_ELSE' or 'MP_TO' or 'MP_UNTIL'):
+            self.optional_sign()
+            self.term()
+            self.term_tail()
+        elif self.t_type() == ('MP_PLUS' or 'MP_MINUS'):
+            self.epsilon()
+        else:
+            self.error('MP_PAREN','MP_COMMA','MP_SCOLON','MP_LTHAN','MP_LEQUAL','MP_NEQUAL', 'MP_EQUAL', 'MP_GTHAN','MP_GEQUAL', 'MP_DO', 'MP_DOWNTO','MP_ELSE', 'MP_TO', 'MP_UNTIL', 'MP_PLUS','MP_MINUS')
 
     def program_identifier(self):
         """
@@ -705,4 +731,3 @@ class Parser(object):
             pass
         else:
             self.error()
-
