@@ -95,7 +95,7 @@ class Parser(object):
         VariableDeclarationPart -> "var" VariableDeclaration ";" VariableDeclarationTail
                                 -> e
         """
-        if self.t_type() == 'MP_IDENTIFIER':
+        if self.t_type() == 'MP_VAR':
             self.match('var')
             self.variable_declaration()
             self.match(';')
@@ -683,6 +683,55 @@ class Parser(object):
         else:
             self.error(['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT'])
 
+
+    def optional_relational_part(self):
+        """
+        Expanding Rule 71, 72:
+        OptionalRelationalPart -> RelationalOperator SimpleExpression
+                               -> epsilon
+        """
+        if self.t_type() == ('MP_LTHAN' or 'MP_LEQUAL' or 'MP_GTHAN'
+                             or 'MP_GEQUAL' or 'MP_EQUAL' or 'MP_NEQUAL'):
+            self.relational_operator()
+            self.simple_expession()
+        elif self.t_type() == ('MP_RPAREN' or 'MP_COMMA' or 'MP_SCOLON'
+                                or 'MP_DO' or 'MP_DOWNTO' or 'MP_ELSE'
+                                or 'MP_END' or 'MP_THEN' or 'MP_TO'
+                                or 'MP_UNTIL'):
+            self.epsilon()
+        else:
+            self.error(['MP_LTHAN', 'MP_LEQUAL', 'MP_GTHAN',
+                        'MP_GEQUAL', 'MP_EQUAL', 'MP_NEQUAL',
+                        'MP_RPAREN', 'MP_COMMA', 'MP_SCOLON',
+                        'MP_DO', 'MP_DOWNTO', 'MP_ELSE',
+                        'MP_END', 'MP_THEN', 'MP_TO',
+                        'MP_UNTIL'])
+
+    def relational_operator(self):
+        """
+        Expanding Rules 73 - 78:
+        RelationalOperator  -> "="
+                            -> "<"
+                            -> ">"
+                            -> "<="
+                            -> ">="
+                            -> "<>"
+        """
+        if self.t_type() == 'MP_EQUAL':
+            self.match('=')
+        elif self.t_type() == 'MP_LTHAN':
+            self.match('<')
+        elif self.t_type() == 'MP_GTHAN':
+            self.match('>')
+        elif self.t_type() == 'MP_LEQUAL':
+            self.match('<=')
+        elif self.t_type() == 'MP_GEQUAL':
+            self.match('>=')
+        elif self.t_type() == 'MP_NEQUAL':
+            self.match('<>')
+        else:
+            self.error(['MP_LTHAN', 'MP_LEQUAL', 'MP_GTHAN',
+                        'MP_GEQUAL', 'MP_EQUAL', 'MP_NEQUAL'])
 
     def program_identifier(self):
         """
