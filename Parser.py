@@ -372,7 +372,6 @@ class Parser(object):
                   -> ForStatement
                   -> ProcedureStatement
         """
-        self.next_token = self.tokens.next()
         if self.t_type() == 'MP_END':
             self.empty_statement()
         elif self.t_type() == 'MP_BEGIN':
