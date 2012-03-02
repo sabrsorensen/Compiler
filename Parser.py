@@ -57,8 +57,7 @@ class Parser(object):
             self.program()
             if self.t_type() == 'MP_EOF':
                 self.match('EOF')
-                #Need to print "The input program parses!"
-
+                return "The input program parses!"
             exit()
         else:
             self.error('MP_PROGRAM')

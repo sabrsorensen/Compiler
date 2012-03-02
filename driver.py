@@ -10,7 +10,7 @@ def main():
     s.open_file(input_file)
     s.get_token()
     p = Parser(s.tokens)
-    p.system_goal()
+    print p.system_goal()
 
 #    for token in s.tokens:
 #        #tokens to standard out
