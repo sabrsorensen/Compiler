@@ -55,7 +55,9 @@ class Parser(object):
         if self.t_type() == 'MP_PROGRAM':
             self.program()
             if self.t_type() == 'MP_EOF':
-                self.match('EOF') 
+                self.match('EOF')
+                #Need to print "The input program parses!"
+
             exit()
         else:
             self.error('MP_PROGRAM')
@@ -369,6 +371,7 @@ class Parser(object):
                   -> ForStatement
                   -> ProcedureStatement
         """
+        self.next_token = self.tokens.next()
         if self.t_type() == 'MP_END':
             self.empty_statement()
         elif self.t_type() == 'MP_BEGIN':
@@ -378,7 +381,13 @@ class Parser(object):
         elif self.t_type() == 'MP_WRITE':
             self.write_statement()
         elif self.t_type() == 'MP_IDENTIFIER':
-            self.procedure_or_assignment_statement()
+            procedure_list = ['MP_END', 'MP_SCOLON', 'MP_LPAREN']
+            if self.next_token.token_type in procedure_list:
+                self.procedure_statement()
+            elif self.next_token.token_type == 'MP_COLON':
+                self.assignment_statement()
+            else:
+                self.error(['MP_END', 'MP_SCOLON', 'MP_LPAREN', 'MP_COLON'])
         elif self.t_type() == 'MP_IF':
             self.if_statement()
         elif self.t_type() == 'MP_WHILE':
@@ -390,18 +399,6 @@ class Parser(object):
         else:
             self.error(['MP_END', 'MP_BEGIN', 'MP_WRITE', 'MP_IDENTIFIER',
                         'MP_IF', 'MP_WHILE', 'MP_REPEAT', 'MP_FOR'])
-
-    def procedure_or_assignment_statement(self):
-        procedure_list = ['MP_END', 'MP_SCOLON', 'MP_LPAREN']
-        self.next_token = self.tokens.next()
-        if self.next_token.token_type in procedure_list:
-            self.procedure_identifier()
-            self.procedure_statement()
-        elif self.next_token.token_type == 'MP_COLON':
-            self.assignment_statement()
-        else:
-            self.error(['MP_END', 'MP_SCOLON', 'MP_LPAREN', 'MP_COLON'])
-
 
     def empty_statement(self):
         """
