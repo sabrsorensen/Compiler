@@ -16,7 +16,7 @@ class Parser(object):
         logging.error("Couldn't match: \"%s\" in %s(). Received %s" % (self.t_lexeme(),
                                                       inspect.stack()[1][3],self.t_type()))
         logging.error('Expected tokens: %s' % expected)
-        logging.error("Three level stack trace, most recent call last.\n\tTrace up to debug.\n\t^ %s()\n\t^ %s()\n\t> %s()" % (inspect.stack()[3][3],
+        logging.error("Three level parse tree (stack) trace, most recent call last.\n\t^ %s()\n\t^ %s()\n\t> %s()" % (inspect.stack()[3][3],
                                                                                                                   inspect.stack()[2][3],
                                                                                                                   inspect.stack()[1][3]))
         exit()
@@ -379,12 +379,13 @@ class Parser(object):
             self.write_statement()
         elif self.t_type() == 'MP_IDENTIFIER':
             procedure_list = ['MP_END', 'MP_SCOLON', 'MP_LPAREN']
+            procedure_list_2 = ['MP_COLON', 'MP_ASSIGN']
             if self.next_token.token_type in procedure_list:
                 self.procedure_statement()
-            elif self.next_token.token_type == 'MP_COLON':
+            elif self.next_token.token_type in procedure_list_2:
                 self.assignment_statement()
             else:
-                self.error(['MP_END', 'MP_SCOLON', 'MP_LPAREN', 'MP_COLON'])
+                self.error(['MP_END', 'MP_SCOLON', 'MP_LPAREN', 'MP_COLON', 'MP_ASSIGN'])
         elif self.t_type() == 'MP_IF':
             self.if_statement()
         elif self.t_type() == 'MP_WHILE':
@@ -752,15 +753,16 @@ class Parser(object):
         TermTail -> AddingOperator Term TermTail
         TermTail -> ?
         """
-        accepted_list = ['MP_PAREN', 'MP_COMMA', 'MP_SCOLON',
+        eps_list = ['MP_RPAREN', 'MP_COMMA', 'MP_SCOLON',
                          'MP_LTHAN', 'MP_LEQUAL', 'MP_NEQUAL',
                          'MP_EQUAL', 'MP_GTHAN', 'MP_GEQUAL',
                          'MP_DO', 'MP_DOWNTO', 'MP_ELSE',
                          'MP_TO', 'MP_UNTIL']
-        eps_list = ['MP_PLUS', 'MP_MINUS']
+        accepted_list = ['MP_PLUS', 'MP_MINUS']
 
         if self.t_type() in accepted_list:
-            self.optional_sign()
+            #self.optional_sign()
+            self.adding_operator()
             self.term()
             self.term_tail()
         elif self.t_type() in eps_list:
