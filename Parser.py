@@ -1,8 +1,5 @@
 import inspect
-#import sys
-#import re
 import logging
-#from Scanner import Token
 
 class Parser(object):
 
