@@ -18,6 +18,10 @@ class Parser(object):
         logging.error("Couldn't match: \"%s\" in %s(). Received %s" % (self.t_lexeme(),
                                                       inspect.stack()[1][3],self.t_type()))
         logging.error('Expected tokens: %s' % expected)
+        logging.error("Three level stack trace, most recent call last.\n\tTrace up to debug.\n\t^ %s()\n\t^ %s()\n\t> %s()" % (inspect.stack()[3][3],
+                                                                                                                  inspect.stack()[2][3],
+                                                                                                                  inspect.stack()[1][3]))
+        exit()
 
     def t_type(self):
         """
