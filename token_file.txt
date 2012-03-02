@@ -1,2 +1,44 @@
-MP_ERROR         1     1     ?
-MP_EOF           2     0     
+MP_PROGRAM       1     1     program
+MP_IDENTIFIER    1     9     sample1
+MP_SCOLON        1     16    ;
+MP_VAR           1     4     var
+MP_IDENTIFIER    1     8     i
+MP_COMMA         1     9     ,
+MP_IDENTIFIER    1     11    j
+MP_COLON         1     12    :
+MP_INTEGER       1     14    integer
+MP_SCOLON        1     21    ;
+MP_BEGIN         1     2     begin
+MP_IDENTIFIER    1     4     readln
+MP_LPAREN        1     10    (
+MP_IDENTIFIER    1     11    i
+MP_RPAREN        1     12    )
+MP_SCOLON        1     13    ;
+MP_IDENTIFIER    1     4     str
+MP_ASSIGN        1     9     :=
+MP_STRING_LIT    1     11    string literal...''e
+MP_IDENTIFIER    0     3     j
+MP_ASSIGN        0     6     :=
+MP_INTEGER_LIT   0     8     9
+MP_PLUS          0     10    +
+MP_IDENTIFIER    0     12    i
+MP_TIMES         0     14    *
+MP_FIXED_LIT     0     16    9.1
+MP_MINUS         0     20    -
+MP_FLOAT_LIT     0     22    8.1e-1
+MP_SCOLON        0     28    ;
+MP_WRITE         0     4     write
+MP_LPAREN        0     9     (
+MP_STRING_LIT    0     11    Result is 
+MP_RPAREN        0     23    )
+MP_SCOLON        0     24    ;
+MP_WRITE         0     4     write
+MP_LPAREN        0     9     (
+MP_IDENTIFIER    0     11    j
+MP_RPAREN        0     13    )
+MP_SCOLON        0     14    ;
+MP_IDENTIFIER    0     4     writeln
+MP_SCOLON        0     11    ;
+MP_END           0     2     end
+MP_PERIOD        0     5     .
+MP_EOF           0     6     
