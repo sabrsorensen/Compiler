@@ -142,7 +142,7 @@ class Parser(object):
         """
         if self.t_type() == 'MP_IDENTIFIER':
             self.identifier_list()
-            self.match(';')
+            self.match(':')
             self.type()
         else:
             self.error('MP_IDENTIFIER')
@@ -732,7 +732,7 @@ class Parser(object):
         SimpleExpression -> OptionalSign Term TermTail
         """
         accepted_list = ['MP_LPAREN', 'MP_PLUS', 'MP_MINUS',
-                         'MP_IDENTIFIER', 'MP_INTEGER_LIT', 'MP_NOT']
+                         'MP_IDENTIFIER', 'MP_INTEGER', 'MP_NOT']
 
         if self.t_type() in accepted_list:
             self.optional_sign()
@@ -771,7 +771,7 @@ class Parser(object):
         OptionalSign -> ?
         """
         accepted_list = ['MP_PLUS','MP_MINUS']
-        eps_list = ['MP_IDENTIFIER', 'MP_INTEGER_LIT','MP_NOT']
+        eps_list = ['MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
 
         if self.t_type() in accepted_list:
             self.match(self.t_lexeme())
@@ -799,7 +799,7 @@ class Parser(object):
         Expanding Rule 88:
         Term -> Factor FactorTail
         """
-        accepted_list = ['MP_LPAREN', 'MP_IDENTIFIER', 'MP_INTEGER_LIT', 'MP_NOT']
+        accepted_list = ['MP_LPAREN', 'MP_IDENTIFIER', 'MP_INTEGER', 'MP_NOT']
         if self.t_type() in accepted_list:
             self.factor()
             self.factor_tail()
@@ -856,7 +856,7 @@ class Parser(object):
         Factor -> "(" Expression ")"
         Factor -> FunctionIdentifier OptionalActualParameterList
         """
-        accepted_list = ['MP_INTEGER_LIT', 'MP_IDENTIFIER', 'MP_NOT', 'MP_LPAREN']
+        accepted_list = ['MP_INTEGER', 'MP_IDENTIFIER', 'MP_NOT', 'MP_LPAREN']
         if self.t_type() in accepted_list:
             self.match(self.t_lexeme())
         else:

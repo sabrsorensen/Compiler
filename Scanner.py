@@ -292,7 +292,7 @@ class Scanner():
         self.rewind()
         #find out what kind of number was found
         if re.match(self.float_lit_pattern, lexeme):
-            self.create_token("MP_FLOAT_LIT", self.get_line(),
+            self.create_token("MP_FLOAT", self.get_line(),
                                 self.get_column(len(lexeme)),lexeme)
             return
         elif re.match(self.fixed_lit_pattern, lexeme):
@@ -300,7 +300,7 @@ class Scanner():
                                 self.get_column(len(lexeme)), lexeme)
             return
         elif re.match(self.integer_lit_pattern, lexeme):
-            self.create_token("MP_INTEGER_LIT", self.get_line(),
+            self.create_token("MP_INTEGER", self.get_line(),
                                 self.get_column(len(lexeme)), lexeme)
         else:
             #invalid token found
