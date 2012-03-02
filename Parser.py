@@ -37,7 +37,10 @@ class Parser(object):
 
     def match(self, lexeme):
         self.cur_token = self.next_token
-        self.next_token = self.tokens.next()
+        try:
+            self.next_token = self.tokens.next()
+        except StopIteration:
+            pass
         logging.info("Matched '%s' in %s()" % (lexeme, inspect.stack()[1][3]))
         return False
 
