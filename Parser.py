@@ -35,6 +35,14 @@ class Parser(object):
         """
         return self.cur_token.token_value
 
+    @classmethod
+    def print_tree(cls, level):
+        """
+        A method for printing where we are at in parse tree
+        In case future assignments will require more complexity
+        """
+        print level
+
     def match(self, lexeme):
         self.cur_token = self.next_token
         try:
@@ -54,6 +62,7 @@ class Parser(object):
         System Goal -> Program $
         """
         if self.t_type() == 'MP_PROGRAM':
+            Parser.print_tree('1')
             self.program()
             if self.t_type() == 'MP_EOF':
                 self.match('EOF')
@@ -68,6 +77,7 @@ class Parser(object):
         Program -> ProgramHeading ";" Block "."
         """
         if self.t_type() == 'MP_PROGRAM':
+            Parser.print_tree('2')
             self.program_heading()
             self.match(';')
             self.block()
@@ -81,6 +91,7 @@ class Parser(object):
         "program" Identifier
         """
         if self.t_type() == 'MP_PROGRAM':
+            Parser.print_tree('3')
             self.match('program')
             self.program_identifier()
         else:
@@ -93,6 +104,7 @@ class Parser(object):
         """
         accepted_list = ['MP_VAR', 'MP_PROCEDURE', 'MP_BEGIN', 'MP_FUNCTION']
         if self.t_type() in accepted_list:
+            Parser.print_tree('4')
             self.variable_declaration_part()
             self.procedure_and_function_declaration_part()
             self.statement_part()
@@ -107,11 +119,13 @@ class Parser(object):
         """
         eps_list = ['MP_BEGIN', 'MP_FUNCTION', 'MP_PROCEDURE']
         if self.t_type() == 'MP_VAR':
+            Parser.print_tree('5')
             self.match('var')
             self.variable_declaration()
             self.match(';')
             self.variable_declaration_tail()
         elif self.t_type() in eps_list:
+            Parser.print_tree('6')
             self.epsilon()
         else:
             self.error(eps_list.append('MP_VAR'))
@@ -130,10 +144,12 @@ class Parser(object):
         """
         eps_list = ['MP_BEGIN', 'MP_FUNCTION', 'MP_PRODCEDURE']
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('7')
             self.variable_declaration()
             self.match(';')
             self.variable_declaration_tail()
         elif self.t_type() in eps_list:
+            Parser.print_tree('8')
             self.epsilon()
         else:
             self.error(eps_list.append('MP_IDENTIFIER'))
@@ -144,6 +160,7 @@ class Parser(object):
         VariableDeclaration -> IdentifierList ":" Type
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('9')
             self.identifier_list()
             self.match(':')
             self.type()
@@ -156,11 +173,14 @@ class Parser(object):
         Type -> "Integer"
              -> "Float"
         """
-        accepted_list = ['MP_FLOAT', 'MP_INTEGER']
-        if self.t_type() in accepted_list:
+        if self.t_type() == 'MP_FLOAT':
+            Parser.print_tree('11')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_INTEGER':
+            Parser.print_tree('10')
             self.match(self.t_lexeme())
         else:
-            self.error(accepted_list)
+            self.error(['MP_FLOAT', 'MP_INTEGER'])
 
     def procedure_and_function_declaration_part(self):
         """
@@ -170,12 +190,15 @@ class Parser(object):
                                             -> epsilon
         """
         if self.t_type() == 'MP_PROCEDURE':
+            Parser.print_tree('12')
             self.procedure_declaration()
             self.procedure_and_function_declaration_part()
         elif self.t_type() == 'MP_FUNCTION':
+            Parser.print_tree('13')
             self.function_declaration()
             self.procedure_and_function_declaration_part()
         elif self.t_type() == 'MP_BEGIN':
+            Parser.print_tree('14')
             self.epsilon()
         else:
             self.error(['MP_PROCEDURE', 'MP_FUNCTION', 'MP_BEGIN'])
@@ -186,6 +209,7 @@ class Parser(object):
         ProcedureDeclaration -> ProcedureHeading ";" Block ";"
         """
         if self.t_type() == 'MP_PROCEDURE':
+            Parser.print_tree('15')
             self.procedure_heading()
             self.match(';')
             self.block()
@@ -200,6 +224,7 @@ class Parser(object):
         FunctionDeclaration -> FunctionHeading ";" Block ";"
         """
         if self.t_type() == 'MP_FUNCTION':
+            Parser.print_tree('16')
             self.function_heading()
             self.match(';')
             self.block()
@@ -213,6 +238,7 @@ class Parser(object):
         ProcedureHeading -> "procedure" procedureIdentifier OptionalFormalParameterList
         """
         if self.t_type() == 'MP_PROCEDURE':
+            Parser.print_tree('17')
             self.match('procedure')
             self.procedure_identifier()
             self.optional_formal_parameter_list()
@@ -225,6 +251,7 @@ class Parser(object):
         FunctionHeading -> "function" functionIdentifier OptionalFormalParameterList ":" Type
         """
         if self.t_type() == 'MP_FUNCTION':
+            Parser.print_tree('18')
             self.match('function')
             self.function_identifier()
             self.optional_formal_parameter_list()
@@ -241,11 +268,13 @@ class Parser(object):
         """
         eps_list = ['MP_FLOAT', 'MP_INTEGER', 'MP_SCOLON']
         if self.t_type() == 'MP_LPAREN':
+            Parser.print_tree('19')
             self.match('(')
             self.formal_parameter_section()
             self.formal_parameter_section_tail()
             self.match(')')
         elif self.t_type() in eps_list:
+            Parser.print_tree('20')
             self.epsilon()
         else:
             self.error(eps_list.append('MP_LPAREN'))
@@ -257,10 +286,12 @@ class Parser(object):
                                    -> epsilon
         """
         if self.t_type() == 'MP_SCOLON':
+            Parser.print_tree('21')
             self.match(';')
             self.formal_parameter_section()
             self.formal_parameter_section_tail()
         elif self.t_type() == 'MP_RPAREN':
+            Parser.print_tree('22')
             self.epsilon()
         else:
             self.error(['MP_SCOLON', 'MP_RPAREN'])
@@ -272,8 +303,10 @@ class Parser(object):
                                -> VariableParameterSection
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('23')
             self.value_parameter_section()
         elif self.t_type() == 'MP_VAR':
+            Parser.print_tree('24')
             self.variable_parameter_section()
         else:
             self.error(['MP_IDENTIFIER', 'MP_VAR'])
@@ -284,6 +317,7 @@ class Parser(object):
         ValueParameterSection -> IdentifierList ":" Type
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('25')
             self.identifier_list()
             self.match(':')
             self.type()
@@ -297,6 +331,7 @@ class Parser(object):
         VariableParameterSection -> "var" IdentifierList ":" Type
         """
         if self.t_type() == 'MP_VAR':
+            Parser.print_tree('26')
             self.identifier_list()
             self.match(':')
             self.type()
@@ -310,6 +345,7 @@ class Parser(object):
         StatementPart -> CompoundStatement
         """
         if self.t_type() == 'MP_BEGIN':
+            Parser.print_tree('27')
             self.compound_statement()
         else:
             self.error('MP_BEGIN')
@@ -321,6 +357,7 @@ class Parser(object):
         CompoundStatement -> "begin" StatementSequence "end"
         """
         if self.t_type() == 'MP_BEGIN':
+            Parser.print_tree('28')
             self.match('begin')
             self.statement_sequence()
             self.match('end')
@@ -336,6 +373,7 @@ class Parser(object):
                          'MP_WRITE', 'MP_IF', 'MP_WHILE',
                          'MP_REPEAT', 'MP_FOR', 'MP_IDENTIFIER']
         if self.t_type() in accepted_list:
+            Parser.print_tree('29')
             self.statement()
             self.statement_tail()
         else:
@@ -349,10 +387,12 @@ class Parser(object):
         """
         eps_list = [ 'MP_END', 'MP_UNTIL']
         if self.t_type() == 'MP_SCOLON':
+            Parser.print_tree('30')
             self.match(';')
             self.statement()
             self.statement_tail()
         elif self.t_type() in eps_list:
+            Parser.print_tree('31')
             self.epsilon()
         else:
             self.error(eps_list.append('MP_SCOLON'))
@@ -372,14 +412,19 @@ class Parser(object):
                   -> ProcedureStatement
         """
         if self.t_type() == 'MP_END':
+            Parser.print_tree('32')
             self.empty_statement()
         elif self.t_type() == 'MP_BEGIN':
+            Parser.print_tree('33')
             self.compound_statement()
         elif self.t_type() == 'MP_READ':
+            Parser.print_tree('34')
             self.read_statement()
         elif self.t_type() == 'MP_WRITE':
+            Parser.print_tree('35')
             self.write_statement()
         elif self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('36')
             procedure_list = ['MP_END', 'MP_SCOLON', 'MP_LPAREN']
             procedure_list_2 = ['MP_COLON', 'MP_ASSIGN']
             if self.next_token.token_type in procedure_list:
@@ -389,12 +434,16 @@ class Parser(object):
             else:
                 self.error(['MP_END', 'MP_SCOLON', 'MP_LPAREN', 'MP_COLON', 'MP_ASSIGN'])
         elif self.t_type() == 'MP_IF':
+            Parser.print_tree('37')
             self.if_statement()
         elif self.t_type() == 'MP_WHILE':
+            Parser.print_tree('38')
             self.while_statement()
         elif self.t_type() == 'MP_REPEAT':
+            Parser.print_tree('39')
             self.repeat_statement()
         elif self.t_type() == 'MP_FOR':
+            Parser.print_tree('40')
             self.for_statement()
         else:
             self.error(['MP_END', 'MP_BEGIN', 'MP_WRITE', 'MP_IDENTIFIER',
@@ -407,6 +456,7 @@ class Parser(object):
         """
         accepted_list = ['MP_SCOLON', 'MP_ELSE', 'MP_END', 'MP_UNTIL']
         if self.t_type() in accepted_list:
+            Parser.print_tree('42')
             self.epsilon()
         else:
             self.error(accepted_list)
@@ -417,6 +467,7 @@ class Parser(object):
         ReadStatement -> "read" "(" ReadParameter ReadParameterTail ")"
         """
         if self.t_type() == 'MP_READ':
+            Parser.print_tree('43')
             self.match('read')
             self.match('(')
             self.read_parameter()
@@ -432,10 +483,12 @@ class Parser(object):
                           -> epsilon
         """
         if self.t_type() == 'MP_COMMA':
+            Parser.print_tree('44')
             self.match(',')
             self.read_parameter()
             self.read_parameter_tail()
         elif self.t_type() == 'MP_RPAREN':
+            Parser.print_tree('45')
             self.epsilon()
         else:
             self.error(['MP_COMMA', 'MP_RPAREN'])
@@ -446,6 +499,7 @@ class Parser(object):
         ReadParameter -> VariableIdentifier
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('46')
             self.variable_identifier()
         else:
             self.error('MP_IDENTIFIER')
@@ -456,6 +510,7 @@ class Parser(object):
         WriteStatement -> "write" "(" WriteParameter WriteParameterTail ")"
         """
         if self.t_type() == 'MP_WRITE':
+            Parser.print_tree('47')
             self.match('write')
             self.match('(')
             self.write_parameter()
@@ -471,10 +526,12 @@ class Parser(object):
                            -> epsilon
         """
         if self.t_type() == 'MP_COMMA':
+            Parser.print_tree('48')
             self.match(',')
             self.write_parameter()
             self.write_parameter_tail()
         elif self.t_type() == 'MP_RPAREN':
+            Parser.print_tree('49')
             self.epsilon()
         else:
             self.error(['MP_COMMA', 'MP_PAREN'])
@@ -487,6 +544,7 @@ class Parser(object):
         """
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
+            Parser.print_tree('50')
             self.ordinal_expression()
         else:
             self.error(accepted_list)
@@ -500,6 +558,7 @@ class Parser(object):
         # the conflict here should be considered resolved, because in the end
         #both those guys lead to identifier
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('51')
             self.variable_identifier()
             self.match(':=')
             self.expression()
@@ -513,6 +572,7 @@ class Parser(object):
         IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart
         """
         if self.t_type() == 'MP_IF':
+            Parser.print_tree('53')
             self.match('if')
             self.boolean_expression()
             self.match('then')
@@ -528,9 +588,11 @@ class Parser(object):
         """
         eps_list = ['MP_SCOLON', 'MP_END', 'MP_UNTIL']
         if self.t_type() == 'MP_ELSE':
+            Parser.print_tree('54')
             self.match('else')
             self.statement()
         elif self.t_type() in eps_list:
+            Parser.print_tree('55')
             self.epsilon()
         else:
             self.error(eps_list.extend('MP_ELSE'))
@@ -541,6 +603,7 @@ class Parser(object):
         RepeatStatement -> "repeat" StatementSequence "until" BooleanExpression
         """
         if self.t_type() == 'MP_REPEAT':
+            Parser.print_tree('56')
             self.match('repeat')
             self.statement_sequence()
             self.match('until')
@@ -554,6 +617,7 @@ class Parser(object):
         WhileStatement -> "while" BooleanExpression "do" Statement
         """
         if self.t_type() == 'MP_WHILE':
+            Parser.print_tree('57')
             self.match('while')
             self.boolean_expression()
             self.match('do')
@@ -568,6 +632,7 @@ class Parser(object):
         ForStatement -> "for" ControlVariable ":=" InitialValue StepValue FinalValue "do" Statement
         """
         if self.t_type() == 'MP_FOR':
+            Parser.print_tree('58')
             self.match('for')
             self.control_variable()
             self.match(':=')
@@ -585,6 +650,7 @@ class Parser(object):
         ControlVariable -> VariableIdentifier
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('59')
             self.variable_identifier()
         else:
             self.error('MP_IDENTIFIER')
@@ -596,6 +662,7 @@ class Parser(object):
         """
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
+            Parser.print_tree('60')
             self.ordinal_expression()
         else:
             self.error(accepted_list)
@@ -606,11 +673,14 @@ class Parser(object):
         StepValue -> "to"
                   -> "downto"
         """
-        accepted_list = ['MP_TO', 'MP_DOWNTO']
-        if self.t_type() in accepted_list:
+        if self.t_type() == 'MP_TO':
+            Parser.print_tree('61')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_DOWNTO':
+            Parser.print_tree('62')
             self.match(self.t_lexeme())
         else:
-            self.error(accepted_list)
+            self.error(['MP_TO', 'MP_DOWNTO'])
 
     def final_value(self):
         """
@@ -619,6 +689,7 @@ class Parser(object):
         """
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
+            Parser.print_tree('63')
             self.ordinal_expression()
         else:
             self.error(accepted_list)
@@ -630,6 +701,7 @@ class Parser(object):
         ProcedureStatement -> ProcedureIdentifier OptionalActualParameterList
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('64')
             self.procedure_identifier()
             self.optional_actual_parameter_list()
         else:
@@ -650,11 +722,13 @@ class Parser(object):
                     'MP_TO', 'MP_UNTIL']
 
         if self.t_type() == 'MP_LPAREN':
+            Parser.print_tree('65')
             self.match('(')
             self.actual_parameter()
             self.actual_parameter_tail()
             self.match(')')
         elif self.t_type() in eps_list:
+            Parser.print_tree('66')
             self.epsilon()
         else:
             self.error(eps_list.append('MP_LPAREN'))
@@ -666,10 +740,12 @@ class Parser(object):
                             -> epsilon
         """
         if self.t_type() == 'MP_COMMA':
+            Parser.print_tree('67')
             self.match(',')
             self.actual_parameter()
             self.actual_parameter_tail()
         elif self.t_type() == 'MP_RPAREN':
+            Parser.print_tree('68')
             self.epsilon()
         else:
             self.error(['MP_COMMA', 'MP_RPAREN'])
@@ -681,6 +757,7 @@ class Parser(object):
         """
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
+            Parser.print_tree('69')
             self.ordinal_expression()
         else:
             self.error(accepted_list)
@@ -692,6 +769,7 @@ class Parser(object):
         """
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
+            Parser.print_tree('70')
             self.simple_expression()
             self.optional_relational_part()
         else:
@@ -710,9 +788,11 @@ class Parser(object):
                     'MP_END', 'MP_THEN', 'MP_TO', 'MP_UNTIL']
 
         if self.t_type() in accepted_list:
+            Parser.print_tree('71')
             self.relational_operator()
             self.simple_expression()
         elif self.t_type() in eps_list:
+            Parser.print_tree('72')
             self.epsilon()
         else:
             self.error(accepted_list.extend(eps_list))
@@ -727,12 +807,26 @@ class Parser(object):
                             -> ">="
                             -> "<>"
         """
-        accepted_list = ['MP_LTHAN', 'MP_LEQUAL', 'MP_GTHAN',
-                         'MP_GEQUAL', 'MP_EQUAL', 'MP_NEQUAL']
-        if self.t_type() in accepted_list:
+        if self.t_type() == 'MP_EQUAL':
+            Parser.print_tree('73')
             self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_LTHAN':
+            Parser.print_tree('74')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_GTHAN':
+            Parser.print_tree('75')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_LEQUAL':
+            Parser.print_tree('76')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_GEQUAL':
+            Parser.print_tree('77')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_NEQUAL':
+            Parser.print_tree('78')
         else:
-            self.error(accepted_list)
+            self.error(['MP_EQUAL', 'MP_LTHAN', 'MP_GTHAN',
+                        'MP_LEQUAL', 'MP_GEQUAL', 'MP_NEQUAL'])
 
     def simple_expression(self):
         """
@@ -743,6 +837,7 @@ class Parser(object):
                          'MP_IDENTIFIER', 'MP_INTEGER', 'MP_NOT']
 
         if self.t_type() in accepted_list:
+            Parser.print_tree('79')
             self.optional_sign()
             self.term()
             self.term_tail()
@@ -763,11 +858,13 @@ class Parser(object):
         accepted_list = ['MP_PLUS', 'MP_MINUS']
 
         if self.t_type() in accepted_list:
+            Parser.print_tree('80')
             #self.optional_sign()
             self.adding_operator()
             self.term()
             self.term_tail()
         elif self.t_type() in eps_list:
+            Parser.print_tree('81')
             self.epsilon()
         else:
             self.error(accepted_list.extend(eps_list))
@@ -779,15 +876,19 @@ class Parser(object):
         OptionalSign -> "-"
         OptionalSign -> ?
         """
-        accepted_list = ['MP_PLUS','MP_MINUS']
         eps_list = ['MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
 
-        if self.t_type() in accepted_list:
+        if self.t_type() == 'MP_PLUS':
+            Parser.print_tree('82')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_MINUS':
+            Parser.print_tree('83')
             self.match(self.t_lexeme())
         elif self.t_type() in eps_list:
+            Parser.print_tree('84')
             self.epsilon()
         else:
-            self.error(accepted_list.extend(eps_list))
+            self.error(eps_list.extend(['MP_PLUS','MP_MINUS']))
 
     def adding_operator(self):
         """
@@ -810,6 +911,7 @@ class Parser(object):
         """
         accepted_list = ['MP_LPAREN', 'MP_IDENTIFIER', 'MP_INTEGER', 'MP_NOT']
         if self.t_type() in accepted_list:
+            Parser.print_tree('88')
             self.factor()
             self.factor_tail()
         else:
@@ -833,10 +935,12 @@ class Parser(object):
                     'MP_UNTIL']
 
         if self.t_type() in accepted_list:
+            Parser.print_tree('89')
             self.multiplying_operator()
             self.factor()
             self.factor_tail()
         elif self.t_type() in eps_list:
+            Parser.print_tree('90')
             self.epsilon()
         else:
             self.error(accepted_list.extend(eps_list))
@@ -849,12 +953,20 @@ class Parser(object):
         MultiplyingOperator -> "mod"
         MultiplyingOperator -> "and"
         """
-        accepted_list = ['MP_TIMES', 'MP_DIV', 'MP_MOD', 'MP_AND']
-
-        if self.t_type() in accepted_list:
+        if self.t_type() == 'MP_TIMES':
+            Parser.print_tree('91')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_DIV':
+            Parser.print_tree('92')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_MOD':
+            Parser.print_tree('93')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_AND':
+            Parser.print_tree('94')
             self.match(self.t_lexeme())
         else:
-            self.error(accepted_list)
+            self.error(['MP_TIMES', 'MP_DIV', 'MP_MOD', 'MP_AND'])
 
     def factor(self):
         """
@@ -865,11 +977,20 @@ class Parser(object):
         Factor -> "(" Expression ")"
         Factor -> FunctionIdentifier OptionalActualParameterList
         """
-        accepted_list = ['MP_INTEGER', 'MP_IDENTIFIER', 'MP_NOT', 'MP_LPAREN']
-        if self.t_type() in accepted_list:
+        if self.t_type() == 'MP_INTEGER':
+            Parser.print_tree('95')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('96')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_NOT':
+            Parser.print_tree('97')
+            self.match(self.t_lexeme())
+        elif self.t_type() == 'MP_LPAREN':
+            Parser.print_tree('98')
             self.match(self.t_lexeme())
         else:
-            self.error(accepted_list)
+            self.error(['MP_INTEGER', 'MP_IDENTIFIER', 'MP_NOT', 'MP_LPAREN'])
 
     def program_identifier(self):
         """
@@ -877,6 +998,7 @@ class Parser(object):
         ProgramIdentifier -> Identifier
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('100')
             self.match(self.t_lexeme())
         else:
             self.error('MP_IDENTIFIER')
@@ -887,6 +1009,7 @@ class Parser(object):
         VariableIdentifier -> Identifier
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('101')
             self.match(self.t_lexeme())
         else:
             self.error('MP_IDENTIFIER')
@@ -897,6 +1020,7 @@ class Parser(object):
         ProcedureIdentifier -> Identifier
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('102')
             self.match(self.t_lexeme())
         else:
             self.error('MP_IDENTIFIER')
@@ -907,6 +1031,7 @@ class Parser(object):
         ProgramIdentifier -> Identifier
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('103')
             self.match(self.t_lexeme())
         else:
             self.error('MP_IDENTIFIER')
@@ -919,6 +1044,7 @@ class Parser(object):
         accepted_list = ['MP_IDENTIFIER', 'MP_PLUS', 'MP_MINUS', 'MP_IDENTIFIER', 'MP_INTEGER', 'MP_NOT']
 
         if self.t_type() in accepted_list:
+            Parser.print_tree('104')
             self.match(self.t_lexeme())
         else:
             self.error(accepted_list)
@@ -932,6 +1058,7 @@ class Parser(object):
                          'MP_IDENTIFIER', 'MP_INTEGER', 'MP_NOT']
 
         if self.t_type() in accepted_list:
+            Parser.print_tree('105')
             self.expression()
         else:
             self.error(accepted_list)
@@ -942,6 +1069,7 @@ class Parser(object):
         IdentifierList -> Identifier IdentifierTail
         """
         if self.t_type() == 'MP_IDENTIFIER':
+            Parser.print_tree('106')
             self.identifier()
             self.identifier_tail()
         else:
@@ -954,10 +1082,12 @@ class Parser(object):
         IdentifierTail -> ?
         """
         if self.t_type() == 'MP_COMMA':
+            Parser.print_tree('107')
             self.match(',')
             self.identifier()
             self.identifier_tail()
         elif self.t_type() == 'MP_COLON':
+            Parser.print_tree('108')
             self.epsilon()
         else:
             self.error(['MP_COMMMA', 'MP_COLON'])
@@ -965,15 +1095,4 @@ class Parser(object):
     def identifier(self):
         self.match(self.t_lexeme())
 
-    def fun_template(self):
-        """
-        Expanding Rule :
-
-        """
-        if self.t_type() == '':
-            pass
-        elif self.t_type() == '':
-            pass
-        else:
-            self.error()
 
