@@ -1,3 +1,6 @@
+__authors__ = 'Sam Sorensen', 'Keith Smith', 'Anna Andriyanova'
+__date__ = 'Spring 2012'
+
 from Scanner import Scanner
 from Parser import Parser
 import sys
