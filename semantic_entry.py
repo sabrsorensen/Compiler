@@ -2,6 +2,7 @@ __authors__ = 'Sam Sorensen', 'Keith Smith', 'Anna Andriyanova'
 __date__ = 'Spring 2012'
 
 # according to PEP, class names are written in CamelBack notation
+# My mistake. Should we rename the filenames as well?
 class SemanticEntry(object):
 
     def __init__(self):
@@ -24,6 +25,7 @@ class SemanticEntry(object):
         self.depth -= 1
 
     # We don't really need the following three functions, python instance variables are public by default.
+    # Can I pull them out then, along with to_string?
 #    def get_current_record(self):
 #        return self.current_record
 #
@@ -34,6 +36,7 @@ class SemanticEntry(object):
 #        return self.depth
 
     # Sam, remember __repr__ ? :)
+    # Hmm, nifty function.
     def __repr__(self):
         return "%s %s" % (self.cur_record, self.semantic_record_stack)
 
