@@ -21,7 +21,7 @@ class SemanticEntry(object):
             self.cur_record = self.semantic_record_stack.pop()
         else:
             self.cur_record = None
-        self.depth =-1
+        self.depth -= 1
 
     # We don't really need the following three functions, python instance variables are public by default.
 #    def get_current_record(self):
