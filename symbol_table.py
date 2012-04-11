@@ -12,7 +12,6 @@ class SymbolTable(object):
     def __init__(self, name):
         self.name = ''
         self.cur_depth = 0
-        self.sem_records = [] #Do we need this?
         self.context_attributes_stack = []
         self.cur_context_attributes = None
         self.sym_table = {}
