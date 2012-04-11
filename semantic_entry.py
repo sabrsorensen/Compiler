@@ -11,8 +11,8 @@ class SemanticEntry(object):
 
 
     def put(self, record):
-        if cur_record:
-            self.semantic_record_stack.insert(0,cur_record)
+        if self.cur_record:
+            self.semantic_record_stack.insert(0,self.cur_record)
         self.cur_record = record
         self.depth += 1
 
