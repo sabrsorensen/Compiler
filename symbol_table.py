@@ -26,7 +26,7 @@ class SymbolTable(object):
         self.cur_lexeme = ''
         for lexeme in self.cur_context_attributes.context_lexemes:
             self.cur_entry = self.find(lexeme)
-            if self.cur_entry is not None:
+            if self.cur_entry:
                 self.cur_entry.back_out()
                 if self.cur_entry.semantic_record_stack is None:
                     del self.sym_table[lexeme]
