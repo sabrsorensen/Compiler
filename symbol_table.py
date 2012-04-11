@@ -25,7 +25,6 @@ class SymbolTable(object):
     def destroy(self):
         self.cur_lexeme = ''
         for lexeme in self.cur_context_attributes.context_lexemes:
-            self.cur_entry = SemanticEntry()
             self.cur_entry = self.find(lexeme)
             if self.cur_entry is not None:
                 self.cur_entry.back_out()
