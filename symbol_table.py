@@ -8,7 +8,7 @@ from semantic_entry import SemanticEntry
 
 class SymbolTable(object):
 
-    def __init__(self, name):
+    def __init__(self):
         self.name = ''
         self.cur_depth = 0
         self.context_attributes_stack = []
