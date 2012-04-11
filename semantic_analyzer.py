@@ -27,16 +27,21 @@ class SemanticAnalyzer():
 
     #Stub methods from here down.
     def process_id(self, id_rec):
-        pass
+        return
     def gen_push_id(self, id_rec, rec_out):
-        pass
-        return #bool
+        if(id_rec.type != "Integer"):
+            logging.error("lol, type error.")
+            return False
+        trans_rec = self.sym_table.find(id_rec.lexeme).cur_rec #is cur_rec right?
+        self.output += "push " + trans_rec.offset + "(d" + trans_rec.depth + ")\n"
+        return True
+
     def gen_push_int(self, int_rec_in):
-        pass
+        self.output += "push #"+ int_rec_in.lexeme + "\n"
     def gen_begin(self):
-        pass
+        self.output += "push d0\nmov sp d0\n"
     def gen_end(self):
-        pass
+        self.output += "hlt\n"
     def gen_arithmetic(self,left_operand, operator, right_operator, rec_out):
         pass
     def to_file(self, file_name):
