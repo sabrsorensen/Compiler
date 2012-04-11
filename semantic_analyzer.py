@@ -45,7 +45,12 @@ class SemanticAnalyzer():
     def gen_arithmetic(self,left_operand, operator, right_operator, rec_out):
         pass
     def to_file(self, file_name):
-        pass
+        try:
+            output_file = open('a.out','w')
+            output_file.write(self.output)
+            output_file.close()
+        except IOError as (errno, strerror):
+            logging.error("I/O error(%s): %s" % errno,strerror)
 
     """
     Possible additional "if" handling.
