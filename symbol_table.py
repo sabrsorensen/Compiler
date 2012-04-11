@@ -6,7 +6,6 @@ from semantic_record import SemanticRecord
 from symbol_table import ContextAttrs
 from semantic_entry import SemanticEntry
 
-
 class SymbolTable(object):
 
     def __init__(self, name):
