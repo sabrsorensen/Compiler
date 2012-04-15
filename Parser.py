@@ -1,6 +1,9 @@
 import inspect
 import logging
 
+from symbol_table import SymbolTable
+from semantic_analyzer import SemanticAnalyzer
+
 class Parser(object):
 
 
@@ -9,6 +12,8 @@ class Parser(object):
         self.tokens = iter(tokens)
         self.cur_token = self.tokens.next()     #Default token holder
         self.next_token = self.tokens.next()    #LL2 lookahead token holder for when needed
+        self.symbol_table = SymbolTable()
+        self.semantic_analyzer = SemanticAnalyzer(self.symbol_table)
 
     ############### Utility Functions ###############
 
@@ -76,6 +81,7 @@ class Parser(object):
         Expanding Rule 2:
         Program -> ProgramHeading ";" Block "."
         """
+        self.symbol_table.create()
         if self.t_type() == 'MP_PROGRAM':
             Parser.print_tree('2')
             self.program_heading()
@@ -164,6 +170,7 @@ class Parser(object):
             self.identifier_list()
             self.match(':')
             self.type()
+
         else:
             self.error('MP_IDENTIFIER')
 
@@ -1093,6 +1100,8 @@ class Parser(object):
             self.error(['MP_COMMMA', 'MP_COLON'])
 
     def identifier(self):
-        self.match(self.t_lexeme())
+        temp = self.t_lexeme()
+        self.match(temp)
+        return temp
 
 

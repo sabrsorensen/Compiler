@@ -3,7 +3,6 @@ __date__ = 'Spring 2012'
 
 import logging
 from semantic_record import SemanticRecord
-from symbol_table import ContextAttrs
 from semantic_entry import SemanticEntry
 
 class SymbolTable(object):
