@@ -161,7 +161,7 @@ class Parser(object):
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('9')
-            self.identifier_list()
+            var_list = self.identifier_list([])
             self.match(':')
             self.type()
         else:
@@ -318,7 +318,7 @@ class Parser(object):
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('25')
-            self.identifier_list()
+            val_param_list = self.identifier_list([])
             self.match(':')
             self.type()
         else:
@@ -332,7 +332,7 @@ class Parser(object):
         """
         if self.t_type() == 'MP_VAR':
             Parser.print_tree('26')
-            self.identifier_list()
+            var_param_list = self.identifier_list([])
             self.match(':')
             self.type()
         else:
@@ -1063,19 +1063,20 @@ class Parser(object):
         else:
             self.error(accepted_list)
 
-    def identifier_list(self):
+    def identifier_list(self, id_list):
         """
         Expanding Rule 106:
         IdentifierList -> Identifier IdentifierTail
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('106')
-            self.identifier()
-            self.identifier_tail()
+            id_list.append(self.identifier())
+            self.identifier_tail(id_list)
         else:
             self.error()
+        return id_list
 
-    def identifier_tail(self):
+    def identifier_tail(self, id_list):
         """
         Expanding Rule 107,108:
         IdentifierTail -> "," Identifier IdentifierTail
@@ -1084,15 +1085,17 @@ class Parser(object):
         if self.t_type() == 'MP_COMMA':
             Parser.print_tree('107')
             self.match(',')
-            self.identifier()
-            self.identifier_tail()
+            id_list.append(self.identifier())
+            self.identifier_tail(id_list)
         elif self.t_type() == 'MP_COLON':
             Parser.print_tree('108')
             self.epsilon()
         else:
             self.error(['MP_COMMMA', 'MP_COLON'])
+        return id_list
 
     def identifier(self):
         self.match(self.t_lexeme())
+
 
 
