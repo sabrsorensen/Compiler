@@ -235,18 +235,19 @@ class Parser(object):
         """
         if self.t_type() == 'MP_PROCEDURE':
             old_proc_name = self.cur_proc_name
-            Parser.print_tree('15')
-            self.procedure_heading()
-            self.match(';')
             proc_sym_table = SymbolTable(self.cur_symbol_table.parent_table)
             proc_sym_table.create()
             self.cur_symbol_table = proc_sym_table
             self.sem_analyzer.sym_table = self.cur_symbol_table
+            Parser.print_tree('15')
+            self.procedure_heading()
+            self.match(';')
             self.block()
             self.match(';')
             print "Procedure Symbol Table " + self.cur_proc_name + proc_sym_table.__repr__()
             self.cur_symbol_table = self.cur_symbol_table.parent_table
             self.cur_proc_name = old_proc_name
+            proc_sym_table.destroy()
         else:
             self.error('MP_PROCEDURE')
 
@@ -258,18 +259,19 @@ class Parser(object):
         """
         if self.t_type() == 'MP_FUNCTION':
             old_func_name = self.cur_func_name
-            Parser.print_tree('16')
-            self.function_heading()
-            self.match(';')
             func_sym_table = SymbolTable(self.cur_symbol_table.parent_table)
             func_sym_table.create()
             self.cur_symbol_table = func_sym_table
             self.sem_analyzer.sym_table = self.cur_symbol_table
+            Parser.print_tree('16')
+            self.function_heading()
+            self.match(';')
             self.block()
             self.match(';')
             print "Function Symbol Table " + self.cur_func_name + '\n' + func_sym_table.__repr__()
             self.cur_func_name = old_func_name
             self.cur_symbol_table = self.cur_symbol_table.parent_table
+            func_sym_table.destroy()
 
         else:
             self.error('MP_FUNCTION')
@@ -298,7 +300,7 @@ class Parser(object):
             self.function_identifier()
             self.optional_formal_parameter_list()
             self.match(':')
-            self.type()
+            type = self.type()
         else:
             self.error('MP_FUNCTION')
 
@@ -362,7 +364,14 @@ class Parser(object):
             Parser.print_tree('25')
             val_param_list = self.identifier_list([])
             self.match(':')
-            self.type()
+            type = self.type()
+            for var in val_param_list:
+                record = SemanticRecord()
+                record.type = type
+                record.lexeme = var
+                record.set_size(type)
+                record.kind = "var"
+                self.cur_symbol_table.insert(record)
         else:
             self.error('MP_IDENTIFIER')
 
@@ -377,7 +386,15 @@ class Parser(object):
             self.match(self.t_type())
             var_param_list = self.identifier_list([])
             self.match(':')
-            self.type()
+            type = self.type()
+            #iterate through the list of vars
+            for var in var_param_list:
+                record = SemanticRecord()
+                record.type = type
+                record.lexeme = var
+                record.set_size(type)
+                record.kind = "var"
+                self.cur_symbol_table.insert(record)
         else:
             self.error('MP_VAR')
 

@@ -4,6 +4,7 @@ __date__ = 'Spring 2012'
 
 from semantic_entry import SemanticEntry
 from semantic_record import SemanticRecord
+from collections import OrderedDict
 
 class SymbolTable(object):
 
@@ -13,7 +14,7 @@ class SymbolTable(object):
         self.cur_depth = 0
         self.context_attributes_stack = []
         self.cur_context_attributes = None
-        self.sym_table = {}
+        self.sym_table = OrderedDict()
         self.record = SemanticRecord()
 
     def create(self): #subtables
@@ -36,7 +37,6 @@ class SymbolTable(object):
         self.record = record
         self.cur_context_attributes.context_lexemes.append(self.record.lexeme)
         self.record.offset = self.cur_depth
-        print self.record
         self.cur_depth += self.record.size
         self.existing_entry = self.find(self.record.lexeme)
         if self.existing_entry is None:
