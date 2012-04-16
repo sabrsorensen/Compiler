@@ -73,6 +73,7 @@ class Parser(object):
             self.program()
             if self.t_type() == 'MP_EOF':
                 self.match('EOF')
+                print self.root_table
                 return "The input program parses!"
             exit()
         else:
@@ -237,6 +238,7 @@ class Parser(object):
             self.cur_symbol_table = proc_sym_table
             self.block()
             self.match(';')
+            print proc_sym_table
         else:
             self.error('MP_PROCEDURE')
 
@@ -255,6 +257,7 @@ class Parser(object):
             self.cur_symbol_table = func_sym_table
             self.block()
             self.match(';')
+            print func_sym_table
         else:
             self.error('MP_FUNCTION')
 
