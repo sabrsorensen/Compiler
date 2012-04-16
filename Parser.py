@@ -5,6 +5,11 @@ from symbol_table import SymbolTable
 from semantic_analyzer import SemanticAnalyzer
 from semantic_record import SemanticRecord
 
+log = logging.getLogger()
+ch  = logging.StreamHandler()
+#log.setLevel(logging.DEBUG)
+log.setLevel(logging.ERROR)
+
 class Parser(object):
 
 
@@ -62,6 +67,12 @@ class Parser(object):
         logging.info("Matched '%s' in %s()" % (lexeme, inspect.stack()[1][3]))
         return False
 
+    def print_symbol_table(self, type, table):
+        level = log.getEffectiveLevel()
+        log.setLevel(logging.DEBUG)
+        logging.debug(type + " Symbol Table " + table.name + table.__repr__() + '\n')
+        log.setLevel(level)
+
 
     ############### Rule handling functions ###############
 
@@ -76,7 +87,7 @@ class Parser(object):
             self.program()
             if self.t_type() == 'MP_EOF':
                 self.match('EOF')
-                print "Program Symbol Table " + self.program_name + self.root_table.__repr__()
+                self.print_symbol_table("Program",self.root_table)
                 return "The input program parses!"
             exit()
         else:
@@ -247,7 +258,7 @@ class Parser(object):
             self.match(';')
             self.block()
             self.match(';')
-            print "Procedure Symbol Table " + self.cur_proc_name + proc_sym_table.__repr__() + '\n'
+            self.print_symbol_table("Procedure", proc_sym_table)
             self.cur_symbol_table = self.cur_symbol_table.parent_table
             self.cur_proc_name = old_proc_name
             proc_sym_table.destroy()
@@ -264,15 +275,15 @@ class Parser(object):
             old_func_name = self.cur_func_name
             func_sym_table = SymbolTable(self.cur_symbol_table)
             func_sym_table.create()
-            print func_sym_table.cur_depth
             self.cur_symbol_table = func_sym_table
             self.sem_analyzer.sym_table = self.cur_symbol_table
             Parser.print_tree('16')
             self.function_heading()
+            func_sym_table.name = self.cur_func_name
             self.match(';')
             self.block()
             self.match(';')
-            print "Function Symbol Table " + self.cur_func_name + '\n' + func_sym_table.__repr__() + '\n'
+            self.print_symbol_table("Function",func_sym_table)
             self.cur_func_name = old_func_name
             self.cur_symbol_table = self.cur_symbol_table.parent_table
             func_sym_table.destroy()
