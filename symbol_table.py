@@ -3,6 +3,7 @@ __date__ = 'Spring 2012'
 
 
 from semantic_entry import SemanticEntry
+from semantic_record import SemanticRecord
 
 class SymbolTable(object):
 
@@ -13,6 +14,7 @@ class SymbolTable(object):
         self.context_attributes_stack = []
         self.cur_context_attributes = None
         self.sym_table = {}
+        self.record = SemanticRecord()
 
     def create(self): #subtables
         self.cur_context_attributes = ContextAttrs()
@@ -31,18 +33,19 @@ class SymbolTable(object):
                     del self.sym_table[lexeme]
 
     def insert(self, record):
-        self.cur_context_attributes.context_lexemes.append(record.lexeme)
-        record.offset = self.cur_depth
-        self.cur_depth += record.size
-        self.existing_entry = self.find(record.lexeme)
+        self.record = record
+        self.cur_context_attributes.context_lexemes.append(self.record.lexeme)
+        self.record.offset = self.cur_depth
+        self.cur_depth += self.record.size
+        self.existing_entry = self.find(self.record.lexeme)
         if self.existing_entry is None:
             self.new_entry = SemanticEntry()
-            record.depth = 0
-            self.new_entry.put(record)
-            self.sym_table[record.lexeme] = self.new_entry
+            self.record.depth = 0
+            self.new_entry.put(self.record)
+            self.sym_table[self.record.lexeme] = self.new_entry
         else:
-            record.depth = self.existing_entry.depth
-            self.existing_entry.put(record)
+            self.record.depth = self.existing_entry.depth
+            self.existing_entry.put(self.record)
 
     def find(self, lexeme):
          return self.sym_table.get(lexeme, None)

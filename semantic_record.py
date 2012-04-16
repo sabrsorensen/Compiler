@@ -10,7 +10,7 @@ class SemanticRecord(object):
         self.lexeme = ''
         self.param_mode = ''
         self.kind = ''
-        self.size = None
+        self.size = 0
         self.offset = None
         self.label1 = ''
         self.label2 = ''

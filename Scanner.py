@@ -77,7 +77,7 @@ class Scanner():
             }
         
     def open_file(self, input_file):
-        self.file = open(input_file)
+        self.file = open(input_file,'rU')
 
     def create_token(self, token_type, token_line, token_column, token_name ):
         if token_name[-1:] == '\n':
