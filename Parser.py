@@ -3,6 +3,7 @@ import logging
 
 from symbol_table import SymbolTable
 from semantic_analyzer import SemanticAnalyzer
+from semantic_record import SemanticRecord
 
 class Parser(object):
 
@@ -12,8 +13,9 @@ class Parser(object):
         self.tokens = iter(tokens)
         self.cur_token = self.tokens.next()     #Default token holder
         self.next_token = self.tokens.next()    #LL2 lookahead token holder for when needed
-        self.symbol_table = SymbolTable()
-        self.semantic_analyzer = SemanticAnalyzer(self.symbol_table)
+        self.cur_symbol_table = None
+        self.root_table = SymbolTable()
+        #self.semantic_analyzer = SemanticAnalyzer(self.symbol_table)
 
     ############### Utility Functions ###############
 
@@ -81,11 +83,12 @@ class Parser(object):
         Expanding Rule 2:
         Program -> ProgramHeading ";" Block "."
         """
-        self.symbol_table.create()
         if self.t_type() == 'MP_PROGRAM':
             Parser.print_tree('2')
             self.program_heading()
             self.match(';')
+            self.root_table.create_root()
+            self.cur_symbol_table = self.root_table
             self.block()
             self.match('.')
         else:
@@ -169,8 +172,15 @@ class Parser(object):
             Parser.print_tree('9')
             var_list = self.identifier_list([])
             self.match(':')
-            self.type()
-
+            type = self.type()
+            #iterate through the list of vars
+            for var in var_list:
+                record = SemanticRecord()
+                record.type = type
+                record.lexeme = var
+                record.size = record.set_size(type)
+                record.kind = "var"
+                self.cur_symbol_table.insert(record)
         else:
             self.error('MP_IDENTIFIER')
 
@@ -180,15 +190,18 @@ class Parser(object):
         Type -> "Integer"
              -> "Float"
         """
+        lexeme = ''
         if self.t_type() == 'MP_FLOAT':
             Parser.print_tree('11')
-            self.match(self.t_lexeme())
+            lexeme = self.t_lexeme()
+            self.match(lexeme)
         elif self.t_type() == 'MP_INTEGER':
             Parser.print_tree('10')
-            self.match(self.t_lexeme())
+            lexeme = self.t_lexeme()
+            self.match(lexeme)
         else:
             self.error(['MP_FLOAT', 'MP_INTEGER'])
-
+        return lexeme
     def procedure_and_function_declaration_part(self):
         """
         Expanding Rules 12, 13, 14:
@@ -219,6 +232,9 @@ class Parser(object):
             Parser.print_tree('15')
             self.procedure_heading()
             self.match(';')
+            proc_sym_table = SymbolTable()
+            proc_sym_table.create()
+            self.cur_symbol_table = proc_sym_table
             self.block()
             self.match(';')
         else:
@@ -234,6 +250,9 @@ class Parser(object):
             Parser.print_tree('16')
             self.function_heading()
             self.match(';')
+            func_sym_table = SymbolTable()
+            func_sym_table.create()
+            self.cur_symbol_table = func_sym_table
             self.block()
             self.match(';')
         else:
