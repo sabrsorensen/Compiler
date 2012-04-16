@@ -51,7 +51,7 @@ class Parser(object):
         A method for printing where we are at in parse tree
         In case future assignments will require more complexity
         """
-        print level
+        logging.debug(level)
 
     def match(self, lexeme):
         self.cur_token = self.next_token
@@ -76,7 +76,7 @@ class Parser(object):
             self.program()
             if self.t_type() == 'MP_EOF':
                 self.match('EOF')
-                print "Symbol Table " + self.program_name + self.root_table.__repr__()
+                print "Program Symbol Table " + self.program_name + self.root_table.__repr__()
                 return "The input program parses!"
             exit()
         else:
@@ -92,6 +92,7 @@ class Parser(object):
             self.program_heading()
             self.match(';')
             self.root_table.create_root()
+            self.root_table.name = self.program_name
             self.cur_symbol_table = self.root_table
             self.sem_analyzer.sym_table = self.cur_symbol_table
             self.block()
@@ -185,6 +186,7 @@ class Parser(object):
                 record.lexeme = var
                 record.set_size(type)
                 record.kind = "var"
+                record.depth = self.cur_symbol_table.cur_depth
                 self.cur_symbol_table.insert(record)
         else:
             self.error('MP_IDENTIFIER')
@@ -235,16 +237,17 @@ class Parser(object):
         """
         if self.t_type() == 'MP_PROCEDURE':
             old_proc_name = self.cur_proc_name
-            proc_sym_table = SymbolTable(self.cur_symbol_table.parent_table)
+            proc_sym_table = SymbolTable(self.cur_symbol_table)
             proc_sym_table.create()
             self.cur_symbol_table = proc_sym_table
             self.sem_analyzer.sym_table = self.cur_symbol_table
             Parser.print_tree('15')
             self.procedure_heading()
+            proc_sym_table.name = self.cur_proc_name
             self.match(';')
             self.block()
             self.match(';')
-            print "Procedure Symbol Table " + self.cur_proc_name + proc_sym_table.__repr__()
+            print "Procedure Symbol Table " + self.cur_proc_name + proc_sym_table.__repr__() + '\n'
             self.cur_symbol_table = self.cur_symbol_table.parent_table
             self.cur_proc_name = old_proc_name
             proc_sym_table.destroy()
@@ -259,8 +262,9 @@ class Parser(object):
         """
         if self.t_type() == 'MP_FUNCTION':
             old_func_name = self.cur_func_name
-            func_sym_table = SymbolTable(self.cur_symbol_table.parent_table)
+            func_sym_table = SymbolTable(self.cur_symbol_table)
             func_sym_table.create()
+            print func_sym_table.cur_depth
             self.cur_symbol_table = func_sym_table
             self.sem_analyzer.sym_table = self.cur_symbol_table
             Parser.print_tree('16')
@@ -268,7 +272,7 @@ class Parser(object):
             self.match(';')
             self.block()
             self.match(';')
-            print "Function Symbol Table " + self.cur_func_name + '\n' + func_sym_table.__repr__()
+            print "Function Symbol Table " + self.cur_func_name + '\n' + func_sym_table.__repr__() + '\n'
             self.cur_func_name = old_func_name
             self.cur_symbol_table = self.cur_symbol_table.parent_table
             func_sym_table.destroy()
@@ -371,6 +375,7 @@ class Parser(object):
                 record.lexeme = var
                 record.set_size(type)
                 record.kind = "var"
+                record.depth = self.cur_symbol_table.cur_depth
                 self.cur_symbol_table.insert(record)
         else:
             self.error('MP_IDENTIFIER')
@@ -394,6 +399,7 @@ class Parser(object):
                 record.lexeme = var
                 record.set_size(type)
                 record.kind = "var"
+                record.depth = self.cur_symbol_table.cur_depth
                 self.cur_symbol_table.insert(record)
         else:
             self.error('MP_VAR')

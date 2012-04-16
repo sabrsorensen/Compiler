@@ -11,11 +11,15 @@ class SymbolTable(object):
     def __init__(self, parent):
         self.parent_table = parent
         self.name = ''
-        self.cur_depth = 0
+        if parent:
+            self.cur_depth = self.parent_table.cur_depth
+        else:
+            self.cur_depth = 0
         self.context_attributes_stack = []
         self.cur_context_attributes = None
         self.sym_table = OrderedDict()
         self.record = SemanticRecord()
+        self.cur_offset = 0
 
     def create(self): #subtables
         self.cur_context_attributes = ContextAttrs()
@@ -36,12 +40,12 @@ class SymbolTable(object):
     def insert(self, record):
         self.record = record
         self.cur_context_attributes.context_lexemes.append(self.record.lexeme)
-        self.record.offset = self.cur_depth
-        self.cur_depth += self.record.size
+        self.record.offset = self.cur_offset
+        self.cur_offset += self.record.size
         self.existing_entry = self.find(self.record.lexeme)
         if self.existing_entry is None:
             self.new_entry = SemanticEntry()
-            self.record.depth = 0
+         #   self.record.depth = 0
             self.new_entry.put(self.record)
             self.sym_table[self.record.lexeme] = self.new_entry
         else:

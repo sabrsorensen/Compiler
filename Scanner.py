@@ -4,8 +4,8 @@ import logging
 log = logging.getLogger()
 ch  = logging.StreamHandler()
 log.addHandler(ch)
-log.setLevel(logging.DEBUG)
-
+#log.setLevel(logging.DEBUG)
+log.setLevel(logging.ERROR)
 class Scanner():
 
     def __init__(self):
