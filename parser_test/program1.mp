@@ -16,5 +16,5 @@ begin
   read(i); { get i }
   count(i, sum); { call count }
   write(sum); { write result }
-  write('HELLO! WORLD');
+  {write('HELLO! WORLD');}
 end.

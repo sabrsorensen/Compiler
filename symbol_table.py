@@ -36,6 +36,7 @@ class SymbolTable(object):
         self.record = record
         self.cur_context_attributes.context_lexemes.append(self.record.lexeme)
         self.record.offset = self.cur_depth
+        print self.record
         self.cur_depth += self.record.size
         self.existing_entry = self.find(self.record.lexeme)
         if self.existing_entry is None:
@@ -51,7 +52,12 @@ class SymbolTable(object):
          return self.sym_table.get(lexeme, None)
 
     def __repr__(self):
-        return self.sym_table
+        output = "\n[%s | %s | %s | %s | %s | %s]" %   ("lexeme", "kind",
+                                                      "type", "size",
+                                                      "offset", "depth")
+        for k,v in self.sym_table.items():
+            output = output + '\n' + v.cur_record.__repr__()
+        return output
 
 
 class ContextAttrs(object):

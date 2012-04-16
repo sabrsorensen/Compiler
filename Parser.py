@@ -16,6 +16,9 @@ class Parser(object):
         self.cur_symbol_table = None
         self.root_table = SymbolTable(None)
         self.sem_analyzer = SemanticAnalyzer()
+        self.program_name = ''
+        self.cur_proc_name = ''
+        self.cur_func_name = ''
 
     ############### Utility Functions ###############
 
@@ -73,7 +76,7 @@ class Parser(object):
             self.program()
             if self.t_type() == 'MP_EOF':
                 self.match('EOF')
-                print self.root_table
+                print "Symbol Table " + self.program_name + self.root_table.__repr__()
                 return "The input program parses!"
             exit()
         else:
@@ -153,7 +156,7 @@ class Parser(object):
         VariableDeclarationTail -> VariableDeclaration ";" VariableDeclarationTail
                                 -> e
         """
-        eps_list = ['MP_BEGIN', 'MP_FUNCTION', 'MP_PRODCEDURE']
+        eps_list = ['MP_BEGIN', 'MP_FUNCTION', 'MP_PROCEDURE']
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('7')
             self.variable_declaration()
@@ -180,7 +183,7 @@ class Parser(object):
                 record = SemanticRecord()
                 record.type = type
                 record.lexeme = var
-                record.size = record.set_size(type)
+                record.set_size(type)
                 record.kind = "var"
                 self.cur_symbol_table.insert(record)
         else:
@@ -231,6 +234,7 @@ class Parser(object):
         ProcedureDeclaration -> ProcedureHeading ";" Block ";"
         """
         if self.t_type() == 'MP_PROCEDURE':
+            old_proc_name = self.cur_proc_name
             Parser.print_tree('15')
             self.procedure_heading()
             self.match(';')
@@ -240,8 +244,9 @@ class Parser(object):
             self.sem_analyzer.sym_table = self.cur_symbol_table
             self.block()
             self.match(';')
+            print "Procedure Symbol Table " + self.cur_proc_name + proc_sym_table.__repr__()
             self.cur_symbol_table = self.cur_symbol_table.parent_table
-            print proc_sym_table
+            self.cur_proc_name = old_proc_name
         else:
             self.error('MP_PROCEDURE')
 
@@ -252,6 +257,7 @@ class Parser(object):
         FunctionDeclaration -> FunctionHeading ";" Block ";"
         """
         if self.t_type() == 'MP_FUNCTION':
+            old_func_name = self.cur_func_name
             Parser.print_tree('16')
             self.function_heading()
             self.match(';')
@@ -261,8 +267,10 @@ class Parser(object):
             self.sem_analyzer.sym_table = self.cur_symbol_table
             self.block()
             self.match(';')
+            print "Function Symbol Table " + self.cur_func_name + '\n' + func_sym_table.__repr__()
+            self.cur_func_name = old_func_name
             self.cur_symbol_table = self.cur_symbol_table.parent_table
-            print func_sym_table
+
         else:
             self.error('MP_FUNCTION')
 
@@ -366,6 +374,7 @@ class Parser(object):
         """
         if self.t_type() == 'MP_VAR':
             Parser.print_tree('26')
+            self.match(self.t_type())
             var_param_list = self.identifier_list([])
             self.match(':')
             self.type()
@@ -1023,6 +1032,11 @@ class Parser(object):
         elif self.t_type() == 'MP_LPAREN':
             Parser.print_tree('98')
             self.match(self.t_lexeme())
+            self.expression()
+            if self.t_type() == 'MP_RPAREN':
+                self.match(self.t_lexeme())
+            else:
+                self.error('MP_RPAREN')
         else:
             self.error(['MP_INTEGER', 'MP_IDENTIFIER', 'MP_NOT', 'MP_LPAREN'])
 
@@ -1033,7 +1047,8 @@ class Parser(object):
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('100')
-            self.match(self.t_lexeme())
+            self.program_name = self.t_lexeme()
+            self.match(self.program_name)
         else:
             self.error('MP_IDENTIFIER')
 
@@ -1055,7 +1070,8 @@ class Parser(object):
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('102')
-            self.match(self.t_lexeme())
+            self.cur_proc_name = self.t_lexeme()
+            self.match(self.cur_proc_name)
         else:
             self.error('MP_IDENTIFIER')
 
@@ -1066,19 +1082,23 @@ class Parser(object):
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('103')
-            self.match(self.t_lexeme())
+            self.cur_func_name = self.t_lexeme()
+            self.match(self.cur_func_name)
         else:
             self.error('MP_IDENTIFIER')
 
     def boolean_expression(self):
         """
         Expanding Rule 104:
-        BooleanIdentifier -> Identifier
+        BooleanExpression -> Expression
         """
-        accepted_list = ['MP_IDENTIFIER', 'MP_PLUS', 'MP_MINUS', 'MP_IDENTIFIER', 'MP_INTEGER', 'MP_NOT']
+        accepted_list = ['MP_LPAREN', 'MP_PLUS', 'MP_MINUS',
+                         'MP_IDENTIFIER', 'MP_INTEGER', 'MP_NOT']
 
         if self.t_type() in accepted_list:
             Parser.print_tree('104')
+            self.match(self.t_lexeme())
+            self.expression()
             self.match(self.t_lexeme())
         else:
             self.error(accepted_list)
