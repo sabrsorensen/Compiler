@@ -14,8 +14,8 @@ class Parser(object):
         self.cur_token = self.tokens.next()     #Default token holder
         self.next_token = self.tokens.next()    #LL2 lookahead token holder for when needed
         self.cur_symbol_table = None
-        self.root_table = SymbolTable()
-        #self.semantic_analyzer = SemanticAnalyzer(self.symbol_table)
+        self.root_table = SymbolTable(None)
+        self.sem_analyzer = SemanticAnalyzer()
 
     ############### Utility Functions ###############
 
@@ -90,6 +90,7 @@ class Parser(object):
             self.match(';')
             self.root_table.create_root()
             self.cur_symbol_table = self.root_table
+            self.sem_analyzer.sym_table = self.cur_symbol_table
             self.block()
             self.match('.')
         else:
@@ -233,11 +234,13 @@ class Parser(object):
             Parser.print_tree('15')
             self.procedure_heading()
             self.match(';')
-            proc_sym_table = SymbolTable()
+            proc_sym_table = SymbolTable(self.cur_symbol_table.parent_table)
             proc_sym_table.create()
             self.cur_symbol_table = proc_sym_table
+            self.sem_analyzer.sym_table = self.cur_symbol_table
             self.block()
             self.match(';')
+            self.cur_symbol_table = self.cur_symbol_table.parent_table
             print proc_sym_table
         else:
             self.error('MP_PROCEDURE')
@@ -252,11 +255,13 @@ class Parser(object):
             Parser.print_tree('16')
             self.function_heading()
             self.match(';')
-            func_sym_table = SymbolTable()
+            func_sym_table = SymbolTable(self.cur_symbol_table.parent_table)
             func_sym_table.create()
             self.cur_symbol_table = func_sym_table
+            self.sem_analyzer.sym_table = self.cur_symbol_table
             self.block()
             self.match(';')
+            self.cur_symbol_table = self.cur_symbol_table.parent_table
             print func_sym_table
         else:
             self.error('MP_FUNCTION')

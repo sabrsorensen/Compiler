@@ -1,13 +1,13 @@
 __authors__ = 'Sam Sorensen', 'Keith Smith', 'Anna Andriyanova'
 __date__ = 'Spring 2012'
 
-import logging
-from semantic_record import SemanticRecord
+
 from semantic_entry import SemanticEntry
 
 class SymbolTable(object):
 
-    def __init__(self):
+    def __init__(self, parent):
+        self.parent_table = parent
         self.name = ''
         self.cur_depth = 0
         self.context_attributes_stack = []

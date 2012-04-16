@@ -5,11 +5,10 @@ __authors__ = 'Sam Sorensen', 'Keith Smith', 'Anna Andriyanova'
 __date__ = 'Spring 2012'
 
 class SemanticAnalyzer():
-    sym_table = SymbolTable(0, 'root') #derp?
     output = ''#output string
 
-    def __init__(self, st_in):
-        self.sym_table = st_in
+    def __init__(self):
+        self.sym_table = None
 
     def gen_add_sp(self, size):
         #
@@ -29,7 +28,7 @@ class SemanticAnalyzer():
     def process_id(self, id_rec):
         return
     def gen_push_id(self, id_rec, rec_out):
-        if(id_rec.type != "Integer"):
+        if id_rec.type != "Integer":
             logging.error("lol, type error.")
             return False
         trans_rec = self.sym_table.find(id_rec.lexeme).cur_rec #is cur_rec right?
