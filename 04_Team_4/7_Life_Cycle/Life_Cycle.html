@@ -73,6 +73,12 @@ Compilers 2012
 <!-- InstanceBeginEditable name="Main" -->
 <h1>Life Cycle</h1>
 Describe the model that you used to develop your capstone project. How did this model help and/or hinder your team?
+<p>
+Our compiler was structured in three major components, a scanner, a parser, and a semantic analyzer. The scanner takes as input a source file, and moves through it character by character to generate tokens. These tokens are added to an intermediate memory representation called a token list. This token file is then passed to the parser. By making the scanner and parser work together this way we have a two pass process for processing and parsing a piece of input code. Additionally the token list consists of token objects, which allowed us to encapsulate various pieces of data relevant to a token, such as its type, value, line, and column. With this representation, once a codeblock is given possession of a token it can extract all the relevant information without performing additional lookups to other places in memory.
+</p>
+<p>
+This principle carried over into the design of our semantic analyzer, where the object encapsulation of not only our symbol tables, but also each entry in the symbol table, allowed us to use similar functionality in creating and manipulating these entries. Finally, by constructing our compiler in various linked components we were able to keep those structures logically separate. This greatly aided in the design of our project, as each component can be designed, created, and utilized as its own unique entity.
+</p>
 <!-- InstanceEndEditable -->
 
 </article>

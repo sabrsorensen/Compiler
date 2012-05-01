@@ -79,10 +79,208 @@ Click <a href="../../../01_Introduction/2_Project_Specifications/3_Semanti_Analy
 </p>
 
 <h2>Source Listing</h2>
+<p>Our Semantic Analyzer consists of multiple components, listed below.</p>
+<p>semantic_analyzer.py</p>
 
-<pre class="prettyprint" ><code class="language-java">
-Insert source code for parser here. Copy and paste from Netbeans seems to work well; not tried with other
-IDEs.
+<pre class="prettyprint" ><code class="language-python">
+import logging
+from symbol_table import SymbolTable
+
+__authors__ = 'Sam Sorensen', 'Keith Smith', 'Anna Andriyanova'
+__date__ = 'Spring 2012'
+
+class SemanticAnalyzer():
+output = ''#output string
+
+def __init__(self):
+self.sym_table = None
+
+def gen_add_sp(self, size):
+#
+self.output += "add sp #" + size + " sp\n"
+
+def gen_ass_statement(self,id_rec, expr_rec):
+#
+if id_rec.type != expr_rec.type:
+#invalid type match
+logging.error("Type match error!")
+exit(0)
+self.output += "; Oh hey, we're assigning stuff to " + id_rec.lexeme
+trans_rec = self.sym_table.find(id_rec.lexeme).cur_rec #is cur_rec right?
+self.output += "pop " + trans_rec.offset + "(d" + trans_rec.depth + ")\n"
+
+#Stub methods from here down.
+def process_id(self, id_rec):
+return
+def gen_push_id(self, id_rec, rec_out):
+if id_rec.type != "Integer":
+logging.error("lol, type error.")
+return False
+trans_rec = self.sym_table.find(id_rec.lexeme).cur_rec #is cur_rec right?
+self.output += "push " + trans_rec.offset + "(d" + trans_rec.depth + ")\n"
+return True
+
+def gen_push_int(self, int_rec_in):
+self.output += "push #"+ int_rec_in.lexeme + "\n"
+def gen_begin(self):
+self.output += "push d0\nmov sp d0\n"
+def gen_end(self):
+self.output += "hlt\n"
+def gen_arithmetic(self,left_operand, operator, right_operator, rec_out):
+pass
+def to_file(self, file_name):
+try:
+output_file = open('a.out','w')
+output_file.write(self.output)
+output_file.close()
+except IOError as (errno, strerror):
+logging.error("I/O error(%s): %s" % errno,strerror)
+
+"""
+Possible additional "if" handling.
+"""
+</code></pre>
+<p>semantic_entry.py</p>
+<pre class="prettyprint" ><code class="language-python">
+__authors__ = 'Sam Sorensen', 'Keith Smith', 'Anna Andriyanova'
+__date__ = 'Spring 2012'
+
+class SemanticEntry(object):
+
+def __init__(self):
+#instead of empty, do my_sem_entry.semantic_record_stack
+self.depth = 0
+self.cur_record = None
+self.semantic_record_stack = []
+
+
+def put(self, record):
+if self.cur_record:
+self.semantic_record_stack.insert(0,self.cur_record)
+self.cur_record = record
+self.depth += 1
+
+def back_out(self):
+if self.semantic_record_stack:
+self.cur_record = self.semantic_record_stack.pop()
+else:
+self.cur_record = None
+self.depth -= 1
+
+def __repr__(self):
+return "%s %s" % (self.cur_record, self.semantic_record_stack)
+</code></pre>
+<p>semantic_record.py</p>
+<pre class="prettyprint" ><code class="language-python">
+__authors__ = 'Sam Sorensen', 'Keith Smith', 'Anna Andriyanova'
+__date__ = 'Spring 2012'
+
+import logging
+
+class SemanticRecord(object):
+
+def __init__(self):
+self.type = ''
+self.lexeme = ''
+self.param_mode = ''
+self.kind = ''
+self.size = 0
+self.offset = None
+self.label1 = ''
+self.label2 = ''
+self.loop_label = ''
+self.depth = None
+
+def __repr__(self):
+return "[%s | %s | %s | %s | %s | %s]" %   (self.lexeme, self.kind,
+self.type, self.size,
+self.offset, self.depth)
+
+def set_size(self, type):
+"""
+Setting the size of the entry based on its type
+"""
+if type.lower() in ['integer', 'boolean']:
+self.size = 1
+elif  type.lower() == 'float':
+self.size = 2
+else:
+logging.error('Unknown type: %s' % type)
+</code></pre>
+<p>symbol_table.py</p>
+<pre class="prettyprint" ><code class="language-python">
+__authors__ = 'Sam Sorensen', 'Keith Smith', 'Anna Andriyanova'
+__date__ = 'Spring 2012'
+
+
+from semantic_entry import SemanticEntry
+from semantic_record import SemanticRecord
+from collections import OrderedDict
+
+class SymbolTable(object):
+
+def __init__(self, parent):
+self.parent_table = parent
+self.name = ''
+if parent:
+self.cur_depth = self.parent_table.cur_depth
+else:
+self.cur_depth = 0
+self.context_attributes_stack = []
+self.cur_context_attributes = None
+self.sym_table = OrderedDict()
+self.record = SemanticRecord()
+self.cur_offset = 0
+
+def create(self): #subtables
+self.cur_context_attributes = ContextAttrs()
+self.cur_depth += 1
+
+def create_root(self): #Root table
+self.cur_context_attributes = ContextAttrs()
+
+def destroy(self):
+self.cur_lexeme = ''
+for lexeme in self.cur_context_attributes.context_lexemes:
+self.cur_entry = self.find(lexeme)
+if self.cur_entry:
+self.cur_entry.back_out()
+if self.cur_entry.semantic_record_stack is None:
+del self.sym_table[lexeme]
+
+def insert(self, record):
+self.record = record
+self.cur_context_attributes.context_lexemes.append(self.record.lexeme)
+self.record.offset = self.cur_offset
+self.cur_offset += self.record.size
+self.existing_entry = self.find(self.record.lexeme)
+if self.existing_entry is None:
+self.new_entry = SemanticEntry()
+#   self.record.depth = 0
+self.new_entry.put(self.record)
+self.sym_table[self.record.lexeme] = self.new_entry
+else:
+self.record.depth = self.existing_entry.depth
+self.existing_entry.put(self.record)
+
+def find(self, lexeme):
+return self.sym_table.get(lexeme, None)
+
+def __repr__(self):
+output = "\n[%s | %s | %s | %s | %s | %s]" %   ("lexeme", "kind",
+"type", "size",
+"offset", "depth")
+for k,v in self.sym_table.items():
+output = output + '\n' + v.cur_record.__repr__()
+return output
+
+
+class ContextAttrs(object):
+
+def __init__(self):
+self.context_lexemes = []
+self.nesting_level = 1
+self.cur_offset = None
 </code></pre>
 
 <!-- InstanceEndEditable -->
