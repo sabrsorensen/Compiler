@@ -13,7 +13,7 @@
 
 
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Summary</title>
+<title>Design Tradeoffs</title>
 <!-- InstanceEndEditable -->
 </head>
 
@@ -71,7 +71,21 @@ Compilers 2012
 
 <article id="mainContent">
 <!-- InstanceBeginEditable name="Main" -->
-Content goes here.
+<h1>Design Tradeoffs</h1>
+Besides the tradeoffs listed below, there were minimal restrictions or constraints we ran into which affected the structure our compiler.
+
+<h3>Scanner Design Tradeoffs</h3>
+    To facilitate scanning the input program, we made use of Python's built-in string handling and Regular Expressions support. This cut down on the time required to develop our scanner and check the structure of the program.
+
+<h3>Resolution of Keywords</h3>
+Using a Python dictionary made the most sense for keeping track of reserved words in our compiler. Dicts have a time complexity of O(n) in worst case and O(1) in average case for setting and retrieving keys and values.
+When the scanner reads the input file, input tokens are checked against the values in the reserved words dictionary, and handled appropriately when encountered.
+
+<h3>Symbol Table Design</h3>
+We chose to look at symbol table entries as objects, so we took an object oriented approach towards creating and handling the symbol tables. Entries are added to a list of other entries, and the various symbol table columns
+    are stored as attributes of the objects representing the entries. In Python, getting and setting objects in a list is of complexity O(1) as is the complexity of getting and setting attributes of an object, giving a total complexity of O(2)
+
+<h3>. . . </h3>
 <!-- InstanceEndEditable -->
 
 </article>
