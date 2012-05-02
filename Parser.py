@@ -87,6 +87,7 @@ class Parser(object):
             if self.t_type() == 'MP_EOF':
                 self.match('EOF')
                 self.print_symbol_table("Program",self.root_table)
+                self.sem_analyzer.write_IR()
                 return "The input program parses!"
             exit()
         else:
@@ -105,7 +106,9 @@ class Parser(object):
             self.root_table.name = self.program_name
             self.cur_symbol_table = self.root_table
             self.sem_analyzer.sym_table = self.cur_symbol_table
+            self.sem_analyzer.gen_begin()
             self.block()
+            self.sem_analyzer.gen_end()
             self.match('.')
         else:
             self.error('MP_PROGRAM')
@@ -286,7 +289,6 @@ class Parser(object):
             self.cur_func_name = old_func_name
             self.cur_symbol_table = self.cur_symbol_table.parent_table
             func_sym_table.destroy()
-
         else:
             self.error('MP_FUNCTION')
 

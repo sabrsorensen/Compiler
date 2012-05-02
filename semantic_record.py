@@ -18,7 +18,7 @@ class SemanticRecord(object):
         self.depth = None
 
     def __repr__(self):
-        return "[%s | %s | %s | %s | %s | %s]" %   (self.lexeme, self.kind,
+        return "[%7s |%7s |%7s |%7s |%7s |%7s ]" %   (self.lexeme, self.kind,
                                                     self.type, self.size,
                                                     self.offset, self.depth)
 

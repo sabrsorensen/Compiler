@@ -33,14 +33,15 @@ class SemanticAnalyzer():
     def gen_push_int(self, int_rec_in):
         pass
     def gen_begin(self):
-        pass
+        self.output += 'mov d0 0(sp)\nmov sp d0\n'
     def gen_end(self):
-        pass
+        self.output += 'hlt\n'
     def gen_arithmetic(self,left_operand, operator, right_operator, rec_out):
         pass
     def to_file(self, file_name):
         pass
-
+    def write_IR(self):
+        print self.output
     """
     Possible additional "if" handling.
     """

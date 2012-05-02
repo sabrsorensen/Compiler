@@ -56,7 +56,7 @@ class SymbolTable(object):
          return self.sym_table.get(lexeme, None)
 
     def __repr__(self):
-        output = "\n[%s | %s | %s | %s | %s | %s]" %   ("lexeme", "kind",
+        output = "\n[%7s |%7s |%7s |%7s |%7s |%7s ]" %   ("lexeme", "kind",
                                                       "type", "size",
                                                       "offset", "depth")
         for k,v in self.sym_table.items():
