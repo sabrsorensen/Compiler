@@ -5,7 +5,6 @@ __authors__ = 'Sam Sorensen', 'Keith Smith', 'Anna Andriyanova'
 __date__ = 'Spring 2012'
 
 class SemanticAnalyzer():
-    sym_table = SymbolTable(0, 'root') #derp?
     output = ''#output string
 
     def __init__(self, st_in):

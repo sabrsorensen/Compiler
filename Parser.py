@@ -12,7 +12,6 @@ log.setLevel(logging.ERROR)
 
 class Parser(object):
 
-
     def __init__(self, tokens):
         self.index = len(tokens)
         self.tokens = iter(tokens)
@@ -20,7 +19,7 @@ class Parser(object):
         self.next_token = self.tokens.next()    #LL2 lookahead token holder for when needed
         self.cur_symbol_table = None
         self.root_table = SymbolTable(None)
-        self.sem_analyzer = SemanticAnalyzer()
+        self.sem_analyzer = SemanticAnalyzer(self.root_table)
         self.program_name = ''
         self.cur_proc_name = ''
         self.cur_func_name = ''
