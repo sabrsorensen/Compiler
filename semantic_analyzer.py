@@ -45,9 +45,9 @@ class SemanticAnalyzer():
     def gen_write(self, expr_rec):
         self.output += 'wrts'
     def gen_read(self, read_param_rec):
-        read_param_rec = self.sym_table.find(read_param_rec.lexeme).cur_record
-        if read_param_rec is not None:
-            self.output += 'read ' + str(read_param_rec.offset) + '(D' + str(read_param_rec.depth) + ')'
+        if self.sym_table.find(read_param_rec.lexeme) is not None:
+            read_param_rec = self.sym_table.find(read_param_rec.lexeme).cur_record
+            self.output += 'read ' + str(read_param_rec.offset) + '(D' + str(read_param_rec.depth) + ')\n'
         else:
             logging.error("Read statement parameter " + read_param_rec.lexeme + " not found.\n")
     """
