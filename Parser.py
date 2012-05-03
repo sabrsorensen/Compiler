@@ -578,7 +578,7 @@ class Parser(object):
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('46')
-            self.variable_identifier()
+            self.variable_identifier(sem_rec)
         else:
             self.error('MP_IDENTIFIER')
 
@@ -735,7 +735,7 @@ class Parser(object):
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('59')
-            self.variable_identifier(SemanticRecord()) # DUMMY! When doing level B, change to actual record
+            self.variable_identifier()
         else:
             self.error('MP_IDENTIFIER')
 
@@ -854,7 +854,7 @@ class Parser(object):
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('70')
-            self.simple_expression()
+            self.simple_expression(sem_rec)
             self.optional_relational_part()
         else:
             self.error(accepted_list)
@@ -912,7 +912,7 @@ class Parser(object):
             self.error(['MP_EQUAL', 'MP_LTHAN', 'MP_GTHAN',
                         'MP_LEQUAL', 'MP_GEQUAL', 'MP_NEQUAL'])
 
-    def simple_expression(self):
+    def simple_expression(self, sem_rec):
         """
         Expanding Rule 79 :
         SimpleExpression -> OptionalSign Term TermTail
@@ -923,8 +923,8 @@ class Parser(object):
         if self.t_type() in accepted_list:
             Parser.print_tree('79')
             self.optional_sign()
-            self.term()
-            self.term_tail()
+            self.term(sem_rec)
+            self.term_tail(sem_rec)
         else:
             self.error(accepted_list)
 
@@ -934,6 +934,9 @@ class Parser(object):
         TermTail -> AddingOperator Term TermTail
         TermTail -> ?
         """
+        result_sem_rec = SemanticRecord()
+        term_sem_rec = SemanticRecord()
+        add_op_sem_rec = SemanticRecord()
         eps_list = ['MP_RPAREN', 'MP_COMMA', 'MP_SCOLON',
                          'MP_LTHAN', 'MP_LEQUAL', 'MP_NEQUAL',
                          'MP_EQUAL', 'MP_GTHAN', 'MP_GEQUAL',
@@ -941,17 +944,13 @@ class Parser(object):
                          'MP_TO', 'MP_UNTIL']
         accepted_list = ['MP_PLUS', 'MP_MINUS']
 
-        add_op_rec = SemanticRecord()
-        term_rec = SemanticRecord()
-        result_rec = SemanticRecord()
-
         if self.t_type() in accepted_list:
             Parser.print_tree('80')
             #self.optional_sign()
-            self.adding_operator(add_op_rec)
-            self.term(term_rec)
-            self.term_tail(result_rec)
-            term_tail_rec = result_rec
+            self.adding_operator(term_tail_rec)
+            self.term(term_sem_rec)
+            self.sem_analyzer.gen_arithmetic(term_tail_rec, add_op_sem_rec, term_sem_rec, result_sem_rec)
+            self.term_tail(result_sem_rec)
         elif self.t_type() in eps_list:
             Parser.print_tree('81')
             self.epsilon()
@@ -995,7 +994,7 @@ class Parser(object):
         else:
             self.error(accepted_list)
 
-    def term(self):
+    def term(self, sem_rec):
         """
         Expanding Rule 88:
         Term -> Factor FactorTail
@@ -1003,17 +1002,20 @@ class Parser(object):
         accepted_list = ['MP_LPAREN', 'MP_IDENTIFIER', 'MP_INTEGER', 'MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('88')
-            self.factor()
-            self.factor_tail()
+            self.factor(sem_rec)
+            self.factor_tail(sem_rec)
         else:
             self.error(accepted_list)
 
-    def factor_tail(self):
+    def factor_tail(self, sem_rec):
         """
         Expanding Rule 89,90:
         FactorTail -> MultiplyingOperator Factor FactorTail
         FactorTail -> ?
         """
+        result_sem_rec = SemanticRecord()
+        factor_sem_rec = SemanticRecord()
+        mul_op_sem_rec = SemanticRecord()
         accepted_list = ['MP_TIMES', 'MP_AND',
                          'MP_DIV', 'MP_MOD']
 
@@ -1027,16 +1029,17 @@ class Parser(object):
 
         if self.t_type() in accepted_list:
             Parser.print_tree('89')
-            self.multiplying_operator()
-            self.factor()
-            self.factor_tail()
+            self.multiplying_operator(mul_op_sem_rec)
+            self.factor(factor_sem_rec)
+            self.sem_analyzer.gen_arithmetic(sem_rec, mul_op_sem_rec, factor_sem_rec, result_sem_rec)
+            self.factor_tail(result_sem_rec)
         elif self.t_type() in eps_list:
             Parser.print_tree('90')
             self.epsilon()
         else:
             self.error(accepted_list.extend(eps_list))
 
-    def multiplying_operator(self):
+    def multiplying_operator(self, mul_op_sem_rec):
         """
         Expanding Rule 91,92,93,94:
         MultiplyingOperator -> "*"
@@ -1047,15 +1050,19 @@ class Parser(object):
         if self.t_type() == 'MP_TIMES':
             Parser.print_tree('91')
             self.match(self.t_lexeme())
+            mul_op_sem_rec = '*'
         elif self.t_type() == 'MP_DIV':
             Parser.print_tree('92')
             self.match(self.t_lexeme())
+            mul_op_sem_rec = 'div'
         elif self.t_type() == 'MP_MOD':
             Parser.print_tree('93')
             self.match(self.t_lexeme())
+            mul_op_sem_rec = 'mod'
         elif self.t_type() == 'MP_AND':
             Parser.print_tree('94')
             self.match(self.t_lexeme())
+            mul_op_sem_rec = 'and'
         else:
             self.error(['MP_TIMES', 'MP_DIV', 'MP_MOD', 'MP_AND'])
 
@@ -1114,6 +1121,7 @@ class Parser(object):
             in_lexeme = self.t_lexeme()
             self.match(in_lexeme)
             sem_rec.lexeme = in_lexeme
+            sem_rec.type = 'Int'
         else:
             self.error('MP_IDENTIFIER')
 
