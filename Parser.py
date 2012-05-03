@@ -598,7 +598,6 @@ class Parser(object):
             self.write_parameter_tail() # this too is an expression of some sort
             self.match(')')
             # todo: handle combining the two returns from param and param_tail, push on the stack
-            self.sem_analyzer.gen_write(write_param_rec)
         else:
             self.error('MP_WRITE')
 
@@ -625,10 +624,12 @@ class Parser(object):
         Expanding Rule 50 :
         WriteParameter -> OrdinalExpression
         """
+        write_param_rec = SemanticRecord()
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('50')
-            self.ordinal_expression()
+            self.ordinal_expression(write_param_rec)
+            self.sem_analyzer.gen_write(write_param_rec)
         else:
             self.error(accepted_list)
 
@@ -749,7 +750,7 @@ class Parser(object):
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('60')
-            self.ordinal_expression()
+            self.ordinal_expression(SemanticRecord())
         else:
             self.error(accepted_list)
 
@@ -1167,7 +1168,7 @@ class Parser(object):
         else:
             self.error(accepted_list)
 
-    def ordinal_expression(self):
+    def ordinal_expression(self, sem_rec):
         """
         Expanding Rule 105:
         OrdinalExpression -> Expression
@@ -1177,7 +1178,7 @@ class Parser(object):
 
         if self.t_type() in accepted_list:
             Parser.print_tree('105')
-            self.expression()
+            self.expression(sem_rec)
         else:
             self.error(accepted_list)
 

@@ -63,13 +63,14 @@ class SemanticAnalyzer():
     def write_IR(self):
         print self.output
     def gen_write(self, expr_rec):
-        self.output += 'wrts'
+        self.output += 'wrts\n'
     def gen_read(self, read_param_rec):
         if self.sym_table.find(read_param_rec.lexeme) is not None:
             read_param_rec = self.sym_table.find(read_param_rec.lexeme).cur_record
-            self.output += 'read ' + str(read_param_rec.offset) + '(D' + str(read_param_rec.depth) + ')\n'
+            self.output += 'read ' + str(read_param_rec.offset) + '(d' + str(read_param_rec.depth) + ')\n'
         else:
-            logging.error("Read statement parameter " + read_param_rec.lexeme + " not found.\n")
+            logging.error("Variable " + read_param_rec.lexeme + " referenced before declaration.\n")
+            exit(-1)
     """
     Possible additional "if" handling.
     """
