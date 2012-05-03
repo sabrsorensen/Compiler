@@ -1,0 +1,57 @@
+{Currently correct output...should i be 5 after output though?}
+{Technically can leave undefined...will look into it}
+
+program Program2;
+
+  var Apples: Integer;
+	  Pear  : Integer;
+
+  begin
+	Apples := 1;
+	Pear := 1;
+	
+	{Test NAND}
+    if (NOT((apples = 1) AND (pear = Apples)))
+      then begin
+        Write(1)
+      end
+      else begin
+        Write(0)
+      end;
+	
+	APples := 1;
+	PeAr := 0;
+	
+	{Test NAND}
+    if (NOT((apples = 1) AND (pear = Apples)))
+      then begin
+        Write(1)
+      end
+      else begin
+        Write(0)
+      end;
+	  
+	APples := 0;
+	PeAr := 1;
+	
+	{Test NAND}
+    if (NOT((apples = 1) AND (pear = Apples)))
+      then begin
+        Write(1)
+      end
+      else begin
+        Write(0)
+      end;
+	  
+	APples := 0;
+	PeAr := 0;
+	
+	{Test NAND}
+    if (NOT((apples = 1) AND (pear = AppLes)))
+      then begin
+        Write(1)
+      end
+      else begin
+        Write(0)
+      end;
+  end.

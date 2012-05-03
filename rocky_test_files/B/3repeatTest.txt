@@ -1,0 +1,15 @@
+{repeat test}
+program repeatTest;
+
+var a, b: integer;
+
+begin
+
+repeat
+ read(a);
+ read(b);
+ write(a, b);
+until a > b;
+
+end.
+

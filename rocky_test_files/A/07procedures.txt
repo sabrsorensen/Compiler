@@ -1,0 +1,45 @@
+{
+9
+8
+8
+-2
+-3
+5
+-3
+}
+
+program test;
+
+var x:integer; y:integer;
+
+procedure one(a:integer);
+ begin
+ a := a+1;
+ write(a);
+ end;
+
+procedure two(var b:integer);
+ begin
+ one(b);
+ write(b);
+ end;
+
+procedure three(c:integer);
+  begin
+  c := c + 3;
+  two(c);
+  write(c);
+  end;
+
+begin
+
+  x := 5;
+  y := -3;
+
+  three(x);
+  two(y);
+
+  write(x);
+  write(y);
+
+end.

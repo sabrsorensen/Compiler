@@ -1,0 +1,57 @@
+{Currently correct output...should i be 5 after output though?}
+{Technically can leave undefined...will look into it}
+
+program Program2;
+
+  var Apples: Integer;
+	  Pear  : Integer;
+
+  begin
+	ApplEs := 1;
+	Pear := 1;
+	
+	{Test AND}
+    if ((applEs = 1) AND (PeaR = 1))
+      then begin
+        Write(1)
+      end
+      else begin
+        Write(0)
+      end;
+	
+	APpLes := 1;
+	peAR := 0;
+	
+	{Test AND}
+    if ((AppleS = 1) AND (pEAr = 1))
+      then begin
+        Write(1)
+      end
+      else begin
+        Write(0)
+      end;
+	  
+	APplEs := 0;
+	PeAr := 1;
+	
+	{Test AND}
+    if ((aPplEs = 1) AND (PeAR = 1))
+      then begin
+        Write(1)
+      end
+      else begin
+        Write(0)
+      end;
+	  
+	APpleS := 0;
+	PeAr := 0;
+	
+	{Test AND}
+    if ((aPplES = 1) AND (PEaR = 1))
+      then begin
+        Write(1)
+      end
+      else begin
+        Write(0)
+      end;
+  end.

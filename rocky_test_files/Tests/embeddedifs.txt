@@ -1,0 +1,37 @@
+{Currently correct output...should i be 5 after output though?}
+{Technically can leave undefined...will look into it}
+
+program Program2;
+
+  var Apples: Integer;
+	  Pear  : Integer;
+
+  begin
+	Apples := 1;
+	Pear := 1;
+	
+	{Test NAND}
+    if (Apples = Pear)
+      then begin
+		Write(1);
+		Apples := ApPles + 10;
+		
+        if (NOT(apples = 1))
+		  then begin
+			Write(1);
+			if (APPLES < PEAR)
+			  then begin
+				Write(1)
+			  end
+			  else begin
+				Write(0)
+			  end;
+		  end
+		  else begin
+			Write(0)
+		  end;
+      end
+      else begin
+        Write(0)
+      end;
+  end.

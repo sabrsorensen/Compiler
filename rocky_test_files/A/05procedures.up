@@ -1,0 +1,41 @@
+{
+30
+input:200
+201
+211
+input:100
+101
+201
+101
+}
+
+program test;
+
+var x:integer; y:integer;
+
+procedure one(var a:integer);
+ begin
+ read(a);
+ a := a+1;
+ write(a);
+ end;
+
+procedure two(b:integer);
+ begin
+ b := b+10;
+ write(b);
+ end;
+
+begin
+
+  two(20);
+
+  one(x);
+  two(x);
+
+  one(y);
+
+  write(x);
+  write(y);
+
+end.

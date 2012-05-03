@@ -1,0 +1,47 @@
+{
+11
+12
+13
+14
+15
+16
+15
+30
+}
+
+program test;
+
+var x:integer; y:integer;
+
+function f_one(a:integer):integer;
+ begin
+ a := a+1; 
+ write(a);
+ f_one := a;
+ end;
+
+function f_two(b:integer):integer;
+ begin
+ b := b+1;
+ write(b);
+ f_two := b;
+ end;
+
+function f_three(var c:integer):integer;
+ begin
+ c := c+1;
+ write(c);
+ f_three := c;
+ end;
+
+begin
+  x := 10;
+  y := 20;
+
+  y := f_one(f_two(f_three(x)));
+  x := f_two(f_one(f_three(y)));
+
+  write(y+1);
+  write(x+y);
+
+end.

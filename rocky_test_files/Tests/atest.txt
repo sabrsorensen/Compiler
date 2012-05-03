@@ -1,0 +1,36 @@
+{Currently correct output...should i be 5 after output though?}
+{Technically can leave undefined...will look into it}
+
+program Program2;
+
+  var i: Integer;
+      N: Integer;
+	  J: Integer;
+	  Sum: Integer;
+  begin
+	sum := 0;
+	N := 5;
+    for i := N downto 1 do	
+      Write(i);				{5,4,3,2,1}
+	write(i);				{0}
+	write(N);				{5}
+	for i := 1 to N do		
+	  Write(i);				{1,2,3,4,5}
+	write(i);				{6}
+	write(N);				{5}
+	
+	for i := 1 to N do
+	  begin
+	   write(i);			{1,2,3,4,5}
+	   N := 10;
+	   J := 5;
+	   while (J <= N) or (J > 100) do begin
+			Sum := Sum + J;
+			J := J + 1;
+			write(J);
+			write(N)
+		end
+	  end;
+	write(i);				{6}
+	write(N);				{10}
+  end.
