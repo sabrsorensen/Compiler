@@ -1088,7 +1088,6 @@ class Parser(object):
         elif self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('96')
             sem_rec.lexeme = self.t_lexeme()
-            print sem_rec.type
             self.match(self.t_lexeme())
             self.sem_analyzer.gen_push_id(sem_rec, SemanticRecord())
         elif self.t_type() == 'MP_NOT':
