@@ -576,9 +576,11 @@ class Parser(object):
         Expanding Rule 46 :
         ReadParameter -> VariableIdentifier
         """
+        read_param_rec = SemanticRecord()
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('46')
-            self.variable_identifier(sem_rec)
+            self.variable_identifier(read_param_rec)
+            self.sem_analyzer.gen_read(read_param_rec)
         else:
             self.error('MP_IDENTIFIER')
 
@@ -735,7 +737,7 @@ class Parser(object):
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('59')
-            self.variable_identifier()
+            self.variable_identifier(SemanticRecord()) # DUMMY! When doing level B, change to actual record
         else:
             self.error('MP_IDENTIFIER')
 
