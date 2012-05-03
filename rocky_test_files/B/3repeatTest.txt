@@ -9,7 +9,7 @@ repeat
  read(a);
  read(b);
  write(a, b);
-until a > b;
+until (a > b);
 
 end.
 
