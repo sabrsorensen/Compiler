@@ -56,11 +56,11 @@ begin
   ;
 
 
-  if ((a > b) or (a > c)) or (a = c) then
+  if (((a > b) or (a > c)) or (a = c)) then
     begin
-      if not (a <> c) then
+      if (not (a <> c)) then
         begin
-          if (b < a) or not (c <> c) then
+          if ((b < a) or not (c <> c)) then
             if (b = 55) then
               begin
                 write(100000);
