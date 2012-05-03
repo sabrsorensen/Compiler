@@ -1,6 +1,5 @@
 import logging
 import traceback
-from symbol_table import SymbolTable
 
 __authors__ = 'Sam Sorensen', 'Keith Smith', 'Anna Andriyanova'
 __date__ = 'Spring 2012'
@@ -20,29 +19,6 @@ class SemanticAnalyzer():
     def gen_add_sp(self, size):
         #
         self.output += "add sp #" + size + " sp\n"
-
-    def begin_while(self, while_rec):
-        while_rec.label1 = self.gen_label()
-        while_rec.label2 = self.gen_label()
-
-    def gen_while(self, while_rec, expr_rec):
-        self.output += "l" + str(while_rec.label1) + ":\n"
-        if expr_rec.lexeme == 'eq':
-            self.output += "bne -1(sp) sp l" + str(while_rec.label2) + "\n"
-        elif expr_rec.lexeme == 'lt':
-            self.output += "bge -1(sp) sp l" + str(while_rec.label2) + "\n"
-        elif expr_rec.lexeme == 'lte':
-            self.output += "bgt -1(sp) sp l" + str(while_rec.label2) + "\n"
-        elif expr_rec.lexeme == 'gt':
-            self.output += "ble -1(sp) sp l" + str(while_rec.label2) + "\n"
-        elif expr_rec.lexeme == 'gte':
-            self.output += "blt -1(sp) sp l" + str(while_rec.label2) + "\n"
-        elif expr_rec.lexeme == 'ne':
-            self.output += "beq -1(sp) sp l" + str(while_rec.label2) + "\n"
-
-    def end_while(self, while_rec):
-        self.output += "br l" + str(while_rec.label1) + "\n"
-        self.output += "l" + str(while_rec.label2) + ":\n"
 
     def gen_ass_statement(self,id_rec, expr_rec):
         # todo add type matching back in, commented for testing
@@ -112,7 +88,7 @@ class SemanticAnalyzer():
     def gen_read(self, read_param_rec):
         if self.sym_table.find(read_param_rec.lexeme) is not None:
             read_param_rec = self.sym_table.find(read_param_rec.lexeme).cur_record
-            self.output += 'read ' + str(read_param_rec.offset) + '(d' + str(read_param_rec.depth) + ')\n'
+            self.output += 'rd ' + str(read_param_rec.offset) + '(d' + str(read_param_rec.depth) + ')\n'
         else:
             logging.error("Variable " + read_param_rec.lexeme + " referenced before declaration.\n")
             exit(-1)
@@ -121,46 +97,66 @@ class SemanticAnalyzer():
     """
     def begin_if(self, if_rec):
         if_rec.label1 = self.gen_label()
-        if_rec.label2 = self.gen_label()
         if if_rec.lexeme == 'eq':
-            self.output += "bne " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +'\n'
+            self.output += "beq " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
         elif if_rec.lexeme == 'lt':
-            self.output += "bgt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +'\n'
-            self.output += "beq " + "-2(sp) "  + "-1(sp)" + ' L' + str(if_rec.label2) +'\n'
+            self.output += "blt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
         elif if_rec.lexeme == 'gt':
-            self.output += "blt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +'\n'
-            self.output += "beq " + "-2(sp) "  + "-1(sp)" + ' L' + str(if_rec.label2) +'\n'
+            self.output += "bgt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
         elif if_rec.lexeme == 'lte':
-            self.output += "bgt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +'\n'
+            self.output += "blt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
+            self.output += "beq " + "-2(sp) "  + "-1(sp)" + ' L' + str(if_rec.label1) +':\n'
         elif if_rec.lexeme == 'gte':
-            self.output += "blt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +'\n'
+            self.output += "bgt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
+            self.output += "beq " + "-2(sp) "  + "-1(sp)" + ' L' + str(if_rec.label1) +':\n'
         elif if_rec.lexeme == 'ne':
-            self.output += "beq " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +'\n'
+            self.output += "bne " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
 
     def end_if(self, if_rec):
-        self.output += 'L'+ str(if_rec.label2) + ':\n'
+        self.output += 'L'+ str(if_rec.label1) + ':\n'
 
-    def opt_else(self, if_rec):
-        self.output += 'br L' + str(if_rec.label2) + '\n'
-        self.output += 'L' + str(if_rec.label1) + ':\n'
+    def begin_while(self, while_rec):
+        while_rec.label1 = self.gen_label()
+        while_rec.label2 = self.gen_label()
 
-    def begin_repeat(self, rep_rec):
-        rep_rec.label1 = self.gen_label()
-        self.output += 'L' + str(rep_rec.label1) + ':\n'
+    def gen_while(self, while_rec, expr_rec):
+        self.output += "l" + str(while_rec.label1) + ":\n"
+        if expr_rec.lexeme == 'eq':
+            self.output += "bne -1(sp) sp l" + str(while_rec.label2) + "\n"
+        elif expr_rec.lexeme == 'lt':
+            self.output += "bge -1(sp) sp l" + str(while_rec.label2) + "\n"
+        elif expr_rec.lexeme == 'lte':
+            self.output += "bgt -1(sp) sp l" + str(while_rec.label2) + "\n"
+        elif expr_rec.lexeme == 'gt':
+            self.output += "ble -1(sp) sp l" + str(while_rec.label2) + "\n"
+        elif expr_rec.lexeme == 'gte':
+            self.output += "blt -1(sp) sp l" + str(while_rec.label2) + "\n"
+        elif expr_rec.lexeme == 'ne':
+            self.output += "beq -1(sp) sp l" + str(while_rec.label2) + "\n"
 
-    def end_repeat(self, rep_rec):
-        if rep_rec.lexeme == 'eq':
-            self.output += "bne " + "-1(sp) "  + "sp" + ' L' + str(rep_rec.label1) +'\n'
-        elif rep_rec.lexeme == 'lt':
-            self.output += "bgt " + "-1(sp) "  + "sp" + ' L' + str(rep_rec.label1) +'\n'
-            self.output += "beq " + "-2(sp) "  + "-1(sp)" + ' L' + str(rep_rec.label2) +'\n'
-        elif rep_rec.lexeme == 'gt':
-            self.output += "blt " + "-1(sp) "  + "sp" + ' L' + str(rep_rec.label1) +'\n'
-            self.output += "beq " + "-2(sp) "  + "-1(sp)" + ' L' + str(rep_rec.label2) +'\n'
-        elif rep_rec.lexeme == 'lte':
-            self.output += "bgt " + "-1(sp) "  + "sp" + ' L' + str(rep_rec.label1) +'\n'
-        elif rep_rec.lexeme == 'gte':
-            self.output += "blt " + "-1(sp) "  + "sp" + ' L' + str(rep_rec.label1) +'\n'
-        elif rep_rec.lexeme == 'ne':
-            self.output += "beq " + "-1(sp) "  + "sp" + ' L' + str(rep_rec.label1) +'\n'
+    def end_while(self, while_rec):
+        self.output += "br l" + str(while_rec.label1) + "\n"
+        self.output += "l" + str(while_rec.label2) + ":\n"
 
+    def begin_for(self, for_rec):
+        for_rec.label1 = self.gen_label()
+        for_rec.label2 = self.gen_label()
+
+    def gen_for(self, for_rec):
+        self.gen_while(for_rec, for_rec)
+
+    def end_for(self,for_rec, control_var_rec, final_rec):
+        self.gen_push_id(control_var_rec, None)
+        if for_rec.lexeme == 'lte':
+            self.output += "push #1\nadds\n"
+        elif for_rec.lexeme == 'gte':
+            self.output += "push #1\nsubs\n"
+        temp = self.sym_table.find(control_var_rec.lexeme).cur_record
+        self.output += "pop " + str(temp.offset) + "(d" + str(temp.depth) + ")\n"
+        if self.sym_table.find(final_rec.lexeme):
+            self.gen_push_id(final_rec, None)
+        else:
+            self.gen_push_int(final_rec)
+
+        self.output += "br l" + str(for_rec.label1) + "\n"
+        self.output += "l" + str(for_rec.label2) + ":\n"

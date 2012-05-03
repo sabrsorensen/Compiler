@@ -731,31 +731,38 @@ class Parser(object):
         Expanding Rule 58:
         ForStatement -> "for" ControlVariable ":=" InitialValue StepValue FinalValue "do" Statement
         """
+        control_var_rec = SemanticRecord()
+        initial_rec = SemanticRecord()
+        final_rec = SemanticRecord()
+        for_rec = SemanticRecord()
         if self.t_type() == 'MP_FOR':
             Parser.print_tree('58')
             self.match('for')
-            self.control_variable()
+            self.control_variable(control_var_rec)
             self.match(':=')
-            self.initial_value()
-            self.step_value()
-            self.final_value()
+            self.initial_value(initial_rec)
+            self.step_value(for_rec)
+            self.final_value(final_rec)
             self.match('do')
+            self.sem_analyzer.begin_for(for_rec)
+            self.sem_analyzer.gen_for(for_rec)
             self.statement()
+            self.sem_analyzer.end_for(for_rec, control_var_rec, final_rec)
         else:
             self.error('MP_FOR')
 
-    def control_variable(self):
+    def control_variable(self, control_var_rec):
         """
         Expanding Rule 59:
         ControlVariable -> VariableIdentifier
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('59')
-            self.variable_identifier(SemanticRecord()) # DUMMY! When doing level B, change to actual record
+            self.variable_identifier(control_var_rec)
         else:
             self.error('MP_IDENTIFIER')
 
-    def initial_value(self):
+    def initial_value(self, initial_rec):
         """
         Expanding Rule 60:
         InitialValue -> OrdinalExpression
@@ -763,11 +770,11 @@ class Parser(object):
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('60')
-            self.ordinal_expression(SemanticRecord())
+            self.ordinal_expression(initial_rec)
         else:
             self.error(accepted_list)
 
-    def step_value(self):
+    def step_value(self, step_rec):
         """
         Expanding Rules 61, 62 :
         StepValue -> "to"
@@ -776,13 +783,15 @@ class Parser(object):
         if self.t_type() == 'MP_TO':
             Parser.print_tree('61')
             self.match(self.t_lexeme())
+            step_rec.lexeme = 'lte'
         elif self.t_type() == 'MP_DOWNTO':
             Parser.print_tree('62')
             self.match(self.t_lexeme())
+            step_rec.lexeme = 'gte'
         else:
             self.error(['MP_TO', 'MP_DOWNTO'])
 
-    def final_value(self):
+    def final_value(self, final_rec):
         """
         Expanding Rule 63:
         FinalValue -> OrdinalExpression
@@ -790,7 +799,7 @@ class Parser(object):
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('63')
-            self.ordinal_expression()
+            self.ordinal_expression(final_rec)
         else:
             self.error(accepted_list)
 
