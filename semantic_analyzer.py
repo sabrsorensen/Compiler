@@ -176,6 +176,7 @@ class SemanticAnalyzer():
             self.output += "push #1\nsubs\n"
         temp = self.sym_table.find(control_var_rec.lexeme).cur_record
         self.output += "pop " + str(temp.offset) + "(d" + str(temp.depth) + ")\n"
+        self.gen_push_id(control_var_rec, None)
         if self.sym_table.find(final_rec.lexeme):
             self.gen_push_id(final_rec, None)
         else:
