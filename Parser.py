@@ -735,7 +735,7 @@ class Parser(object):
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('59')
-            self.variable_identifier()
+            self.variable_identifier(SemanticRecord()) # DUMMY! When doing level B, change to actual record
         else:
             self.error('MP_IDENTIFIER')
 
@@ -846,7 +846,7 @@ class Parser(object):
         else:
             self.error(accepted_list)
 
-    def expression(self):
+    def expression(self, sem_rec):
         """
         Expanding Rule 70 :
         Expression -> SimpleExpression OptionalRelationalPart
@@ -928,7 +928,7 @@ class Parser(object):
         else:
             self.error(accepted_list)
 
-    def term_tail(self):
+    def term_tail(self, term_tail_rec): # term_tail_rec contains information about the left operand of the expression
         """
         Expanding Rule 80,81 :
         TermTail -> AddingOperator Term TermTail
@@ -941,12 +941,17 @@ class Parser(object):
                          'MP_TO', 'MP_UNTIL']
         accepted_list = ['MP_PLUS', 'MP_MINUS']
 
+        add_op_rec = SemanticRecord()
+        term_rec = SemanticRecord()
+        result_rec = SemanticRecord()
+
         if self.t_type() in accepted_list:
             Parser.print_tree('80')
             #self.optional_sign()
-            self.adding_operator()
-            self.term()
-            self.term_tail()
+            self.adding_operator(add_op_rec)
+            self.term(term_rec)
+            self.term_tail(result_rec)
+            term_tail_rec = result_rec
         elif self.t_type() in eps_list:
             Parser.print_tree('81')
             self.epsilon()
@@ -974,7 +979,7 @@ class Parser(object):
         else:
             self.error(eps_list.extend(['MP_PLUS','MP_MINUS']))
 
-    def adding_operator(self):
+    def adding_operator(self, sem_rec):
         """
         Expanding Rule 85,86,87:
         AddingOperator -> "+"
@@ -984,7 +989,9 @@ class Parser(object):
         accepted_list = ['MP_PLUS','MP_MINUS','MP_OR']
 
         if self.t_type() in accepted_list:
-            self.match(self.t_lexeme())
+            in_lexeme = self.t_lexeme()
+            self.match(in_lexeme)
+            sem_rec.lexeme = in_lexeme
         else:
             self.error(accepted_list)
 
