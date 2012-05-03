@@ -281,8 +281,15 @@ class Parser(object):
             self.cur_symbol_table = func_sym_table
             self.sem_analyzer.sym_table = self.cur_symbol_table
             Parser.print_tree('16')
-            self.function_heading()
+            type = self.function_heading()
             func_sym_table.name = self.cur_func_name
+            func_record = SemanticRecord()
+            func_record.type = type
+            func_record.lexeme = self.cur_func_name
+            func_record.set_size(type)
+            func_record.kind = "func"
+            func_record.depth = self.cur_symbol_table.cur_depth
+            self.cur_symbol_table.parent_table.insert(func_record)
             self.match(';')
             self.block()
             self.match(';')
@@ -318,6 +325,7 @@ class Parser(object):
             self.optional_formal_parameter_list()
             self.match(':')
             type = self.type()
+            return type
         else:
             self.error('MP_FUNCTION')
 
