@@ -1069,7 +1069,7 @@ class Parser(object):
         else:
             self.error(['MP_TIMES', 'MP_DIV', 'MP_MOD', 'MP_AND'])
 
-    def factor(self, sem_rec=None): #AAA
+    def factor(self, sem_rec): #AAA
         """
         Expanding Rule 95,96,97,98,99:
         Factor -> UnsignedInteger
@@ -1080,8 +1080,10 @@ class Parser(object):
         """
         if self.t_type() == 'MP_INTEGER':
             Parser.print_tree('95')
-            self.match(self.t_lexeme())
+            sem_rec.lexeme = self.t_lexeme()
+            sem_rec.type = 'Integer'
             self.sem_analyzer.gen_push_int(sem_rec)
+            self.match(self.t_lexeme())
         elif self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('96')
             self.match(self.t_lexeme())
