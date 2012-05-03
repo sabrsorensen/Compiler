@@ -667,17 +667,18 @@ class Parser(object):
             self.sem_analyzer.begin_if(if_rec)
             self.match('then')
             self.statement()
+            self.optional_else_part(if_rec)
             self.sem_analyzer.end_if(if_rec)
-            self.optional_else_part()
         else:
             self.error('MP_IF')
 
-    def optional_else_part(self):
+    def optional_else_part(self, if_rec):
         """
         Expanding Rule 54:
         OptionalElsePart -> "else" Statement
         """
         eps_list = ['MP_SCOLON', 'MP_END', 'MP_UNTIL']
+        self.sem_analyzer.opt_else(if_rec)
         if self.t_type() == 'MP_ELSE':
             Parser.print_tree('54')
             self.match('else')
