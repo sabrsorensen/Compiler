@@ -957,7 +957,7 @@ class Parser(object):
 
         if self.t_type() in accepted_list:
             Parser.print_tree('79')
-            self.optional_sign()
+            self.optional_sign(sem_rec)
             self.term(sem_rec)
             self.term_tail(sem_rec)
         else:
@@ -992,7 +992,7 @@ class Parser(object):
         else:
             self.error(accepted_list.extend(eps_list))
 
-    def optional_sign(self):
+    def optional_sign(self, sem_rec):
         """
         Expanding Rule 82,83,84:
         OptionalSign -> "+"
@@ -1007,6 +1007,7 @@ class Parser(object):
         elif self.t_type() == 'MP_MINUS':
             Parser.print_tree('83')
             self.match(self.t_lexeme())
+            sem_rec.negative = 1
         elif self.t_type() in eps_list:
             Parser.print_tree('84')
             self.epsilon()

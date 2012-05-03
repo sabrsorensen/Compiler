@@ -16,6 +16,7 @@ class SemanticRecord(object):
         self.label2 = ''
         self.loop_label = ''
         self.depth = None
+        self.negative = 0
 
     def __repr__(self):
         return "[%7s |%7s |%7s |%7s |%7s |%7s ]" %   (self.lexeme, self.kind,
