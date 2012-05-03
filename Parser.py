@@ -880,14 +880,8 @@ class Parser(object):
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('70')
-            if self.t_type() == 'MP_LPAREN':
-                self.match('(')
-                self.simple_expression(sem_rec)
-                self.optional_relational_part(sem_rec)
-                self.match(')')
-            else:
-                self.simple_expression(sem_rec)
-                self.optional_relational_part(sem_rec)
+            self.simple_expression(sem_rec)
+            self.optional_relational_part(sem_rec)
         else:
             self.error(accepted_list)
 
@@ -1132,7 +1126,13 @@ class Parser(object):
         elif self.t_type() == 'MP_LPAREN':
             Parser.print_tree('98')
             self.match(self.t_lexeme())
-            self.expression(sem_rec)
+            if self.t_type() == 'MP_LPAREN':
+                self.match('(')
+                self.expression(sem_rec)
+                self.match(')')
+            else:
+                self.expression(sem_rec)
+
             if self.t_type() == 'MP_RPAREN':
                 self.match(self.t_lexeme())
             else:
