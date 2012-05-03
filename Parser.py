@@ -999,7 +999,7 @@ class Parser(object):
         OptionalSign -> "-"
         OptionalSign -> ?
         """
-        eps_list = ['MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
+        eps_list = ['MP_IDENTIFIER', 'MP_INTEGER','MP_NOT', 'MP_LPAREN']
 
         if self.t_type() == 'MP_PLUS':
             Parser.print_tree('82')

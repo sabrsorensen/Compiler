@@ -12,10 +12,10 @@ class Scanner():
         #### Regular Expressions ####
         self.id_pattern =  r'(^(_|[a-zA-Z])[_a-zA-Z0-9]*$)'
         #Matches any number, or partial number still being scanned
-        self.generic_num_pattern = r'^([0-9]+(\.?([0-9]+)?)([eE])?([-+])?([0-9]+)?)+$'
+        self.generic_num_pattern = r'^([0-9]+(\.?([0-9]+)?)([eE])?([0-9]+)?)+$'
         self.integer_lit_pattern = r'^([0-9])+$'
         self.fixed_lit_pattern = r'^([0-9])+(\.)([0-9])+$'
-        self.float_lit_pattern = r'^[0-9]+(\.[0-9]+)?[eE][+-]?([0-9])+$'
+#        self.float_lit_pattern = r'^[0-9]+(\.[0-9]+)?[eE][+-]?([0-9])+$'
         self.string_lit_pattern = r'^\'(\'\'|[^\'\n])*\'$'
 
         self.file = None
@@ -274,6 +274,7 @@ class Scanner():
         # check if the id we have is a keyword
         for lexeme, token in self.keywords.items():
             if final_lexeme == lexeme:
+                logging.debug("IDENTIFIER: %s" % lexeme)
                 self.create_token(token, cur_line,
                                     cur_col, final_lexeme)
                 return
@@ -291,15 +292,18 @@ class Scanner():
         lexeme = lexeme[0:-1]
         self.rewind()
         #find out what kind of number was found
-        if re.match(self.float_lit_pattern, lexeme):
-            self.create_token("MP_FLOAT", self.get_line(),
-                                self.get_column(len(lexeme)),lexeme)
-            return
-        elif re.match(self.fixed_lit_pattern, lexeme):
+#        if re.match(self.float_lit_pattern, lexeme):
+#            logging.debug("FLOAT: %s" % lexeme)
+#            self.create_token("MP_FLOAT", self.get_line(),
+#                                self.get_column(len(lexeme)),lexeme)
+#            return
+        if re.match(self.fixed_lit_pattern, lexeme):
+            logging.debug("FIXED_LIT: %s" % lexeme)
             self.create_token("MP_FIXED_LIT", self.get_line(),
                                 self.get_column(len(lexeme)), lexeme)
             return
         elif re.match(self.integer_lit_pattern, lexeme):
+            logging.debug("INTEGER: %s" % lexeme)
             self.create_token("MP_INTEGER", self.get_line(),
                                 self.get_column(len(lexeme)), lexeme)
         else:
