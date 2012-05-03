@@ -158,6 +158,7 @@ class Parser(object):
             self.epsilon()
         else:
             self.error(eps_list.append('MP_VAR'))
+        self.sem_analyzer.gen_add_sp()
 
     def epsilon(self):
         """

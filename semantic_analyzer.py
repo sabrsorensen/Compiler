@@ -16,9 +16,10 @@ class SemanticAnalyzer():
         self.cur_label += 1
         return label
 
-    def gen_add_sp(self, size):
+    def gen_add_sp(self):
         #
-        self.output += "add sp #" + size + " sp\n"
+        size = self.sym_table.cur_offset
+        self.output += "add sp #" + str(size) + " sp\n"
 
     def gen_ass_statement(self,id_rec, expr_rec):
         # todo add type matching back in, commented for testing
@@ -101,9 +102,7 @@ class SemanticAnalyzer():
         else:
             logging.error("Variable " + read_param_rec.lexeme + " referenced before declaration.\n")
             exit(-1)
-    """
-    Possible additional "if" handling.
-    """
+
     def begin_if(self, if_rec):
         if_rec.label1 = self.gen_label()
         if_rec.label2 = self.gen_label()
