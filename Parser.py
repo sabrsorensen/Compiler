@@ -694,12 +694,15 @@ class Parser(object):
         Expanding Rule 56:
         RepeatStatement -> "repeat" StatementSequence "until" BooleanExpression
         """
+        rep_rec = SemanticRecord()
         if self.t_type() == 'MP_REPEAT':
             Parser.print_tree('56')
             self.match('repeat')
+            self.sem_analyzer.begin_repeat(rep_rec)
             self.statement_sequence()
             self.match('until')
-            self.boolean_expression()
+            self.boolean_expression(rep_rec)
+            self.sem_analyzer.end_repeat(rep_rec)
         else:
             self.error('MP_REPEAT')
 
