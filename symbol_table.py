@@ -55,7 +55,7 @@ class SymbolTable(object):
     def find(self, lexeme):
         if self.sym_table.get(lexeme, None):
             return self.sym_table.get(lexeme, None)
-        elif self.parent_table and self.parent_table.get(lexeme,None):
+        elif self.parent_table and self.parent_table.sym_table.get(lexeme,None):
             return self.parent_table.find(lexeme)
         else:
             return None
