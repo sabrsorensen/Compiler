@@ -1123,7 +1123,7 @@ class Parser(object):
             in_lexeme = self.t_lexeme()
             self.match(in_lexeme)
             sem_rec.lexeme = in_lexeme
-            sem_rec.type = 'Int'
+            sem_rec.type = 'Integer'
         else:
             self.error('MP_IDENTIFIER')
 

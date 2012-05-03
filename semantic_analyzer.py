@@ -1,4 +1,5 @@
 import logging
+import traceback
 from symbol_table import SymbolTable
 
 __authors__ = 'Sam Sorensen', 'Keith Smith', 'Anna Andriyanova'
@@ -15,23 +16,42 @@ class SemanticAnalyzer():
         self.output += "add sp #" + size + " sp\n"
 
     def gen_ass_statement(self,id_rec, expr_rec):
-        #
+        # todo add type matching back in, commented for testing
+        '''
         if id_rec.type != expr_rec.type:
             #invalid type match
             logging.error("Type match error!")
             exit(0)
-        self.output += "; Oh hey, we're assigning stuff to " + id_rec.lexeme
-        trans_rec = self.sym_table.find(id_rec.lexeme).cur_rec #is cur_rec right?
-        self.output += "pop " + trans_rec.offset + "(d" + trans_rec.depth + ")\n"
+        '''
+        self.output += "; Oh hey, we're assigning stuff to " + id_rec.lexeme + '\n'
+        temp = self.sym_table.find(id_rec.lexeme)
+        if temp:
+            trans_rec = temp.cur_record
+        else:
+            traceback.print_stack()
+            print "Failed to find semantic entry."
+            exit(0)
+        self.output += "pop " + str(trans_rec.offset) + "(d" + str(trans_rec.depth) + ")\n"
 
     #Stub methods from here down.
     def process_id(self, id_rec):
         pass
     def gen_push_id(self, id_rec, rec_out):
-        pass
-        return #bool
+        #Type checking
+        if id_rec.type != 'Integer':
+            traceback.print_stack()
+            print "Type match error!"
+            exit(0)
+        temp = self.sym_table.find(id_rec.lexeme)
+        if temp:
+            trans_rec = temp.cur_record
+        else:
+            traceback.print_stack()
+            print "Failed to find semantic entry."
+            exit(0)
+        self.output += "push" + str(trans_rec.offset) + "(d" + str(trans_rec.depth) + ")\n"
     def gen_push_int(self, int_rec_in):
-        pass
+        self.output += "push #" + str(int_rec_in.lexeme) + "\n"
     def gen_begin(self):
         self.output += 'mov d0 0(sp)\nmov sp d0\n'
     def gen_end(self):
