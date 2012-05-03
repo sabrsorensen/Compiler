@@ -1054,19 +1054,19 @@ class Parser(object):
         if self.t_type() == 'MP_TIMES':
             Parser.print_tree('91')
             self.match(self.t_lexeme())
-            mul_op_sem_rec = '*'
+            mul_op_sem_rec.lexeme = '*'
         elif self.t_type() == 'MP_DIV':
             Parser.print_tree('92')
             self.match(self.t_lexeme())
-            mul_op_sem_rec = 'div'
+            mul_op_sem_rec.lexeme = 'div'
         elif self.t_type() == 'MP_MOD':
             Parser.print_tree('93')
             self.match(self.t_lexeme())
-            mul_op_sem_rec = 'mod'
+            mul_op_sem_rec.lexeme = 'mod'
         elif self.t_type() == 'MP_AND':
             Parser.print_tree('94')
             self.match(self.t_lexeme())
-            mul_op_sem_rec = 'and'
+            mul_op_sem_rec.lexeme = 'and'
         else:
             self.error(['MP_TIMES', 'MP_DIV', 'MP_MOD', 'MP_AND'])
 
