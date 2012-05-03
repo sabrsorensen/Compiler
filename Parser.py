@@ -524,6 +524,8 @@ class Parser(object):
         elif self.t_type() == 'MP_FOR':
             Parser.print_tree('40')
             self.for_statement()
+        elif self.t_type() == 'MP_UNTIL':
+            pass
         else:
             self.error(['MP_END', 'MP_BEGIN', 'MP_WRITE', 'MP_IDENTIFIER',
                         'MP_IF', 'MP_WHILE', 'MP_REPEAT', 'MP_FOR'])
