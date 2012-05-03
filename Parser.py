@@ -638,11 +638,14 @@ class Parser(object):
         """
         # the conflict here should be considered resolved, because in the end
         #both those guys lead to identifier
+        ident_rec = SemanticRecord()
+        express_rec = SemanticRecord()
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('51')
-            self.variable_identifier()
+            self.variable_identifier(ident_rec)
             self.match(':=')
-            self.expression()
+            self.expression(express_rec)
+            self.sem_analyzer.gen_ass_statement(ident_rec, express_rec)
         else:
             self.error('MP_IDENTIFIER')
 
@@ -1094,14 +1097,16 @@ class Parser(object):
         else:
             self.error('MP_IDENTIFIER')
 
-    def variable_identifier(self):
+    def variable_identifier(self, sem_rec):
         """
         Expanding Rule 101:
         VariableIdentifier -> Identifier
         """
         if self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('101')
-            self.match(self.t_lexeme())
+            in_lexeme = self.t_lexeme()
+            self.match(in_lexeme)
+            sem_rec.lexeme = in_lexeme
         else:
             self.error('MP_IDENTIFIER')
 
