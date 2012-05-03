@@ -27,7 +27,8 @@ class Parser(object):
     ############### Utility Functions ###############
 
     def error(self, expected=None):
-        logging.error("Couldn't match: \"%s\" in %s(). Received %s" % (self.t_lexeme(),
+        logging.error("Couldn't match: \"%s\" near line: %s, col: %s in %s(). Received %s" % (self.t_lexeme(),
+                                                      self.cur_token.line, self.cur_token.column,
                                                       inspect.stack()[1][3],self.t_type()))
         logging.error('Expected tokens: %s' % expected)
         logging.error("Three level parse tree (stack) trace, most recent call last.\n\t^ %s()\n\t^ %s()\n\t> %s()" % (inspect.stack()[3][3],
