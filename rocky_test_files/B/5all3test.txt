@@ -45,9 +45,9 @@ begin
 	repeat
 		c := c + 1;
 		write(c);
-	until c > 10;
+	until (c > 10);
 
-	WHILE c > 0 DO
+	WHILE (c > 0) DO
 	begin
 	   c := c - 1;
 	   write(c);
