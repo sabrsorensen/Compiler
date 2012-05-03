@@ -1,9 +1,14 @@
 program sample1;
-  var i, j: integer;
+  var j,k: integer;
 begin
-  read(i); { get i }
   read(j);
-  write(1);
-  write(i);
-  i:= j + 1;
+  j := 9 div 9;
+  write( 9 );
+  write( j );
+  while (j = 10) do begin
+    j := j + 1;
+  end;
+  j := 2;
+  for j := 1 downto k do
+        write(s);
 end.

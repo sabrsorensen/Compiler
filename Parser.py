@@ -977,7 +977,7 @@ class Parser(object):
                          'MP_EQUAL', 'MP_GTHAN', 'MP_GEQUAL',
                          'MP_DO', 'MP_DOWNTO', 'MP_ELSE',
                          'MP_TO', 'MP_UNTIL']
-        accepted_list = ['MP_PLUS', 'MP_MINUS']
+        accepted_list = ['MP_PLUS', 'MP_MINUS', 'MP_OR']
 
         if self.t_type() in accepted_list:
             Parser.print_tree('80')
@@ -1060,7 +1060,7 @@ class Parser(object):
                     'MP_LEQUAL', 'MP_NEQUAL', 'MP_EQUAL',
                     'MP_GTHAN', 'MP_GEQUAL', 'MP_DO',
                     'MP_DOWNTO', 'MP_ELSE', 'MP_END',
-                    'MP_OR,', 'MP_THEN', 'MP_TO',
+                    'MP_OR', 'MP_THEN', 'MP_TO',
                     'MP_UNTIL']
 
         if self.t_type() in accepted_list:

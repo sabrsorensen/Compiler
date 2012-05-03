@@ -24,12 +24,12 @@ begin
   b := 65;
   c := 10;
 
-  if not(a < b) then
+  if (not(a < b)) then
     write(9000000)
   else
     read(a);
 
-  if a < b then
+  if (a < b) then
       write(1)
   else
       a := 20
@@ -43,7 +43,7 @@ begin
           write(100000);
         end
       else
-        if (5+2) = (1+6) then
+        if ((5+2) = (1+6)) then
           begin
             write(2);
           end
