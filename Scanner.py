@@ -30,6 +30,7 @@ class Scanner():
                          'begin':'MP_BEGIN',
                          'div':'MP_DIV',
                          'do':'MP_DO',
+                         'DO':'MP_DO',
                          'downto':'MP_DOWNTO',
                          'else':'MP_ELSE',
                          'end':'MP_END',
@@ -52,6 +53,7 @@ class Scanner():
                          'until':'MP_UNTIL',
                          'var':'MP_VAR',
                          'while':'MP_WHILE',
+                         'WHILE':'MP_WHILE',
                          'write':'MP_WRITE'}
 
         #input char type ==> method dictionary
@@ -274,7 +276,7 @@ class Scanner():
             final_lexeme = final_lexeme[0:-1]
         # check if the id we have is a keyword
         for lexeme, token in self.keywords.items():
-            if final_lexeme == lexeme:
+            if final_lexeme.lower() == lexeme:
                 logging.debug("IDENTIFIER: %s" % lexeme)
                 self.create_token(token, cur_line,
                                     cur_col, final_lexeme)
