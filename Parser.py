@@ -943,6 +943,7 @@ class Parser(object):
             expr_rec.lexeme = 'gte'
         elif self.t_type() == 'MP_NEQUAL':
             Parser.print_tree('78')
+            self.match(self.t_lexeme())
             expr_rec.lexeme = 'ne'
         else:
             self.error(['MP_EQUAL', 'MP_LTHAN', 'MP_GTHAN',
