@@ -34,7 +34,7 @@ class SemanticAnalyzer():
             trans_rec = temp.cur_record
         else:
             traceback.print_stack()
-            print "Failed to find semantic entry."
+            print "Failed to find semantic entry " + id_rec.lexeme
             exit(0)
         self.output += "pop " + str(trans_rec.offset) + "(d" + str(trans_rec.depth) + ")\n"
 

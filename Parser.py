@@ -319,6 +319,7 @@ class Parser(object):
             self.optional_formal_parameter_list()
             self.match(':')
             type = self.type()
+            return type
         else:
             self.error('MP_FUNCTION')
 
