@@ -109,3 +109,23 @@ class SemanticAnalyzer():
     """
     Possible additional "if" handling.
     """
+    def begin_if(self, if_rec):
+        if_rec.label1 = self.gen_label()
+        if if_rec.lexeme == 'eq':
+            self.output += "beq " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
+        elif if_rec.lexeme == 'lt':
+            self.output += "blt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
+        elif if_rec.lexeme == 'gt':
+            self.output += "bgt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
+        elif if_rec.lexeme == 'lte':
+            self.output += "blt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
+            self.output += "beq " + "-2(sp) "  + "-1(sp)" + ' L' + str(if_rec.label1) +':\n'
+        elif if_rec.lexeme == 'gte':
+            self.output += "bgt " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
+            self.output += "beq " + "-2(sp) "  + "-1(sp)" + ' L' + str(if_rec.label1) +':\n'
+        elif if_rec.lexeme == 'ne':
+            self.output += "bne " + "-1(sp) "  + "sp" + ' L' + str(if_rec.label1) +':\n'
+
+
+    def end_if(self, if_rec):
+        self.output += 'L'+ str(if_rec.label1) + ':\n'

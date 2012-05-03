@@ -659,12 +659,15 @@ class Parser(object):
         Expanding Rule 53:
         IfStatement -> "if" BooleanExpression "then" Statement OptionalElsePart
         """
+        if_rec = SemanticRecord()
         if self.t_type() == 'MP_IF':
             Parser.print_tree('53')
             self.match('if')
-            self.boolean_expression()
+            self.boolean_expression(if_rec)
+            self.sem_analyzer.begin_if(if_rec)
             self.match('then')
             self.statement()
+            self.sem_analyzer.end_if(if_rec)
             self.optional_else_part()
         else:
             self.error('MP_IF')
@@ -864,11 +867,11 @@ class Parser(object):
         if self.t_type() in accepted_list:
             Parser.print_tree('70')
             self.simple_expression(sem_rec)
-            self.optional_relational_part()
+            self.optional_relational_part(sem_rec)
         else:
             self.error(accepted_list)
 
-    def optional_relational_part(self):
+    def optional_relational_part(self, rel_rec):
         """
         Expanding Rule 71, 72:
         OptionalRelationalPart -> RelationalOperator SimpleExpression
@@ -882,15 +885,15 @@ class Parser(object):
 
         if self.t_type() in accepted_list:
             Parser.print_tree('71')
-            self.relational_operator()
-            self.simple_expression()
+            self.relational_operator(rel_rec)
+            self.simple_expression(sem_rec = SemanticRecord())
         elif self.t_type() in eps_list:
             Parser.print_tree('72')
             self.epsilon()
         else:
             self.error(accepted_list.extend(eps_list))
 
-    def relational_operator(self):
+    def relational_operator(self, expr_rec):
         """
         Expanding Rules 73 - 78:
         RelationalOperator  -> "="
@@ -903,20 +906,26 @@ class Parser(object):
         if self.t_type() == 'MP_EQUAL':
             Parser.print_tree('73')
             self.match(self.t_lexeme())
+            expr_rec.lexeme = 'eq'
         elif self.t_type() == 'MP_LTHAN':
             Parser.print_tree('74')
             self.match(self.t_lexeme())
+            expr_rec.lexeme = 'lt'
         elif self.t_type() == 'MP_GTHAN':
             Parser.print_tree('75')
             self.match(self.t_lexeme())
+            expr_rec.lexeme = 'gt'
         elif self.t_type() == 'MP_LEQUAL':
             Parser.print_tree('76')
             self.match(self.t_lexeme())
+            expr_rec.lexeme = 'lte'
         elif self.t_type() == 'MP_GEQUAL':
             Parser.print_tree('77')
             self.match(self.t_lexeme())
+            expr_rec.lexeme = 'gte'
         elif self.t_type() == 'MP_NEQUAL':
             Parser.print_tree('78')
+            expr_rec.lexeme = 'ne'
         else:
             self.error(['MP_EQUAL', 'MP_LTHAN', 'MP_GTHAN',
                         'MP_LEQUAL', 'MP_GEQUAL', 'MP_NEQUAL'])
