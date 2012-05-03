@@ -39,6 +39,7 @@ class Scanner():
                          'function':'MP_FUNCTION',
                          'if':'MP_IF',
                          'integer':'MP_INTEGER',
+                         'Integer':'MP_INTEGER',
                          'mod':'MP_MOD',
                          'not':'MP_NOT',
                          'or':'MP_OR',

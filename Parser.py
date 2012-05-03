@@ -830,11 +830,12 @@ class Parser(object):
                     'MP_MOD', 'MP_OR', 'MP_THEN',
                     'MP_TO', 'MP_UNTIL']
 
+        actual_rec = SemanticRecord()
         if self.t_type() == 'MP_LPAREN':
             Parser.print_tree('65')
             self.match('(')
-            self.actual_parameter()
-            self.actual_parameter_tail()
+            self.actual_parameter(actual_rec)
+            self.actual_parameter_tail(actual_rec)
             self.match(')')
         elif self.t_type() in eps_list:
             Parser.print_tree('66')
@@ -842,7 +843,7 @@ class Parser(object):
         else:
             self.error(eps_list.append('MP_LPAREN'))
 
-    def actual_parameter_tail(self):
+    def actual_parameter_tail(self, act_rec):
         """
         Expanding Rules 67, 68:
         ActualParameterTail -> "," ActualParameter ActualParameterTail
@@ -851,15 +852,15 @@ class Parser(object):
         if self.t_type() == 'MP_COMMA':
             Parser.print_tree('67')
             self.match(',')
-            self.actual_parameter()
-            self.actual_parameter_tail()
+            self.actual_parameter(act_rec)
+            self.actual_parameter_tail(act_rec)
         elif self.t_type() == 'MP_RPAREN':
             Parser.print_tree('68')
             self.epsilon()
         else:
             self.error(['MP_COMMA', 'MP_RPAREN'])
 
-    def actual_parameter(self):
+    def actual_parameter(self,act_rec):
         """
         Expanding Rule 69:
         ActualParameter -> OrdinalExpression
@@ -867,7 +868,7 @@ class Parser(object):
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('69')
-            self.ordinal_expression()
+            self.ordinal_expression(act_rec)
         else:
             self.error(accepted_list)
 

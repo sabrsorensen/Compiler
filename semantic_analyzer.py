@@ -47,7 +47,7 @@ class SemanticAnalyzer():
             logging.error("Variable " + id_rec.lexeme + " referenced before declaration.\n")
             exit(0)
         #Type checking
-        if id_rec.type != 'integer':
+        if id_rec.type != 'integer' and id_rec.type != 'Integer':
             traceback.print_stack()
             print "Type match error!"
             exit(0)
