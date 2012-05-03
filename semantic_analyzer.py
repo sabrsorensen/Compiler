@@ -13,13 +13,18 @@ class SemanticAnalyzer():
         self.cur_label = 0
 
     def gen_label(self):
-        self.output += "L" + str(self.cur_label) + ":\n"
+        label = self.cur_label
         self.cur_label += 1
+        return label
 
     def gen_add_sp(self, size):
         #
         self.output += "add sp #" + size + " sp\n"
 
+    def begin_while(self):
+        pass
+    def end_while(self):
+        pass
     def gen_ass_statement(self,id_rec, expr_rec):
         # todo add type matching back in, commented for testing
         '''
