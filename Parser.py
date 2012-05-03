@@ -629,12 +629,7 @@ class Parser(object):
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('50')
-            if self.t_type() == 'MP_LPAREN':
-                self.match('(')
-                self.ordinal_expression(write_param_rec)
-                self.match(')')
-            else:
-                self.ordinal_expression(write_param_rec)
+            self.ordinal_expression(write_param_rec)
             self.sem_analyzer.gen_write(write_param_rec)
         else:
             self.error(accepted_list)
@@ -884,8 +879,14 @@ class Parser(object):
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('70')
-            self.simple_expression(sem_rec)
-            self.optional_relational_part(sem_rec)
+            if self.t_type() == 'MP_LPAREN':
+                self.match('(')
+                self.simple_expression(sem_rec)
+                self.optional_relational_part(sem_rec)
+                self.match(')')
+            else:
+                self.simple_expression(sem_rec)
+                self.optional_relational_part(sem_rec)
         else:
             self.error(accepted_list)
 
