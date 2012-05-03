@@ -21,7 +21,7 @@ class SemanticAnalyzer():
             logging.error("Type match error!")
             exit(0)
         self.output += "; Oh hey, we're assigning stuff to " + id_rec.lexeme
-        trans_rec = self.sym_table.find(id_rec.lexeme).cur_rec #is cur_rec right?
+        trans_rec = self.sym_table.find(id_rec.lexeme).cur_record #is cur_rec right?
         self.output += "pop " + trans_rec.offset + "(d" + trans_rec.depth + ")\n"
 
     #Stub methods from here down.
@@ -47,9 +47,10 @@ class SemanticAnalyzer():
     def gen_read(self, read_param_rec):
         if self.sym_table.find(read_param_rec.lexeme) is not None:
             read_param_rec = self.sym_table.find(read_param_rec.lexeme).cur_record
-            self.output += 'read ' + str(read_param_rec.offset) + '(D' + str(read_param_rec.depth) + ')\n'
+            self.output += 'read ' + str(read_param_rec.offset) + '(d' + str(read_param_rec.depth) + ')\n'
         else:
-            logging.error("Read statement parameter " + read_param_rec.lexeme + " not found.\n")
+            logging.error("Variable " + read_param_rec.lexeme + " referenced before declaration.\n")
+            exit(-1)
     """
     Possible additional "if" handling.
     """
