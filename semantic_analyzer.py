@@ -43,7 +43,7 @@ class SemanticAnalyzer():
     def write_IR(self):
         print self.output
     def gen_write(self, expr_rec):
-        self.output += 'wrts'
+        self.output += 'wrts\n'
     def gen_read(self, read_param_rec):
         if self.sym_table.find(read_param_rec.lexeme) is not None:
             read_param_rec = self.sym_table.find(read_param_rec.lexeme).cur_record
