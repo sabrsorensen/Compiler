@@ -582,18 +582,21 @@ class Parser(object):
         else:
             self.error('MP_IDENTIFIER')
 
-    def write_statement(self):
+    def write_statement(self): #AAA
         """
         Expanding Rule 47:
         WriteStatement -> "write" "(" WriteParameter WriteParameterTail ")"
         """
+        write_param_rec = SemanticRecord()
         if self.t_type() == 'MP_WRITE':
             Parser.print_tree('47')
             self.match('write')
             self.match('(')
-            self.write_parameter()
-            self.write_parameter_tail()
+            self.write_parameter() # this is an expression
+            self.write_parameter_tail() # this too is an expression of some sort
             self.match(')')
+            # todo: handle combining the two returns from param and param_tail, push on the stack
+            self.sem_analyzer.gen_write(write_param_rec)
         else:
             self.error('MP_WRITE')
 
@@ -1046,7 +1049,7 @@ class Parser(object):
         else:
             self.error(['MP_TIMES', 'MP_DIV', 'MP_MOD', 'MP_AND'])
 
-    def factor(self):
+    def factor(self, sem_rec=None): #AAA
         """
         Expanding Rule 95,96,97,98,99:
         Factor -> UnsignedInteger
@@ -1058,22 +1061,26 @@ class Parser(object):
         if self.t_type() == 'MP_INTEGER':
             Parser.print_tree('95')
             self.match(self.t_lexeme())
+            self.sem_analyzer.gen_push_int(sem_rec)
         elif self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('96')
             self.match(self.t_lexeme())
+            self.sem_analyzer.gen_push_id(sem_rec, SemanticRecord())
         elif self.t_type() == 'MP_NOT':
             Parser.print_tree('97')
             self.match(self.t_lexeme())
+            self.factor(SemanticRecord())
         elif self.t_type() == 'MP_LPAREN':
             Parser.print_tree('98')
             self.match(self.t_lexeme())
-            self.expression()
+            self.expression(SemanticRecord()) #AAA
             if self.t_type() == 'MP_RPAREN':
                 self.match(self.t_lexeme())
             else:
                 self.error('MP_RPAREN')
         else:
             self.error(['MP_INTEGER', 'MP_IDENTIFIER', 'MP_NOT', 'MP_LPAREN'])
+        return sem_rec
 
     def program_identifier(self):
         """

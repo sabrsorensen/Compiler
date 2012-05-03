@@ -42,6 +42,8 @@ class SemanticAnalyzer():
         pass
     def write_IR(self):
         print self.output
+    def gen_write(self, expr_rec):
+        self.output += 'wrts'
     """
     Possible additional "if" handling.
     """
