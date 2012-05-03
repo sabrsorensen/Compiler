@@ -26,13 +26,23 @@ class SemanticAnalyzer():
         while_rec.label2 = self.gen_label()
 
     def gen_while(self, while_rec, expr_rec):
-        output += "branch sp -1(sp) l" + str(while_rec.label1) + "\n"
-
-
-        output += "L" + str(while_rec.label1) + ":\n"
+        self.output += "l" + str(while_rec.label1) + ":\n"
+        if expr_rec.lexeme == 'eq':
+            self.output += "bne -1(sp) sp l" + str(while_rec.label2) + "\n"
+        elif expr_rec.lexeme == 'lt':
+            self.output += "bge -1(sp) sp l" + str(while_rec.label2) + "\n"
+        elif expr_rec.lexeme == 'lte':
+            self.output += "bgt -1(sp) sp l" + str(while_rec.label2) + "\n"
+        elif expr_rec.lexeme == 'gt':
+            self.output += "ble -1(sp) sp l" + str(while_rec.label2) + "\n"
+        elif expr_rec.lexeme == 'gte':
+            self.output += "blt -1(sp) sp l" + str(while_rec.label2) + "\n"
+        elif expr_rec.lexeme == 'ne':
+            self.output += "beq -1(sp) sp l" + str(while_rec.label2) + "\n"
 
     def end_while(self, while_rec):
-        output += "L" + str(while_rec.label2) + ":\n"
+        self.output += "br l" + str(while_rec.label1) + "\n"
+        self.output += "l" + str(while_rec.label2) + ":\n"
 
     def gen_ass_statement(self,id_rec, expr_rec):
         # todo add type matching back in, commented for testing
