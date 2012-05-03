@@ -21,10 +21,19 @@ class SemanticAnalyzer():
         #
         self.output += "add sp #" + size + " sp\n"
 
-    def begin_while(self):
-        pass
-    def end_while(self):
-        pass
+    def begin_while(self, while_rec):
+        while_rec.label1 = self.gen_label()
+        while_rec.label2 = self.gen_label()
+
+    def gen_while(self, while_rec, expr_rec):
+        output += "branch sp -1(sp) l" + str(while_rec.label1) + "\n"
+
+
+        output += "L" + str(while_rec.label1) + ":\n"
+
+    def end_while(self, while_rec):
+        output += "L" + str(while_rec.label2) + ":\n"
+
     def gen_ass_statement(self,id_rec, expr_rec):
         # todo add type matching back in, commented for testing
         '''

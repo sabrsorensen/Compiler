@@ -704,12 +704,17 @@ class Parser(object):
         Expanding Rule 57:
         WhileStatement -> "while" BooleanExpression "do" Statement
         """
+        while_rec = SemanticRecord()
+        expr_rec = SemanticRecord()
         if self.t_type() == 'MP_WHILE':
             Parser.print_tree('57')
             self.match('while')
-            self.boolean_expression()
+            self.sem_analyzer.begin_while(while_rec)
+            self.boolean_expression(expr_rec)
+            self.sem_analyzer.gen_while(while_rec, expr_rec)
             self.match('do')
             self.statement()
+            self.sem_analyzer.end_while(while_rec)
         else:
             self.error('MP_WHILE')
 
@@ -1156,7 +1161,7 @@ class Parser(object):
         else:
             self.error('MP_IDENTIFIER')
 
-    def boolean_expression(self):
+    def boolean_expression(self, expr_rec):
         """
         Expanding Rule 104:
         BooleanExpression -> Expression
@@ -1167,7 +1172,7 @@ class Parser(object):
         if self.t_type() in accepted_list:
             Parser.print_tree('104')
             self.match(self.t_lexeme())
-            self.expression()
+            self.expression(expr_rec)
             self.match(self.t_lexeme())
         else:
             self.error(accepted_list)
