@@ -7,8 +7,8 @@ from semantic_record import SemanticRecord
 
 log = logging.getLogger()
 ch  = logging.StreamHandler()
-#log.setLevel(logging.DEBUG)
-log.setLevel(logging.ERROR)
+log.setLevel(logging.DEBUG)
+#log.setLevel(logging.ERROR)
 
 class Parser(object):
 
@@ -628,8 +628,12 @@ class Parser(object):
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('50')
-            self.ordinal_expression(write_param_rec)
-
+            if self.t_type() == 'MP_LPAREN':
+                self.match('(')
+                self.ordinal_expression(write_param_rec)
+                self.match(')')
+            else:
+                self.ordinal_expression(write_param_rec)
             self.sem_analyzer.gen_write(write_param_rec)
         else:
             self.error(accepted_list)
@@ -1120,11 +1124,11 @@ class Parser(object):
         elif self.t_type() == 'MP_NOT':
             Parser.print_tree('97')
             self.match(self.t_lexeme())
-            self.factor(SemanticRecord())
+            self.factor(sem_rec)
         elif self.t_type() == 'MP_LPAREN':
             Parser.print_tree('98')
             self.match(self.t_lexeme())
-            self.expression(SemanticRecord()) #AAA
+            self.expression(sem_rec)
             if self.t_type() == 'MP_RPAREN':
                 self.match(self.t_lexeme())
             else:
