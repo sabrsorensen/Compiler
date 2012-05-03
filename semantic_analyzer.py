@@ -10,6 +10,11 @@ class SemanticAnalyzer():
 
     def __init__(self, st_in):
         self.sym_table = st_in
+        self.cur_label = 0
+
+    def gen_label(self):
+        self.output += "L" + str(self.cur_label) + ":\n"
+        self.cur_label += 1
 
     def gen_add_sp(self, size):
         #
