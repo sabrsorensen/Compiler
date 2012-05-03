@@ -60,7 +60,10 @@ class SemanticAnalyzer():
             exit(0)
         self.output += "push " + str(trans_rec.offset) + "(d" + str(trans_rec.depth) + ")\n"
     def gen_push_int(self, int_rec_in):
-        self.output += "push #" + str(int_rec_in.lexeme) + "\n"
+        if int_rec_in.negative:
+            self.output += "push #-" + str(int_rec_in.lexeme) + "\n"
+        else:
+            self.output += "push #" + str(int_rec_in.lexeme) + "\n"
     def gen_begin(self):
         self.output += 'mov d0 0(sp)\nmov sp d0\n'
     def gen_end(self):
