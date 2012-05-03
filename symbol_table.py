@@ -53,7 +53,12 @@ class SymbolTable(object):
             self.existing_entry.put(self.record)
 
     def find(self, lexeme):
-         return self.sym_table.get(lexeme, None)
+        if self.sym_table.get(lexeme, None):
+            return self.sym_table.get(lexeme, None)
+        elif self.parent_table and self.parent_table.get(lexeme,None):
+            return self.parent_table.find(lexeme)
+        else:
+            return None
 
     def __repr__(self):
         output = "\n[%7s |%7s |%7s |%7s |%7s |%7s ]" %   ("lexeme", "kind",

@@ -41,7 +41,11 @@ class SemanticAnalyzer():
     def process_id(self, id_rec):
         pass
     def gen_push_id(self, id_rec, rec_out):
-        id_rec.type = self.sym_table.find(id_rec.lexeme).cur_record.type
+        if self.sym_table.find(id_rec.lexeme):
+            id_rec.type = self.sym_table.find(id_rec.lexeme).cur_record.type
+        else:
+            logging.error("Variable " + id_rec.lexeme + " referenced before declaration.\n")
+            exit(0)
         #Type checking
         if id_rec.type != 'integer':
             traceback.print_stack()
