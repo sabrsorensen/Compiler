@@ -87,9 +87,11 @@ class SemanticAnalyzer():
         elif operator.lexeme == 'and':
             pass
     def to_file(self, file_name):
-        pass
+        file = open(file_name,'w')
+        file.write(self.output)
     def write_IR(self):
         print self.output
+        self.to_file('micromachine_output')
     def gen_write(self, expr_rec):
         self.output += 'wrts\n'
     def gen_read(self, read_param_rec):
