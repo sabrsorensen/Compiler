@@ -951,7 +951,7 @@ class Parser(object):
         if self.t_type() in accepted_list:
             Parser.print_tree('80')
             #self.optional_sign()
-            self.adding_operator(term_tail_rec)
+            self.adding_operator(add_op_sem_rec)
             self.term(term_sem_rec)
             self.sem_analyzer.gen_arithmetic(term_tail_rec, add_op_sem_rec, term_sem_rec, result_sem_rec)
             self.term_tail(result_sem_rec)

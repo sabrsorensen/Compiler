@@ -23,7 +23,6 @@ class SemanticAnalyzer():
             logging.error("Type match error!")
             exit(0)
         '''
-        self.output += "; Oh hey, we're assigning stuff to " + id_rec.lexeme + '\n'
         temp = self.sym_table.find(id_rec.lexeme)
         if temp:
             trans_rec = temp.cur_record
@@ -57,8 +56,24 @@ class SemanticAnalyzer():
         self.output += 'mov d0 0(sp)\nmov sp d0\n'
     def gen_end(self):
         self.output += 'hlt\n'
-    def gen_arithmetic(self,left_operand, operator, right_operator, rec_out):
-        pass
+    def gen_arithmetic(self,left_operand, operator, right_operand, rec_out):
+        #Type check:
+        if left_operand.type != right_operand.type:
+            print "Type mismatch. " + str(left_operand.lexeme) + "not same type as " + str(right_operand.lexeme)
+        if operator.lexeme == '+':
+            self.output += "adds\n"
+        elif operator.lexeme == '-':
+            self.output += "subs\n"
+        elif operator.lexeme == '*':
+            self.output += "muls\n"
+        elif operator.lexeme == 'div':
+            self.output += "divs\n"
+        elif operator.lexeme == 'mod':
+            pass
+        elif operator.lexeme == 'or':
+            pass
+        elif operator.lexeme == 'and':
+            pass
     def to_file(self, file_name):
         pass
     def write_IR(self):
