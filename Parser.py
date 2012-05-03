@@ -751,7 +751,7 @@ class Parser(object):
             self.final_value(final_rec)
             self.match('do')
             self.sem_analyzer.begin_for(for_rec)
-            self.sem_analyzer.gen_for(for_rec)
+            self.sem_analyzer.gen_for(for_rec, control_var_rec, initial_rec)
             self.statement()
             self.sem_analyzer.end_for(for_rec, control_var_rec, final_rec)
         else:

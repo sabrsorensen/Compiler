@@ -175,7 +175,12 @@ class SemanticAnalyzer():
         for_rec.label1 = self.gen_label()
         for_rec.label2 = self.gen_label()
 
-    def gen_for(self, for_rec):
+    def gen_for(self, for_rec, control_var_rec, initial_rec):
+        temp = self.sym_table.find(control_var_rec.lexeme).cur_record
+        #self.output += "push " + str(temp.offset) + "(d" + str(temp.depth) + ")\n"
+        self.output += "push #" + str(initial_rec.lexeme + "\n")
+        #self.output += "adds\n"
+        self.output += "pop " + str(temp.offset) + "(d" + str(temp.depth) + ")\n"
         self.gen_while(for_rec, for_rec)
 
     def end_for(self,for_rec, control_var_rec, final_rec):
