@@ -47,7 +47,7 @@ begin
 		write(c);
 	until (c > 10);
 
-	WHILE (c > 0) DO
+	WHILE (c >= 0) DO
 	begin
 	   c := c - 1;
 	   write(c);
@@ -69,7 +69,7 @@ begin
         c := 20 div b;
         write(c);
 
-	IF NOT (a < b) THEN
+	IF (NOT (a < b)) THEN
 	  WRITE(a);
 
 
