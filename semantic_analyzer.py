@@ -23,6 +23,7 @@ class SemanticAnalyzer():
             logging.error("Type match error!")
             exit(0)
         '''
+        self.output += "; Oh hey, we're assigning stuff to " + id_rec.lexeme + '\n'
         temp = self.sym_table.find(id_rec.lexeme)
         if temp:
             trans_rec = temp.cur_record
@@ -31,12 +32,14 @@ class SemanticAnalyzer():
             print "Failed to find semantic entry."
             exit(0)
         self.output += "pop " + str(trans_rec.offset) + "(d" + str(trans_rec.depth) + ")\n"
+
     #Stub methods from here down.
     def process_id(self, id_rec):
         pass
     def gen_push_id(self, id_rec, rec_out):
+        id_rec.type = self.sym_table.find(id_rec.lexeme).cur_record.type
         #Type checking
-        if id_rec.type != 'Integer':
+        if id_rec.type != 'integer':
             traceback.print_stack()
             print "Type match error!"
             exit(0)

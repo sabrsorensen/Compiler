@@ -629,6 +629,7 @@ class Parser(object):
         if self.t_type() in accepted_list:
             Parser.print_tree('50')
             self.ordinal_expression(write_param_rec)
+
             self.sem_analyzer.gen_write(write_param_rec)
         else:
             self.error(accepted_list)
@@ -1086,6 +1087,8 @@ class Parser(object):
             self.match(self.t_lexeme())
         elif self.t_type() == 'MP_IDENTIFIER':
             Parser.print_tree('96')
+            sem_rec.lexeme = self.t_lexeme()
+            print sem_rec.type
             self.match(self.t_lexeme())
             self.sem_analyzer.gen_push_id(sem_rec, SemanticRecord())
         elif self.t_type() == 'MP_NOT':
