@@ -71,7 +71,7 @@ class SemanticAnalyzer():
     def gen_arithmetic(self,left_operand, operator, right_operand, rec_out):
         #Type check:
         if left_operand.type != right_operand.type:
-            print "Type mismatch. " + str(left_operand.lexeme) + "not same type as " + str(right_operand.lexeme)
+            print "Type mismatch. " + str(left_operand.lexeme) + " not same type as " + str(right_operand.lexeme)
         if operator.lexeme == '+':
             self.output += "adds\n"
         elif operator.lexeme == '-':

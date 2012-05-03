@@ -1129,12 +1129,12 @@ class Parser(object):
         elif self.t_type() == 'MP_LPAREN':
             Parser.print_tree('98')
             self.match(self.t_lexeme())
-            if self.t_type() == 'MP_LPAREN':
-                self.match('(')
-                self.expression(sem_rec)
-                self.match(')')
-            else:
-                self.expression(sem_rec)
+#            if self.t_type() == 'MP_LPAREN':
+#                self.match('(')
+#                self.expression(sem_rec)
+#                self.match(')')
+#            else:
+            self.expression(sem_rec)
 
             if self.t_type() == 'MP_RPAREN':
                 self.match(self.t_lexeme())
