@@ -27,7 +27,8 @@ class Parser(object):
     ############### Utility Functions ###############
 
     def error(self, expected=None):
-        logging.error("Couldn't match: \"%s\" in %s(). Received %s" % (self.t_lexeme(),
+        logging.error("Couldn't match: \"%s\" near line: %s, col: %s in %s(). Received %s" % (self.t_lexeme(),
+                                                      self.cur_token.line, self.cur_token.column,
                                                       inspect.stack()[1][3],self.t_type()))
         logging.error('Expected tokens: %s' % expected)
         logging.error("Three level parse tree (stack) trace, most recent call last.\n\t^ %s()\n\t^ %s()\n\t> %s()" % (inspect.stack()[3][3],
@@ -628,12 +629,7 @@ class Parser(object):
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('50')
-            if self.t_type() == 'MP_LPAREN':
-                self.match('(')
-                self.ordinal_expression(write_param_rec)
-                self.match(')')
-            else:
-                self.ordinal_expression(write_param_rec)
+            self.ordinal_expression(write_param_rec)
             self.sem_analyzer.gen_write(write_param_rec)
         else:
             self.error(accepted_list)
@@ -883,8 +879,14 @@ class Parser(object):
         accepted_list = ['MP_LPAREN','MP_PLUS','MP_MINUS','MP_IDENTIFIER', 'MP_INTEGER','MP_NOT']
         if self.t_type() in accepted_list:
             Parser.print_tree('70')
-            self.simple_expression(sem_rec)
-            self.optional_relational_part(sem_rec)
+            if self.t_type() == 'MP_LPAREN':
+                self.match('(')
+                self.simple_expression(sem_rec)
+                self.optional_relational_part(sem_rec)
+                self.match(')')
+            else:
+                self.simple_expression(sem_rec)
+                self.optional_relational_part(sem_rec)
         else:
             self.error(accepted_list)
 
@@ -942,6 +944,7 @@ class Parser(object):
             expr_rec.lexeme = 'gte'
         elif self.t_type() == 'MP_NEQUAL':
             Parser.print_tree('78')
+            self.match(self.t_lexeme())
             expr_rec.lexeme = 'ne'
         else:
             self.error(['MP_EQUAL', 'MP_LTHAN', 'MP_GTHAN',
